@@ -16,7 +16,7 @@ export async function getGeniusFixtures() {
   const sportId    = process.env.GENIUS_SOCCER_SPORT_ID ?? '1'
 
   const response = await axios.get(
-    `${baseUrl}/api/fixtures/sports/${sportId}/active-fixtures`
+    `${baseUrl}/fixtures/sports/${sportId}/active-fixtures`
   )
 
   const fixtures = response.data
@@ -30,9 +30,9 @@ export async function getGeniusFixtures() {
 
   return fixtures.map(fixture => ({
     geniusId:  String(fixture.id),
-    home:      fixture.competitors?.[0]?.name ?? '',
-    away:      fixture.competitors?.[1]?.name ?? '',
-    startTime: fixture.startDatetime ?? fixture.fixture?.startDatetime ?? '',
-    status:    fixture.statusId      ?? fixture.fixture?.status        ?? 'UNKNOWN',
+    home:      fixture.fixturecompetitors?.[0]?.competitor?.name ?? '',
+    away:      fixture.fixturecompetitors?.[1]?.competitor?.name ?? '',
+    startTime: fixture.startDate ?? '',
+    status:    fixture.statusType ?? 'UNKNOWN',
   }))
 }
