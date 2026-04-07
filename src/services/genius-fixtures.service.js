@@ -1,7 +1,17 @@
 import axios from 'axios'
 
 /**
- * Fetches active football fixtures from the geniusBackend.
+ * Fetches active (non-finished) football fixtures from geniusBackend v2 API.
+ *
+ * Uses GET /v2/fixtures/recent?limit=100&status=notfinished, paging through
+ * all results. Response shape: { page, pageSize, totalItems, items: [...] }
+ *
+ * Item fields used:
+ *   fixture.id                    — Genius fixture ID
+ *   fixture.homeCompetitor.name   — home team name
+ *   fixture.competitors[1].name   — away team name (index 1)
+ *   fixture.startDate             — ISO start datetime
+ *   fixture.eventStatusType       — e.g. "Scheduled", "InProgress", "Finished"
  *
  * @returns {Promise<Array<{
  *   geniusId: string,
@@ -12,27 +22,47 @@ import axios from 'axios'
  * }>>}
  */
 export async function getGeniusFixtures() {
-  const baseUrl    = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3002'
-  const sportId    = process.env.GENIUS_SOCCER_SPORT_ID ?? '1'
+  const baseUrl = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3002'
+  const PAGE_SIZE = 100
+  const MAX_PAGES = 20 // safety cap: 2000 fixtures max
 
-  const response = await axios.get(
-    `${baseUrl}/fixtures/sports/${sportId}/active-fixtures`
-  )
+  let allItems = []
+  let page = 1
+  let hasMore = true
 
-  const fixtures = response.data
+  while (hasMore) {
+    const url = `${baseUrl}/v2/fixtures/recent`
+    const response = await axios.get(url, {
+      params: {
+        limit: PAGE_SIZE,
+        page,
+        status: 'notfinished',
+      },
+      timeout: 15_000,
+    })
 
-  // Genius Fixture API structure (adjust field paths to match actual response):
-  // fixture.id
-  // fixture.competitors[0].name  (home)
-  // fixture.competitors[1].name  (away)
-  // fixture.startDatetime or fixture.fixture.startDatetime
-  // fixture.statusId or fixture.fixture.status
+    const { items = [], totalItems = 0 } = response.data
+    allItems = allItems.concat(items)
 
-  return fixtures.map(fixture => ({
-    geniusId:  String(fixture.id),
-    home:      fixture.fixturecompetitors?.[0]?.competitor?.name ?? '',
-    away:      fixture.fixturecompetitors?.[1]?.competitor?.name ?? '',
-    startTime: fixture.startDate ?? '',
-    status:    fixture.statusType ?? 'UNKNOWN',
-  }))
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE)
+    hasMore = page < totalPages && page < MAX_PAGES
+    page++
+  }
+
+  return allItems.map(fixture => {
+    // homeCompetitor is the authoritative home team field.
+    // For away, competitors[1] is the non-home competitor when homeCompetitor
+    // matches competitors[0]. Fall back to parsing fixture.name if needed.
+    const home = fixture.homeCompetitor?.name ?? fixture.competitors?.[0]?.name ?? ''
+    const awayCompetitor = fixture.competitors?.find(c => c.id !== fixture.homeCompetitor?.id)
+    const away = awayCompetitor?.name ?? fixture.competitors?.[1]?.name ?? ''
+
+    return {
+      geniusId:  String(fixture.id),
+      home,
+      away,
+      startTime: fixture.startDate ?? '',
+      status:    fixture.eventStatusType ?? 'UNKNOWN',
+    }
+  })
 }
