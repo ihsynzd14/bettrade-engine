@@ -21,8 +21,8 @@ export async function getBetfairFixtures() {
   const filter = {
     eventTypeIds: ['1'],           // 1 = Football/Soccer
     marketTypeCodes: ['MATCH_ODDS'],
-    inPlayOnly: false,
-    turnInPlayEnabled: true,
+    // inPlayOnly omitted → returns both in-play and pre-match markets
+    // turnInPlayEnabled omitted → returns all MATCH_ODDS regardless of in-play flag
     marketStartTime: {
       // Fetch matches starting within the next 24 hours + already in-play
       from: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
@@ -35,7 +35,7 @@ export async function getBetfairFixtures() {
     {
       filter,
       marketProjection: ['EVENT', 'RUNNER_DESCRIPTION', 'MARKET_START_TIME'],
-      maxResults: 200,
+      maxResults: 1000,
       sort: 'FIRST_TO_START',
     },
     {
@@ -53,16 +53,20 @@ export async function getBetfairFixtures() {
   const markets = response.data
 
   return markets
-    .filter(m => m.runners && m.runners.length === 2)
+    .filter(m => m.runners && m.runners.length >= 2)
     .map(m => {
-      // Betfair runner names are typically "Team A v Team B" — split on "v"
-      // Or use runner descriptions directly
-      const runnerNames = m.runners.map(r => r.runnerName)
+      // Soccer MATCH_ODDS runners are sorted by sortPriority: [Home(1), Draw(2), Away(3)]
+      // Use event.name "Team A v Team B" as primary source — most reliable.
+      // Fall back to runners[0] (home) and runners[2] (away) if event name unavailable.
+      const eventName = m.event?.name ?? ''
+      const parts = eventName.split(' v ')
+      const home = parts[0]?.trim() || m.runners[0]?.runnerName || ''
+      const away = parts[1]?.trim() || m.runners[2]?.runnerName || m.runners[1]?.runnerName || ''
       return {
         betfairEventId:  m.event?.id    ?? '',
         betfairMarketId: m.marketId,
-        home:            runnerNames[0] ?? m.event?.name?.split(' v ')[0] ?? '',
-        away:            runnerNames[1] ?? m.event?.name?.split(' v ')[1] ?? '',
+        home,
+        away,
         startTime:       m.marketStartTime ?? '',
       }
     })
