@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getSessionToken } from './betfair-auth.service.js'
 
 const BETTING_API = 'https://api.betfair.com/exchange/betting/rest/v1.0'
-const BATCH_SIZE = 40 // ~5 weight points per market with EX_BEST_OFFERS → max 40 per 200-point request
+const BATCH_SIZE = 40 // EX_BEST_OFFERS = 5 weight points per market → max 40 per 200-point request
 
 /**
  * Fetches live market book data from Betfair for the given market IDs.
@@ -38,10 +38,9 @@ export async function fetchMarketBooks(marketIds) {
         {
           marketIds: batch,
           priceProjection: {
-            priceData: ['EX_BEST_OFFERS', 'EX_TRADED_VOL'],
+            priceData: ['EX_BEST_OFFERS'],
             exBestOffersOverrides: { bestPricesDepth: 3 },
           },
-          matchProjection: 'ROLLED_UP_BY_PRICE',
         },
         { headers }
       )
@@ -70,6 +69,9 @@ export async function fetchMarketBooks(marketIds) {
       console.log(`[betfair-market] Fetched book for ${batch.length} markets (batch ${Math.floor(i / BATCH_SIZE) + 1})`)
     } catch (err) {
       console.error(`[betfair-market] Batch ${Math.floor(i / BATCH_SIZE) + 1} failed:`, err.message)
+      if (err.response?.data) {
+        console.error(`[betfair-market] Betfair error detail:`, JSON.stringify(err.response.data))
+      }
     }
   }
 
