@@ -31,7 +31,7 @@ export async function getGeniusFixtures() {
   let hasMore = true
 
   while (hasMore) {
-    const url = `${baseUrl}/v2/fixtures/recent`
+    const url = `${baseUrl}/api/v2/fixtures/recent`
     const response = await axios.get(url, {
       params: {
         limit: PAGE_SIZE,
