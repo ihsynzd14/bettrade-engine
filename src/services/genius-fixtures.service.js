@@ -22,7 +22,7 @@ import axios from 'axios'
  * }>>}
  */
 export async function getGeniusFixtures() {
-  const baseUrl = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3002'
+  const baseUrl = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3003'
   const PAGE_SIZE = 100
   const MAX_PAGES = 20 // safety cap: 2000 fixtures max
 

@@ -10,7 +10,7 @@ export async function getBookingCoverage() {
     return cachedFixtures
   }
 
-  const baseUrl = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3002'
+  const baseUrl = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3003'
 
   try {
     const res = await axios.get(`${baseUrl}/api/booking/fixtures/coverage`, {
