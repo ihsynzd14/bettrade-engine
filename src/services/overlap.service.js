@@ -1,7 +1,8 @@
 import { getBetfairFixtures } from './betfair-fixtures.service.js'
 import { getGeniusFixtures }  from './genius-fixtures.service.js'
 import { fetchMarketBooks }   from './betfair-market.service.js'
-import { fixtureSimilarity }  from '../lib/normalize.js'
+import { fixtureSimilarity, bookingFixtureSimilarity }  from '../lib/normalize.js'
+import { getBookingCoverage } from './booking-coverage.service.js'
 
 const SIMILARITY_THRESHOLD = 0.65
 const TIME_WINDOW_MS = 60 * 60 * 1000 // ±1 hour
@@ -101,6 +102,32 @@ export async function syncOnce() {
         })
         break
       }
+    }
+  }
+
+  if (process.env.BOOKING_COVERAGE_ENABLED !== 'false') {
+    try {
+      const bookingFixtures = await getBookingCoverage()
+      console.log(`[overlap] Booking coverage: ${bookingFixtures.length} fixtures`)
+
+      const before = matched.length
+      for (let i = matched.length - 1; i >= 0; i--) {
+        const fixture = matched[i]
+        let found = false
+        for (const booking of bookingFixtures) {
+          const score = bookingFixtureSimilarity(fixture, booking)
+          if (score >= SIMILARITY_THRESHOLD) {
+            found = true
+            break
+          }
+        }
+        if (!found) {
+          matched.splice(i, 1)
+        }
+      }
+      console.log(`[overlap] Booking filter: ${before} → ${matched.length} fixtures`)
+    } catch (err) {
+      console.error('[overlap] Booking coverage filter failed:', err.message)
     }
   }
 
