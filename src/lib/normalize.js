@@ -1,5 +1,7 @@
 import stringSimilarity from 'string-similarity'
 
+export const TIME_WINDOW_MS = 60 * 60 * 1000
+
 /**
  * Strips common football club name noise so "Man Utd" and "Manchester United"
  * become closer to each other before similarity scoring.
@@ -46,5 +48,22 @@ export function similarity(a, b) {
 export function fixtureSimilarity(genius, betfair) {
   const homeScore = similarity(genius.home, betfair.home)
   const awayScore = similarity(genius.away, betfair.away)
+  return (homeScore + awayScore) / 2
+}
+
+export function bookingFixtureSimilarity(overlapFixture, bookingFixture) {
+  const parts = bookingFixture.name.split(' v ')
+  if (parts.length !== 2) return 0
+
+  const bookingHome = parts[0].trim()
+  const bookingAway = parts[1].trim()
+
+  const timeA = new Date(overlapFixture.startTime).getTime()
+  const timeB = new Date(bookingFixture.date).getTime()
+  if (isNaN(timeA) || isNaN(timeB)) return 0
+  if (Math.abs(timeA - timeB) > TIME_WINDOW_MS) return 0
+
+  const homeScore = similarity(overlapFixture.homeTeam, bookingHome)
+  const awayScore = similarity(overlapFixture.awayTeam, bookingAway)
   return (homeScore + awayScore) / 2
 }
