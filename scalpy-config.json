@@ -1,0 +1,10 @@
+{
+  "stake": 10,
+  "currency": "GBP",
+  "rules": [
+    { "addedMinutes": 3, "selection": "UNDER", "side": "BACK", "price": 1.18 },
+    { "addedMinutes": 4, "selection": "UNDER", "side": "BACK", "price": 1.22 },
+    { "addedMinutes": 5, "selection": "UNDER", "side": "BACK", "price": 1.25 },
+    { "addedMinutes": 6, "selection": "UNDER", "side": "BACK", "price": 1.28 }
+  ]
+}
