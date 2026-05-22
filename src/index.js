@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import { login } from './services/betfair-auth.service.js'
 import { startPolling } from './services/overlap.service.js'
+import { startEngine } from './scalpy/scalpy.engine.js'
 import { app } from './server.js'
 
 const PORT = process.env.PORT ?? 4001
@@ -8,15 +9,20 @@ const PORT = process.env.PORT ?? 4001
 async function main() {
   console.log('[engine] Starting bettrade-engine...')
 
-  // Authenticate with Betfair before polling starts
+  // Authenticate with Betfair
   await login()
 
-  // Start 60-second overlap sync loop
+  // Start overlap sync loop (existing)
   startPolling()
+
+  // Start Scalpy trading engine
+  startEngine()
 
   app.listen(PORT, () => {
     console.log(`[engine] Listening on http://localhost:${PORT}`)
-    console.log(`[engine] Overlap endpoint: http://localhost:${PORT}/api/v1/fixtures/overlap`)
+    console.log(`[engine] Overlap: http://localhost:${PORT}/api/v1/fixtures/overlap`)
+    console.log(`[engine] Scalpy stream: http://localhost:${PORT}/api/scalpy/stream`)
+    console.log(`[engine] DRY_RUN mode: ${process.env.SCALPY_DRY_RUN !== 'false'}`)
   })
 }
 

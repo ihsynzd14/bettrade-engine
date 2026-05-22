@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { fixturesRoutes } from './routes/fixtures.routes.js'
+import { scalpyRoutes } from './routes/scalpy.routes.js'
 
 const app = express()
 
@@ -12,5 +13,6 @@ app.get('/health', (req, res) => {
 })
 
 app.use('/api/v1/fixtures', fixturesRoutes)
+app.use('/api/scalpy', scalpyRoutes)
 
 export { app }
