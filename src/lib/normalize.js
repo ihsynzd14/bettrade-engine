@@ -12,6 +12,10 @@ export const TIME_WINDOW_MS = 60 * 60 * 1000
 export function normalizeName(name) {
   return name
     .toLowerCase()
+    // Strip diacritics so accented names match their plain forms (Málaga → malaga)
+    .normalize('NFD').replace(/\p{Mn}/gu, '')
+    // Reconcile Betfair's women's marker "(W)" with Genius's "Women"
+    .replace(/\(\s*w\s*\)/g, ' women ')
     // Remove common prefixes/suffixes
     .replace(/\b(fc|cf|ac|sc|afc|bfc|1\.|vfb|fsv|rb|bv|sv|vfl|tsv|1fc)\b/g, '')
     // Expand common abbreviations

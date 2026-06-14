@@ -1,0 +1,3502 @@
+[
+  {
+    "betfairEventId": "35715477",
+    "betfairMarketId": "1.259138620",
+    "home": "Yeoju FC",
+    "away": "Busan Transportation Corp",
+    "startTime": "2026-06-14T08:00:00.000Z",
+    "competition": "South Korean K3/K4 Championship",
+    "runners": [
+      {
+        "selectionId": 67126612,
+        "runnerName": "Yeoju FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 14163797,
+        "runnerName": "Busan Transportation Corp",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714674",
+    "betfairMarketId": "1.259131622",
+    "home": "Qingdao Red Lions",
+    "away": "Shanghai Port B",
+    "startTime": "2026-06-14T08:00:00.000Z",
+    "competition": "Chinese League 2",
+    "runners": [
+      {
+        "selectionId": 23344678,
+        "runnerName": "Qingdao Red Lions",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 67939087,
+        "runnerName": "Shanghai Port B",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715567",
+    "betfairMarketId": "1.259138732",
+    "home": "Johvi FC Lokomotiv",
+    "away": "JK Tammeka Tartu II",
+    "startTime": "2026-06-14T09:30:00.000Z",
+    "competition": "Estonian Esiliiga B",
+    "runners": [
+      {
+        "selectionId": 7143719,
+        "runnerName": "Johvi FC Lokomotiv",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 6391882,
+        "runnerName": "JK Tammeka Tartu II",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714576",
+    "betfairMarketId": "1.259128871",
+    "home": "Flora Tallinn II",
+    "away": "Tallinna Kalev",
+    "startTime": "2026-06-14T09:30:00.000Z",
+    "competition": "Estonian Esiliiga",
+    "runners": [
+      {
+        "selectionId": 5412351,
+        "runnerName": "Flora Tallinn II",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 5924203,
+        "runnerName": "Tallinna Kalev",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35717308",
+    "betfairMarketId": "1.259150860",
+    "home": "Ninh Binh",
+    "away": "Ho Chi Minh City",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Vietnamese National Cup",
+    "runners": [
+      {
+        "selectionId": 89197361,
+        "runnerName": "Ninh Binh",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 12335832,
+        "runnerName": "Ho Chi Minh City",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35707160",
+    "betfairMarketId": "1.259079728",
+    "home": "PKK-U",
+    "away": "TPV",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Finnish Ykkonen",
+    "runners": [
+      {
+        "selectionId": 12905685,
+        "runnerName": "PKK-U",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 804682,
+        "runnerName": "TPV",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35704978",
+    "betfairMarketId": "1.259147456",
+    "home": "Angby IF",
+    "away": "Skiljebo",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 24108674,
+        "runnerName": "Angby IF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 502306,
+        "runnerName": "Skiljebo",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706520",
+    "betfairMarketId": "1.259072011",
+    "home": "Norrby IF",
+    "away": "Oddevold",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Superettan",
+    "runners": [
+      {
+        "selectionId": 778921,
+        "runnerName": "Norrby IF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 778918,
+        "runnerName": "Oddevold",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35718341",
+    "betfairMarketId": "1.259158717",
+    "home": "VIFK (W)",
+    "away": "Tampereen Ilves (W)",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Finnish Kansallinen Liiga",
+    "runners": [
+      {
+        "selectionId": 11478238,
+        "runnerName": "VIFK (W)",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 5615063,
+        "runnerName": "Tampereen Ilves (W)",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714501",
+    "betfairMarketId": "1.259133280",
+    "home": "Wuxi Wugou",
+    "away": "Meizhou Hakka",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Chinese League 1",
+    "runners": [
+      {
+        "selectionId": 39645470,
+        "runnerName": "Wuxi Wugou",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 11079690,
+        "runnerName": "Meizhou Hakka",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715615",
+    "betfairMarketId": "1.259149239",
+    "home": "FK Tukums 2000/TSS II",
+    "away": "Valmieras FK",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Latvian 1 Liga",
+    "runners": [
+      {
+        "selectionId": 87940961,
+        "runnerName": "FK Tukums 2000/TSS II",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 11622901,
+        "runnerName": "Valmieras FK",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35705602",
+    "betfairMarketId": "1.259071119",
+    "home": "Husqvarna",
+    "away": "Vanersborgs FK",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 384109,
+        "runnerName": "Husqvarna",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 11502506,
+        "runnerName": "Vanersborgs FK",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706960",
+    "betfairMarketId": "1.259077322",
+    "home": "Karlbergs BK",
+    "away": "Hammarby TFF",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Division 1",
+    "runners": [
+      {
+        "selectionId": 6406169,
+        "runnerName": "Karlbergs BK",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 1480128,
+        "runnerName": "Hammarby TFF",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35717626",
+    "betfairMarketId": "1.259157634",
+    "home": "FC Lahti (W)",
+    "away": "FC Honka Espoo (W)",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Finnish Naisten Ykkönen",
+    "runners": [
+      {
+        "selectionId": 84879687,
+        "runnerName": "FC Lahti (W)",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 6422504,
+        "runnerName": "FC Honka Espoo (W)",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35712043",
+    "betfairMarketId": "1.259121908",
+    "home": "IFK Ostersund",
+    "away": "Kubikenborgs",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 501183,
+        "runnerName": "IFK Ostersund",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 82939289,
+        "runnerName": "Kubikenborgs",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35705680",
+    "betfairMarketId": "1.259070899",
+    "home": "Vastra Frolunda",
+    "away": "IF Boljan",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 151473,
+        "runnerName": "Vastra Frolunda",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 28264843,
+        "runnerName": "IF Boljan",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714482",
+    "betfairMarketId": "1.259132822",
+    "home": "Lysekloster",
+    "away": "Notodden",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Norwegian 2nd Division",
+    "runners": [
+      {
+        "selectionId": 9406396,
+        "runnerName": "Lysekloster",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 2363980,
+        "runnerName": "Notodden",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714537",
+    "betfairMarketId": "1.259133170",
+    "home": "Shenzhen Juniors FC",
+    "away": "Guangxi Hengchen",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Chinese League 1",
+    "runners": [
+      {
+        "selectionId": 67744862,
+        "runnerName": "Shenzhen Juniors FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 68101080,
+        "runnerName": "Guangxi Hengchen",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35705687",
+    "betfairMarketId": "1.259070679",
+    "home": "Astorps FF",
+    "away": "Landvetter IS",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 28288012,
+        "runnerName": "Astorps FF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 13175390,
+        "runnerName": "Landvetter IS",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714479",
+    "betfairMarketId": "1.259133042",
+    "home": "Sotra SK",
+    "away": "Brattvag",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Norwegian 2nd Division",
+    "runners": [
+      {
+        "selectionId": 5661102,
+        "runnerName": "Sotra SK",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 3873340,
+        "runnerName": "Brattvag",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706948",
+    "betfairMarketId": "1.259075242",
+    "home": "Hassleholms IF",
+    "away": "Trelleborgs",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Division 1",
+    "runners": [
+      {
+        "selectionId": 9371563,
+        "runnerName": "Hassleholms IF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 767907,
+        "runnerName": "Trelleborgs",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35711685",
+    "betfairMarketId": "1.259122348",
+    "home": "Onsala BK",
+    "away": "Torslanda",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 11222663,
+        "runnerName": "Onsala BK",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 502382,
+        "runnerName": "Torslanda",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714476",
+    "betfairMarketId": "1.259132510",
+    "home": "Skeid",
+    "away": "Rana FK",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Norwegian 2nd Division",
+    "runners": [
+      {
+        "selectionId": 152574,
+        "runnerName": "Skeid",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 40310997,
+        "runnerName": "Rana FK",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35717378",
+    "betfairMarketId": "1.259151198",
+    "home": "Gottne IF",
+    "away": "Ljunga/Fränsta",
+    "startTime": "2026-06-14T11:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 18062119,
+        "runnerName": "Gottne IF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 98286873,
+        "runnerName": "Ljunga/Fränsta",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35705277",
+    "betfairMarketId": "1.259062433",
+    "home": "Hegelmann Litauen",
+    "away": "FK Kauno Zalgiris",
+    "startTime": "2026-06-14T11:15:00.000Z",
+    "competition": "Lithuanian A Lyga",
+    "runners": [
+      {
+        "selectionId": 19046910,
+        "runnerName": "Hegelmann Litauen",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 43403902,
+        "runnerName": "FK Kauno Zalgiris",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714689",
+    "betfairMarketId": "1.259131292",
+    "home": "Guizhou Zhucheng Athletic",
+    "away": "Guangzhou Alpha",
+    "startTime": "2026-06-14T11:30:00.000Z",
+    "competition": "Chinese League 2",
+    "runners": [
+      {
+        "selectionId": 82313817,
+        "runnerName": "Guizhou Zhucheng Athletic",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 82313171,
+        "runnerName": "Guangzhou Alpha",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714677",
+    "betfairMarketId": "1.259131512",
+    "home": "Ganzhou Ruishi FC",
+    "away": "Wuhan Three Towns II",
+    "startTime": "2026-06-14T11:30:00.000Z",
+    "competition": "Chinese League 2",
+    "runners": [
+      {
+        "selectionId": 82312900,
+        "runnerName": "Ganzhou Ruishi FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 82318915,
+        "runnerName": "Wuhan Three Towns II",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35699062",
+    "betfairMarketId": "1.259016006",
+    "home": "Nomme Kalju",
+    "away": "Paide Linnameeskond",
+    "startTime": "2026-06-14T11:30:00.000Z",
+    "competition": "Estonian Premier League",
+    "runners": [
+      {
+        "selectionId": 4007449,
+        "runnerName": "Nomme Kalju",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 5407316,
+        "runnerName": "Paide Linnameeskond",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714495",
+    "betfairMarketId": "1.259133500",
+    "home": "Foshan Nanshi FC",
+    "away": "Shaanxi Union FC",
+    "startTime": "2026-06-14T11:30:00.000Z",
+    "competition": "Chinese League 1",
+    "runners": [
+      {
+        "selectionId": 84959838,
+        "runnerName": "Foshan Nanshi FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 68158828,
+        "runnerName": "Shaanxi Union FC",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714682",
+    "betfairMarketId": "1.259131402",
+    "home": "Hubei Istar",
+    "away": "Shenzhen 2028",
+    "startTime": "2026-06-14T11:30:00.000Z",
+    "competition": "Chinese League 2",
+    "runners": [
+      {
+        "selectionId": 56607002,
+        "runnerName": "Hubei Istar",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 82312901,
+        "runnerName": "Shenzhen 2028",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714500",
+    "betfairMarketId": "1.259133390",
+    "home": "Nantong Zhiyun F.C",
+    "away": "Yanbian Longding",
+    "startTime": "2026-06-14T11:30:00.000Z",
+    "competition": "Chinese League 1",
+    "runners": [
+      {
+        "selectionId": 13107045,
+        "runnerName": "Nantong Zhiyun F.C",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 39632858,
+        "runnerName": "Yanbian Longding",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35718680",
+    "betfairMarketId": "1.259163239",
+    "home": "Saint George FC",
+    "away": "Defence Force SC",
+    "startTime": "2026-06-14T12:00:00.000Z",
+    "competition": "Ethiopian Premier League",
+    "runners": [
+      {
+        "selectionId": 7212967,
+        "runnerName": "Saint George FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 10865630,
+        "runnerName": "Defence Force SC",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714478",
+    "betfairMarketId": "1.259132290",
+    "home": "Lorenskog",
+    "away": "Tromsdalen",
+    "startTime": "2026-06-14T12:00:00.000Z",
+    "competition": "Norwegian 2nd Division",
+    "runners": [
+      {
+        "selectionId": 152565,
+        "runnerName": "Lorenskog",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 152569,
+        "runnerName": "Tromsdalen",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714897",
+    "betfairMarketId": "1.259147566",
+    "home": "Linero IF",
+    "away": "Karlskrona",
+    "startTime": "2026-06-14T12:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 28244512,
+        "runnerName": "Linero IF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 502419,
+        "runnerName": "Karlskrona",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714542",
+    "betfairMarketId": "1.259138846",
+    "home": "Transport United FC",
+    "away": "Thimphu City",
+    "startTime": "2026-06-14T12:00:00.000Z",
+    "competition": "Bhutan Premier League",
+    "runners": [
+      {
+        "selectionId": 13270879,
+        "runnerName": "Transport United FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 11243155,
+        "runnerName": "Thimphu City",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35718693",
+    "betfairMarketId": "1.259163129",
+    "home": "Ethiopian Coffee",
+    "away": "Cafe Sidama",
+    "startTime": "2026-06-14T12:00:00.000Z",
+    "competition": "Ethiopian Premier League",
+    "runners": [
+      {
+        "selectionId": 6277353,
+        "runnerName": "Ethiopian Coffee",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 46300914,
+        "runnerName": "Cafe Sidama",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35702263",
+    "betfairMarketId": "1.259033499",
+    "home": "FK Ulytau Zhezkazgan",
+    "away": "Zhenys",
+    "startTime": "2026-06-14T12:00:00.000Z",
+    "competition": "Kazakhstan Premier League",
+    "runners": [
+      {
+        "selectionId": 72956832,
+        "runnerName": "FK Ulytau Zhezkazgan",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 48907031,
+        "runnerName": "Zhenys",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715620",
+    "betfairMarketId": "1.259149426",
+    "home": "Rigas Futbola Skola II",
+    "away": "Rezeknes BJSS",
+    "startTime": "2026-06-14T12:00:00.000Z",
+    "competition": "Latvian 1 Liga",
+    "runners": [
+      {
+        "selectionId": 9558773,
+        "runnerName": "Rigas Futbola Skola II",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 6415423,
+        "runnerName": "Rezeknes BJSS",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715944",
+    "betfairMarketId": "1.259163621",
+    "home": "Traeff",
+    "away": "Bjarg",
+    "startTime": "2026-06-14T12:30:00.000Z",
+    "competition": "Norwegian 2nd Division",
+    "runners": [
+      {
+        "selectionId": 5521795,
+        "runnerName": "Traeff",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 5521794,
+        "runnerName": "Bjarg",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714493",
+    "betfairMarketId": "1.259132712",
+    "home": "Jerv",
+    "away": "IL Sandviken Bergen",
+    "startTime": "2026-06-14T12:30:00.000Z",
+    "competition": "Norwegian 2nd Division",
+    "runners": [
+      {
+        "selectionId": 398186,
+        "runnerName": "Jerv",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 72537964,
+        "runnerName": "IL Sandviken Bergen",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35704999",
+    "betfairMarketId": "1.259147730",
+    "home": "Lindo FF",
+    "away": "FC Nacka Iliria",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 24386858,
+        "runnerName": "Lindo FF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 28288026,
+        "runnerName": "FC Nacka Iliria",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714477",
+    "betfairMarketId": "1.259132400",
+    "home": "Eidsvold Turn",
+    "away": "Levanger",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Norwegian 2nd Division",
+    "runners": [
+      {
+        "selectionId": 13254966,
+        "runnerName": "Eidsvold Turn",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 398353,
+        "runnerName": "Levanger",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35707389",
+    "betfairMarketId": "1.259083799",
+    "home": "FCV",
+    "away": "TP-47",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Finnish Kakkonen",
+    "runners": [
+      {
+        "selectionId": 498141,
+        "runnerName": "FCV",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 396700,
+        "runnerName": "TP-47",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706536",
+    "betfairMarketId": "1.259071788",
+    "home": "Falkenbergs",
+    "away": "Orebro",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Swedish Superettan",
+    "runners": [
+      {
+        "selectionId": 780883,
+        "runnerName": "Falkenbergs",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 42617,
+        "runnerName": "Orebro",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35718140",
+    "betfairMarketId": "1.259158391",
+    "home": "IK Start (W)",
+    "away": "Grei Toppfotball (W)",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Norwegian Ladies 1st Division",
+    "runners": [
+      {
+        "selectionId": 70395840,
+        "runnerName": "IK Start (W)",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 24038227,
+        "runnerName": "Grei Toppfotball (W)",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715312",
+    "betfairMarketId": "1.259148233",
+    "home": "Simba",
+    "away": "Pamba FC",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Tanzanian Premier League",
+    "runners": [
+      {
+        "selectionId": 9470810,
+        "runnerName": "Simba",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 40275122,
+        "runnerName": "Pamba FC",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714467",
+    "betfairMarketId": "1.259132620",
+    "home": "Stjordals-Blink",
+    "away": "Trygg/Lade",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Norwegian 2nd Division",
+    "runners": [
+      {
+        "selectionId": 2440431,
+        "runnerName": "Stjordals-Blink",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 17987752,
+        "runnerName": "Trygg/Lade",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703619",
+    "betfairMarketId": "1.259046547",
+    "home": "Ljungskile",
+    "away": "Ostersunds FK",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Swedish Superettan",
+    "runners": [
+      {
+        "selectionId": 502383,
+        "runnerName": "Ljungskile",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 502427,
+        "runnerName": "Ostersunds FK",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715306",
+    "betfairMarketId": "1.259148102",
+    "home": "Tanzania Prisons",
+    "away": "Dodoma FC",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Tanzanian Premier League",
+    "runners": [
+      {
+        "selectionId": 12279463,
+        "runnerName": "Tanzania Prisons",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 35866277,
+        "runnerName": "Dodoma FC",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35713141",
+    "betfairMarketId": "1.259121577",
+    "home": "Lucksta IF",
+    "away": "Team TG FF",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 25394450,
+        "runnerName": "Lucksta IF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 9581414,
+        "runnerName": "Team TG FF",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35709850",
+    "betfairMarketId": "1.259101686",
+    "home": "FF Jaro II",
+    "away": "JS Hercules",
+    "startTime": "2026-06-14T13:00:00.000Z",
+    "competition": "Finnish Kakkonen",
+    "runners": [
+      {
+        "selectionId": 56496516,
+        "runnerName": "FF Jaro II",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 8575309,
+        "runnerName": "JS Hercules",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35704973",
+    "betfairMarketId": "1.259147840",
+    "home": "IFK Lidingo",
+    "away": "Taby FK",
+    "startTime": "2026-06-14T13:45:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 11514955,
+        "runnerName": "IFK Lidingo",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 11502504,
+        "runnerName": "Taby FK",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696346",
+    "betfairMarketId": "1.258983710",
+    "home": "Haugesund",
+    "away": "Ranheim IL",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Norwegian 1st Division",
+    "runners": [
+      {
+        "selectionId": 152566,
+        "runnerName": "Haugesund",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 22623366,
+        "runnerName": "Ranheim IL",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696222",
+    "betfairMarketId": "1.258979476",
+    "home": "Sogndal",
+    "away": "Moss",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Norwegian 1st Division",
+    "runners": [
+      {
+        "selectionId": 31322,
+        "runnerName": "Sogndal",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 401947,
+        "runnerName": "Moss",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696216",
+    "betfairMarketId": "1.258979746",
+    "home": "Stromsgodset",
+    "away": "Raufoss",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Norwegian 1st Division",
+    "runners": [
+      {
+        "selectionId": 31319,
+        "runnerName": "Stromsgodset",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 152564,
+        "runnerName": "Raufoss",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714480",
+    "betfairMarketId": "1.259132932",
+    "home": "Junkeren",
+    "away": "Honefoss",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Norwegian 2nd Division",
+    "runners": [
+      {
+        "selectionId": 7207474,
+        "runnerName": "Junkeren",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 572779,
+        "runnerName": "Honefoss",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35717875",
+    "betfairMarketId": "1.259159328",
+    "home": "Serrano FC (RJ)",
+    "away": "Marica",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Brazilian Carioca Matches",
+    "runners": [
+      {
+        "selectionId": 13230006,
+        "runnerName": "Serrano FC (RJ)",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 79308787,
+        "runnerName": "Marica",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706921",
+    "betfairMarketId": "1.259075077",
+    "home": "Skala",
+    "away": "Klaksvikar Itrottarfelag",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Faroe Premier League",
+    "runners": [
+      {
+        "selectionId": 1169743,
+        "runnerName": "Skala",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 23672953,
+        "runnerName": "Klaksvikar Itrottarfelag",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706953",
+    "betfairMarketId": "1.259077122",
+    "home": "FK Siauliai II",
+    "away": "FK Transinvest II",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Lithuanian 1 Lyga",
+    "runners": [
+      {
+        "selectionId": 29737909,
+        "runnerName": "FK Siauliai II",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 86712954,
+        "runnerName": "FK Transinvest II",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703763",
+    "betfairMarketId": "1.259047864",
+    "home": "Brusque FC",
+    "away": "Santa Cruz PE",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Brazilian Serie C",
+    "runners": [
+      {
+        "selectionId": 6168045,
+        "runnerName": "Brusque FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 6132724,
+        "runnerName": "Santa Cruz PE",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706910",
+    "betfairMarketId": "1.259075277",
+    "home": "EB/Streymur",
+    "away": "B68 Toftir",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Faroe Premier League",
+    "runners": [
+      {
+        "selectionId": 3178766,
+        "runnerName": "EB/Streymur",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 166887,
+        "runnerName": "B68 Toftir",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35701719",
+    "betfairMarketId": "1.259027539",
+    "home": "FC Astana",
+    "away": "Irtysh Pavlodar",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Kazakhstan Premier League",
+    "runners": [
+      {
+        "selectionId": 7391219,
+        "runnerName": "FC Astana",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 455401,
+        "runnerName": "Irtysh Pavlodar",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706955",
+    "betfairMarketId": "1.259074932",
+    "home": "AFC Eskilstuna",
+    "away": "Assyriska FF",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Swedish Division 1",
+    "runners": [
+      {
+        "selectionId": 12503484,
+        "runnerName": "AFC Eskilstuna",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 10515761,
+        "runnerName": "Assyriska Ff",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696335",
+    "betfairMarketId": "1.258983820",
+    "home": "Hodd",
+    "away": "Kongsvinger",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Norwegian 1st Division",
+    "runners": [
+      {
+        "selectionId": 44824,
+        "runnerName": "Hodd",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 774892,
+        "runnerName": "Kongsvinger",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35702163",
+    "betfairMarketId": "1.259032717",
+    "home": "Juventude",
+    "away": "Ponte Preta",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Brazilian Serie B",
+    "runners": [
+      {
+        "selectionId": 198144,
+        "runnerName": "Juventude",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 204603,
+        "runnerName": "Ponte Preta",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696219",
+    "betfairMarketId": "1.258979656",
+    "home": "Lyn",
+    "away": "Bryne",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Norwegian 1st Division",
+    "runners": [
+      {
+        "selectionId": 31318,
+        "runnerName": "Lyn",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 7033,
+        "runnerName": "Bryne",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714848",
+    "betfairMarketId": "1.259142433",
+    "home": "Hviti Riddarinn",
+    "away": "KFA Austfjarda",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Icelandic 2 Deild",
+    "runners": [
+      {
+        "selectionId": 6358758,
+        "runnerName": "Hviti Riddarinn",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 84641407,
+        "runnerName": "KFA Austfjarda",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35709508",
+    "betfairMarketId": "1.259098178",
+    "home": "FC Stockholm Internazionale",
+    "away": "FBK Karlstad",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Swedish Division 1",
+    "runners": [
+      {
+        "selectionId": 11322093,
+        "runnerName": "FC Stockholm Internazionale",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 10047341,
+        "runnerName": "FBK Karlstad",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35709400",
+    "betfairMarketId": "1.259098725",
+    "home": "River Plate (Uru)",
+    "away": "Cerrito",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Uruguayan Segunda Division",
+    "runners": [
+      {
+        "selectionId": 3206731,
+        "runnerName": "River Plate (Uru)",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 5857923,
+        "runnerName": "Cerrito",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35702587",
+    "betfairMarketId": "1.259037342",
+    "home": "Elimai FC",
+    "away": "FC Ordabasy",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Kazakhstan Premier League",
+    "runners": [
+      {
+        "selectionId": 55581451,
+        "runnerName": "Elimai FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 6476069,
+        "runnerName": "FC Ordabasy",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35705244",
+    "betfairMarketId": "1.259064552",
+    "home": "Enkopings SK",
+    "away": "Vasalunds IF",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Swedish Division 1",
+    "runners": [
+      {
+        "selectionId": 23620509,
+        "runnerName": "Enkopings SK",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 2996873,
+        "runnerName": "Vasalunds IF",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706957",
+    "betfairMarketId": "1.259074712",
+    "home": "Rosengard",
+    "away": "Skovde AIK",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Swedish Division 1",
+    "runners": [
+      {
+        "selectionId": 4619836,
+        "runnerName": "Rosengard",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 14112862,
+        "runnerName": "Skovde AIK",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35704974",
+    "betfairMarketId": "1.259147971",
+    "home": "Helges IF",
+    "away": "Korsnas FF",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 97292000,
+        "runnerName": "Helges IF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 13034091,
+        "runnerName": "Korsnas FF",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35702137",
+    "betfairMarketId": "1.259032827",
+    "home": "Sao Bernardo",
+    "away": "Sport Recife",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Brazilian Serie B",
+    "runners": [
+      {
+        "selectionId": 5231799,
+        "runnerName": "Sao Bernardo",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 2405306,
+        "runnerName": "Sport Recife",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696221",
+    "betfairMarketId": "1.258979566",
+    "home": "Stabaek",
+    "away": "Egersund",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Norwegian 1st Division",
+    "runners": [
+      {
+        "selectionId": 50045,
+        "runnerName": "Stabaek",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 3876624,
+        "runnerName": "Egersund",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696214",
+    "betfairMarketId": "1.258979836",
+    "home": "Asane",
+    "away": "Odds BK",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Norwegian 1st Division",
+    "runners": [
+      {
+        "selectionId": 152573,
+        "runnerName": "Asane",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 10833201,
+        "runnerName": "Odds BK",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696347",
+    "betfairMarketId": "1.258983575",
+    "home": "Sandnes Ulf",
+    "away": "Strommen",
+    "startTime": "2026-06-14T14:00:00.000Z",
+    "competition": "Norwegian 1st Division",
+    "runners": [
+      {
+        "selectionId": 778909,
+        "runnerName": "Sandnes Ulf",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 1146634,
+        "runnerName": "Strommen",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714343",
+    "betfairMarketId": "1.259128374",
+    "home": "IRT Tanger",
+    "away": "Yacoub El Mansour",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Moroccan Botola Pro 1",
+    "runners": [
+      {
+        "selectionId": 13111553,
+        "runnerName": "IRT Tanger",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 74781215,
+        "runnerName": "Yacoub El Mansour",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35719280",
+    "betfairMarketId": "1.259163019",
+    "home": "Ethiopian Medhin",
+    "away": "Dire Dawa Kima FC",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Ethiopian Premier League",
+    "runners": [
+      {
+        "selectionId": 49334524,
+        "runnerName": "Ethiopian Medhin",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 38099183,
+        "runnerName": "Dire Dawa Kima FC",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35702863",
+    "betfairMarketId": "1.259038105",
+    "home": "FK Aktobe",
+    "away": "FK Altay",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Kazakhstan Premier League",
+    "runners": [
+      {
+        "selectionId": 1527910,
+        "runnerName": "FK Aktobe",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 11242251,
+        "runnerName": "FK Altay",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715606",
+    "betfairMarketId": "1.259146185",
+    "home": "Riga FC (Res)",
+    "away": "FK Smiltene/BJSS",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Latvian 1 Liga",
+    "runners": [
+      {
+        "selectionId": 11052118,
+        "runnerName": "Riga FC (Res)",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 19900759,
+        "runnerName": "FK Smiltene/BJSS",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714379",
+    "betfairMarketId": "1.259128658",
+    "home": "Raja Casablanca",
+    "away": "Union de Touarga",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Moroccan Botola Pro 1",
+    "runners": [
+      {
+        "selectionId": 6356893,
+        "runnerName": "Raja Casablanca",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 20442560,
+        "runnerName": "Union de Touarga",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715612",
+    "betfairMarketId": "1.259149537",
+    "home": "Skanstes SK",
+    "away": "FK Beitar Riga Mariners",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Latvian 1 Liga",
+    "runners": [
+      {
+        "selectionId": 40501244,
+        "runnerName": "Skanstes SK",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 71511208,
+        "runnerName": "FK Beitar Riga Mariners",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714344",
+    "betfairMarketId": "1.259128264",
+    "home": "FAR Rabat",
+    "away": "Wydad Casablanca",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Moroccan Botola Pro 1",
+    "runners": [
+      {
+        "selectionId": 6670769,
+        "runnerName": "FAR Rabat",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 4018643,
+        "runnerName": "Wydad Casablanca",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714340",
+    "betfairMarketId": "1.259128484",
+    "home": "HUSA Agadir",
+    "away": "RSB Berkane",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Moroccan Botola Pro 1",
+    "runners": [
+      {
+        "selectionId": 6360286,
+        "runnerName": "HUSA Agadir",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 6666990,
+        "runnerName": "RSB Berkane",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35701720",
+    "betfairMarketId": "1.259027429",
+    "home": "FK Kaspyi Aktau",
+    "away": "FK Kaisar",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Kazakhstan Premier League",
+    "runners": [
+      {
+        "selectionId": 7431762,
+        "runnerName": "FK Kaspyi Aktau",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 9563844,
+        "runnerName": "FK Kaisar",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703618",
+    "betfairMarketId": "1.259046657",
+    "home": "Sandvikens IF",
+    "away": "IK Brage",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Swedish Superettan",
+    "runners": [
+      {
+        "selectionId": 804922,
+        "runnerName": "Sandvikens IF",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 502308,
+        "runnerName": "IK Brage",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35719281",
+    "betfairMarketId": "1.259165111",
+    "home": "Syrianska FC",
+    "away": "BK Forward",
+    "startTime": "2026-06-14T15:00:00.000Z",
+    "competition": "Swedish Division 2",
+    "runners": [
+      {
+        "selectionId": 502426,
+        "runnerName": "Syrianska FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 784611,
+        "runnerName": "BK Forward",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35707379",
+    "betfairMarketId": "1.259083955",
+    "home": "Narpes Kraft",
+    "away": "Huima",
+    "startTime": "2026-06-14T15:30:00.000Z",
+    "competition": "Finnish Kakkonen",
+    "runners": [
+      {
+        "selectionId": 396726,
+        "runnerName": "Narpes Kraft",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 804684,
+        "runnerName": "Huima",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696909",
+    "betfairMarketId": "1.258988314",
+    "home": "MP",
+    "away": "Klubi-04",
+    "startTime": "2026-06-14T15:30:00.000Z",
+    "competition": "Finnish Ykkosliiga",
+    "runners": [
+      {
+        "selectionId": 799032,
+        "runnerName": "MP",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 798978,
+        "runnerName": "Klubi-04",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714571",
+    "betfairMarketId": "1.259128767",
+    "home": "Levadia Tallinn II",
+    "away": "Viimsi JK",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Estonian Esiliiga",
+    "runners": [
+      {
+        "selectionId": 5412337,
+        "runnerName": "Levadia Tallinn II",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 10763001,
+        "runnerName": "Viimsi JK",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35707377",
+    "betfairMarketId": "1.259084065",
+    "home": "VPS Vaasa II",
+    "away": "GBK",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Finnish Kakkonen",
+    "runners": [
+      {
+        "selectionId": 10147136,
+        "runnerName": "VPS Vaasa II",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 396720,
+        "runnerName": "GBK",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714651",
+    "betfairMarketId": "1.259129137",
+    "home": "SCCM Chabab Mohamedia",
+    "away": "Widad Temara",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Moroccan Botola 2",
+    "runners": [
+      {
+        "selectionId": 25848557,
+        "runnerName": "SCCM Chabab Mohamedia",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 10645503,
+        "runnerName": "Widad Temara",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35716593",
+    "betfairMarketId": "1.259146676",
+    "home": "Ayacucho Futbol Club",
+    "away": "CD Los Chankas",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Peruvian Copa de la Liga",
+    "runners": [
+      {
+        "selectionId": 9297155,
+        "runnerName": "Ayacucho Futbol Club",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 65437610,
+        "runnerName": "CD Los Chankas",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714637",
+    "betfairMarketId": "1.259142794",
+    "home": "Kormakur/Hvot",
+    "away": "KFG",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Icelandic 2 Deild",
+    "runners": [
+      {
+        "selectionId": 8558271,
+        "runnerName": "Kormakur/Hvot",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 8541925,
+        "runnerName": "KFG",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714831",
+    "betfairMarketId": "1.259142590",
+    "home": "Dalvik/Reynir",
+    "away": "Haukar",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Icelandic 2 Deild",
+    "runners": [
+      {
+        "selectionId": 6410451,
+        "runnerName": "Dalvik/Reynir",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 3149610,
+        "runnerName": "Haukar",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714669",
+    "betfairMarketId": "1.259129225",
+    "home": "Stade Marocain du Rabat",
+    "away": "Jeunesse Massira",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Moroccan Botola 2",
+    "runners": [
+      {
+        "selectionId": 14374450,
+        "runnerName": "Stade Marocain du Rabat",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 10664250,
+        "runnerName": "Jeunesse Massira",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715632",
+    "betfairMarketId": "1.259149822",
+    "home": "Vikingur Olafsvik",
+    "away": "IF Magni",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Icelandic 2 Deild",
+    "runners": [
+      {
+        "selectionId": 3965659,
+        "runnerName": "Vikingur Olafsvik",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 7291821,
+        "runnerName": "IF Magni",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35707107",
+    "betfairMarketId": "1.259107204",
+    "home": "Gimnasia de La Plata (W)",
+    "away": "Newell's Old Boys Women",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Argentinian Campeonato Femenino",
+    "runners": [
+      {
+        "selectionId": 38965171,
+        "runnerName": "Gimnasia de La Plata (W)",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 66977549,
+        "runnerName": "Newell's Old Boys Women",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35714726",
+    "betfairMarketId": "1.259138985",
+    "home": "Gagra",
+    "away": "Dinamo Tbilisi",
+    "startTime": "2026-06-14T16:00:00.000Z",
+    "competition": "Georgian Umaglesi Liga",
+    "runners": [
+      {
+        "selectionId": 5667811,
+        "runnerName": "Gagra",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 866235,
+        "runnerName": "Dinamo Tbilisi",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35706909",
+    "betfairMarketId": "1.259075988",
+    "home": "AB Argir",
+    "away": "HB Torshavn",
+    "startTime": "2026-06-14T16:15:00.000Z",
+    "competition": "Faroe Premier League",
+    "runners": [
+      {
+        "selectionId": 14367072,
+        "runnerName": "AB Argir",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 46956,
+        "runnerName": "HB Torshavn",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696907",
+    "betfairMarketId": "1.258988094",
+    "home": "Thor",
+    "away": "IBV",
+    "startTime": "2026-06-14T16:30:00.000Z",
+    "competition": "Icelandic Urvalsdeild",
+    "runners": [
+      {
+        "selectionId": 3965658,
+        "runnerName": "Thor",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 198705,
+        "runnerName": "IBV",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35035284",
+    "betfairMarketId": "1.251400246",
+    "home": "Germany",
+    "away": "Curacao",
+    "startTime": "2026-06-14T17:00:00.000Z",
+    "competition": "FIFA World Cup",
+    "runners": [
+      {
+        "selectionId": 18,
+        "runnerName": "Germany",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 5774593,
+        "runnerName": "Curacao",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35696906",
+    "betfairMarketId": "1.258988204",
+    "home": "Keflavik",
+    "away": "Hafnarfjordur",
+    "startTime": "2026-06-14T17:00:00.000Z",
+    "competition": "Icelandic Urvalsdeild",
+    "runners": [
+      {
+        "selectionId": 808414,
+        "runnerName": "Keflavik",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 166884,
+        "runnerName": "Hafnarfjordur",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703724",
+    "betfairMarketId": "1.259049372",
+    "home": "Argentino de Quilmes",
+    "away": "Deportivo Armenio",
+    "startTime": "2026-06-14T17:00:00.000Z",
+    "competition": "Argentinian Primera B Metropolitana",
+    "runners": [
+      {
+        "selectionId": 9534165,
+        "runnerName": "Argentino de Quilmes",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 7108497,
+        "runnerName": "Deportivo Armenio",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35697277",
+    "betfairMarketId": "1.258995942",
+    "home": "Almirante Brown",
+    "away": "Godoy Cruz",
+    "startTime": "2026-06-14T17:30:00.000Z",
+    "competition": "Argentinian Primera Nacional",
+    "runners": [
+      {
+        "selectionId": 5359221,
+        "runnerName": "Almirante Brown",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 1551296,
+        "runnerName": "Godoy Cruz",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35717876",
+    "betfairMarketId": "1.259159750",
+    "home": "Cabofriense",
+    "away": "Americano",
+    "startTime": "2026-06-14T17:45:00.000Z",
+    "competition": "Brazilian Carioca Matches",
+    "runners": [
+      {
+        "selectionId": 1040274,
+        "runnerName": "Cabofriense",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 5247541,
+        "runnerName": "Americano",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35717979",
+    "betfairMarketId": "1.259159548",
+    "home": "CEAC/Araruama",
+    "away": "Sao Goncalo EC RJ",
+    "startTime": "2026-06-14T17:45:00.000Z",
+    "competition": "Brazilian Carioca Matches",
+    "runners": [
+      {
+        "selectionId": 41849516,
+        "runnerName": "CEAC/Araruama",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 11730391,
+        "runnerName": "Sao Goncalo EC RJ",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35718056",
+    "betfairMarketId": "1.259159438",
+    "home": "Audax Rio",
+    "away": "Perolas Negras",
+    "startTime": "2026-06-14T17:45:00.000Z",
+    "competition": "Brazilian Carioca Matches",
+    "runners": [
+      {
+        "selectionId": 6973280,
+        "runnerName": "Audax Rio",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 19850450,
+        "runnerName": "Perolas Negras",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35715333",
+    "betfairMarketId": "1.259133880",
+    "home": "San Francisco Glens SC",
+    "away": "Project 51O FC",
+    "startTime": "2026-06-14T18:00:00.000Z",
+    "competition": "US Premier Development League",
+    "runners": [
+      {
+        "selectionId": 18780177,
+        "runnerName": "San Francisco Glens SC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 55957836,
+        "runnerName": "Project 51O FC",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35709468",
+    "betfairMarketId": "1.259098495",
+    "home": "Atenas",
+    "away": "La Luz FC",
+    "startTime": "2026-06-14T18:00:00.000Z",
+    "competition": "Uruguayan Segunda Division",
+    "runners": [
+      {
+        "selectionId": 8773406,
+        "runnerName": "Atenas",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 19417077,
+        "runnerName": "La Luz FC",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35697252",
+    "betfairMarketId": "1.258995528",
+    "home": "Estudiantes de Caseros",
+    "away": "All Boys",
+    "startTime": "2026-06-14T18:00:00.000Z",
+    "competition": "Argentinian Primera Nacional",
+    "runners": [
+      {
+        "selectionId": 7546748,
+        "runnerName": "Estudiantes de Caseros",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 4724521,
+        "runnerName": "All Boys",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35697297",
+    "betfairMarketId": "1.258996272",
+    "home": "Deportivo Madryn",
+    "away": "CA San Miguel",
+    "startTime": "2026-06-14T18:00:00.000Z",
+    "competition": "Argentinian Primera Nacional",
+    "runners": [
+      {
+        "selectionId": 10995035,
+        "runnerName": "Deportivo Madryn",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 9568569,
+        "runnerName": "CA San Miguel",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35716506",
+    "betfairMarketId": "1.259146786",
+    "home": "Alianza Universidad",
+    "away": "Sport Huancayo",
+    "startTime": "2026-06-14T18:15:00.000Z",
+    "competition": "Peruvian Copa de la Liga",
+    "runners": [
+      {
+        "selectionId": 10278153,
+        "runnerName": "Alianza Universidad",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 4972227,
+        "runnerName": "Sport Huancayo",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35697299",
+    "betfairMarketId": "1.258996576",
+    "home": "Patronato",
+    "away": "Atletico Rafaela",
+    "startTime": "2026-06-14T18:30:00.000Z",
+    "competition": "Argentinian Primera Nacional",
+    "runners": [
+      {
+        "selectionId": 5178628,
+        "runnerName": "Patronato",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 476271,
+        "runnerName": "Atletico Rafaela",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35707024",
+    "betfairMarketId": "1.259107113",
+    "home": "CA Belgrano (W)",
+    "away": "Talleres de Cordoba (W)",
+    "startTime": "2026-06-14T18:30:00.000Z",
+    "competition": "Argentinian Campeonato Femenino",
+    "runners": [
+      {
+        "selectionId": 46411568,
+        "runnerName": "CA Belgrano (W)",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 87372591,
+        "runnerName": "Talleres de Cordoba (W)",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703725",
+    "betfairMarketId": "1.259049261",
+    "home": "CSD Liniers de Ciudad Evita",
+    "away": "Real Pilar FC",
+    "startTime": "2026-06-14T18:30:00.000Z",
+    "competition": "Argentinian Primera B Metropolitana",
+    "runners": [
+      {
+        "selectionId": 21273988,
+        "runnerName": "CSD Liniers de Ciudad Evita",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 14615681,
+        "runnerName": "Real Pilar FC",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35708099",
+    "betfairMarketId": "1.259087612",
+    "home": "Malaga",
+    "away": "Almeria",
+    "startTime": "2026-06-14T19:00:00.000Z",
+    "competition": "Spanish Segunda Division",
+    "runners": [
+      {
+        "selectionId": 13360,
+        "runnerName": "Malaga",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 248020,
+        "runnerName": "Almeria",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703767",
+    "betfairMarketId": "1.259047644",
+    "home": "Paysandu",
+    "away": "Inter Limeira",
+    "startTime": "2026-06-14T19:00:00.000Z",
+    "competition": "Brazilian Serie C",
+    "runners": [
+      {
+        "selectionId": 189951,
+        "runnerName": "Paysandu",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 1053183,
+        "runnerName": "Inter Limeira",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35702097",
+    "betfairMarketId": "1.259033049",
+    "home": "Athletic Club",
+    "away": "Goias",
+    "startTime": "2026-06-14T19:00:00.000Z",
+    "competition": "Brazilian Serie B",
+    "runners": [
+      {
+        "selectionId": 23018379,
+        "runnerName": "Athletic Club",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 198131,
+        "runnerName": "Goias",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35697301",
+    "betfairMarketId": "1.258997306",
+    "home": "CA Temperley",
+    "away": "CA Guemes",
+    "startTime": "2026-06-14T19:00:00.000Z",
+    "competition": "Argentinian Primera Nacional",
+    "runners": [
+      {
+        "selectionId": 8742769,
+        "runnerName": "CA Temperley",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 10918282,
+        "runnerName": "CA Guemes",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35697298",
+    "betfairMarketId": "1.258996686",
+    "home": "Club Atletico Mitre",
+    "away": "Los Andes",
+    "startTime": "2026-06-14T19:00:00.000Z",
+    "competition": "Argentinian Primera Nacional",
+    "runners": [
+      {
+        "selectionId": 14926119,
+        "runnerName": "Club Atletico Mitre",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 5564448,
+        "runnerName": "Los Andes",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703657",
+    "betfairMarketId": "1.259046327",
+    "home": "Blooming Santa Cruz",
+    "away": "Real Tomayapo",
+    "startTime": "2026-06-14T19:00:00.000Z",
+    "competition": "Bolivian Liga de Futbol Profesional",
+    "runners": [
+      {
+        "selectionId": 10259108,
+        "runnerName": "Blooming Santa Cruz",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 25238903,
+        "runnerName": "Real Tomayapo",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35697303",
+    "betfairMarketId": "1.258997072",
+    "home": "CA Central Norte",
+    "away": "San Telmo",
+    "startTime": "2026-06-14T19:30:00.000Z",
+    "competition": "Argentinian Primera Nacional",
+    "runners": [
+      {
+        "selectionId": 8278454,
+        "runnerName": "CA Central Norte",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 9478922,
+        "runnerName": "San Telmo",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35697302",
+    "betfairMarketId": "1.258997196",
+    "home": "CD Maipu",
+    "away": "Tristan Suarez",
+    "startTime": "2026-06-14T19:30:00.000Z",
+    "competition": "Argentinian Primera Nacional",
+    "runners": [
+      {
+        "selectionId": 10723921,
+        "runnerName": "CD MAIPU",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 7128568,
+        "runnerName": "Tristan Suarez",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703853",
+    "betfairMarketId": "1.259048308",
+    "home": "Itabaiana",
+    "away": "Ituano",
+    "startTime": "2026-06-14T19:30:00.000Z",
+    "competition": "Brazilian Serie C",
+    "runners": [
+      {
+        "selectionId": 7160954,
+        "runnerName": "Itabaiana",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 1040280,
+        "runnerName": "Ituano",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35035312",
+    "betfairMarketId": "1.251400102",
+    "home": "Netherlands",
+    "away": "Japan",
+    "startTime": "2026-06-14T20:00:00.000Z",
+    "competition": "FIFA World Cup",
+    "runners": [
+      {
+        "selectionId": 231787,
+        "runnerName": "Netherlands",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 29636,
+        "runnerName": "Japan",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35702130",
+    "betfairMarketId": "1.259032937",
+    "home": "Cuiaba",
+    "away": "Vila Nova",
+    "startTime": "2026-06-14T20:00:00.000Z",
+    "competition": "Brazilian Serie B",
+    "runners": [
+      {
+        "selectionId": 5327095,
+        "runnerName": "Cuiaba",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 376829,
+        "runnerName": "Vila Nova",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35711577",
+    "betfairMarketId": "1.259147315",
+    "home": "Universidad Cesar Vallejo",
+    "away": "Alianza Lima",
+    "startTime": "2026-06-14T20:30:00.000Z",
+    "competition": "Peruvian Copa de la Liga",
+    "runners": [
+      {
+        "selectionId": 5535792,
+        "runnerName": "Universidad Cesar Vallejo",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 219457,
+        "runnerName": "Alianza Lima",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35709422",
+    "betfairMarketId": "1.259098615",
+    "home": "Paysandu FC",
+    "away": "Plaza Colonia",
+    "startTime": "2026-06-14T21:00:00.000Z",
+    "competition": "Uruguayan Segunda Division",
+    "runners": [
+      {
+        "selectionId": 57046763,
+        "runnerName": "Paysandu FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 10149637,
+        "runnerName": "Plaza Colonia",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703744",
+    "betfairMarketId": "1.259048701",
+    "home": "Deportivo Merlo",
+    "away": "Argentino de Merlo",
+    "startTime": "2026-06-14T22:00:00.000Z",
+    "competition": "Argentinian Primera B Metropolitana",
+    "runners": [
+      {
+        "selectionId": 5181458,
+        "runnerName": "Deportivo Merlo",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 9593355,
+        "runnerName": "Argentino de Merlo",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703745",
+    "betfairMarketId": "1.259045887",
+    "home": "Aurora",
+    "away": "Oriente Petrolero",
+    "startTime": "2026-06-14T22:00:00.000Z",
+    "competition": "Bolivian Liga de Futbol Profesional",
+    "runners": [
+      {
+        "selectionId": 893608,
+        "runnerName": "Aurora",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 330231,
+        "runnerName": "Oriente Petrolero",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35702129",
+    "betfairMarketId": "1.259032104",
+    "home": "Novorizontino",
+    "away": "Nautico PE",
+    "startTime": "2026-06-14T22:00:00.000Z",
+    "competition": "Brazilian Serie B",
+    "runners": [
+      {
+        "selectionId": 9173038,
+        "runnerName": "Novorizontino",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 7210009,
+        "runnerName": "Nautico PE",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35700086",
+    "betfairMarketId": "1.259028544",
+    "home": "Vancouver FC",
+    "away": "Pacific",
+    "startTime": "2026-06-14T22:00:00.000Z",
+    "competition": "Canadian Premier League",
+    "runners": [
+      {
+        "selectionId": 55667494,
+        "runnerName": "Vancouver FC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 23522859,
+        "runnerName": "Pacific",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35700122",
+    "betfairMarketId": "1.259028192",
+    "home": "Botafogo SP",
+    "away": "Operario PR",
+    "startTime": "2026-06-14T22:00:00.000Z",
+    "competition": "Brazilian Serie B",
+    "runners": [
+      {
+        "selectionId": 4435648,
+        "runnerName": "Botafogo SP",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 6219238,
+        "runnerName": "Operario PR",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703756",
+    "betfairMarketId": "1.259048084",
+    "home": "Volta Redonda",
+    "away": "Confianca",
+    "startTime": "2026-06-14T22:30:00.000Z",
+    "competition": "Brazilian Serie C",
+    "runners": [
+      {
+        "selectionId": 1040271,
+        "runnerName": "Volta Redonda",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 3806543,
+        "runnerName": "Confianca",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35703759",
+    "betfairMarketId": "1.259047974",
+    "home": "Floresta EC",
+    "away": "Figueirense",
+    "startTime": "2026-06-14T22:30:00.000Z",
+    "competition": "Brazilian Serie C",
+    "runners": [
+      {
+        "selectionId": 14754815,
+        "runnerName": "Floresta EC",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 198125,
+        "runnerName": "Figueirense",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35035148",
+    "betfairMarketId": "1.251384169",
+    "home": "Ivory Coast",
+    "away": "Ecuador",
+    "startTime": "2026-06-14T23:00:00.000Z",
+    "competition": "FIFA World Cup",
+    "runners": [
+      {
+        "selectionId": 75104,
+        "runnerName": "Ivory Coast",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 15303,
+        "runnerName": "Ecuador",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35716480",
+    "betfairMarketId": "1.259146896",
+    "home": "Deportivo Garcilaso",
+    "away": "Cusco FC",
+    "startTime": "2026-06-14T23:00:00.000Z",
+    "competition": "Peruvian Copa de la Liga",
+    "runners": [
+      {
+        "selectionId": 12104874,
+        "runnerName": "Deportivo Garcilaso",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 27767097,
+        "runnerName": "Cusco FC",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  },
+  {
+    "betfairEventId": "35438717",
+    "betfairMarketId": "1.256139684",
+    "home": "Sweden",
+    "away": "Tunisia",
+    "startTime": "2026-06-15T02:00:00.000Z",
+    "competition": "FIFA World Cup",
+    "runners": [
+      {
+        "selectionId": 25912,
+        "runnerName": "Sweden",
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 15292,
+        "runnerName": "Tunisia",
+        "sortPriority": 2
+      },
+      {
+        "selectionId": 58805,
+        "runnerName": "The Draw",
+        "sortPriority": 3
+      }
+    ]
+  }
+]

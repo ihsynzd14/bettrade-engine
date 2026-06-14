@@ -1,0 +1,3502 @@
+[
+  {
+    "geniusId": "13988342",
+    "home": "CD Gualberto Villarroel",
+    "away": "The Strongest",
+    "startTime": "2026-06-13T22:00:00.0000000Z",
+    "status": "Postponed"
+  },
+  {
+    "geniusId": "13912796",
+    "home": "Club Independiente Petrolero",
+    "away": "Oriente Petrolero",
+    "startTime": "2026-06-14T00:30:00.0000000Z",
+    "status": "Postponed"
+  },
+  {
+    "geniusId": "14002815",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T04:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002834",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T04:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014579",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T04:37:23.8059060Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014086",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T04:51:03.6535470Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014588",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T04:51:28.1178420Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13484725",
+    "home": "Illawarra Stingrays FC Women",
+    "away": "Northern Tigers Women",
+    "startTime": "2026-06-14T05:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13484728",
+    "home": "Macarthur Rams Women",
+    "away": "Bulls FC Academy Women",
+    "startTime": "2026-06-14T05:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13875398",
+    "home": "Belconnen United Women",
+    "away": "West Canberra Wanderers FC Women",
+    "startTime": "2026-06-14T05:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014599",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T05:08:55.6583880Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014488",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T05:20:55.2144230Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014678",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T05:22:39.6822250Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002817",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T05:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002836",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T05:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014686",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T05:36:43.9950490Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014503",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T05:50:23.4168860Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014700",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T05:52:15.1586130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13875399",
+    "home": "Tuggeranong United Women",
+    "away": "Canberra FC Women",
+    "startTime": "2026-06-14T06:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13997695",
+    "home": "Shanxi Xihua Women",
+    "away": "Fujian Nanan Women",
+    "startTime": "2026-06-14T06:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14007137",
+    "home": "Shao Jiang",
+    "away": "Benfica Macau",
+    "startTime": "2026-06-14T06:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14008383",
+    "home": "Shanghai Shengli B Women",
+    "away": "Hebei FC Women",
+    "startTime": "2026-06-14T06:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14010578",
+    "home": "Zhejiang Hangzhou B Women",
+    "away": "Wuhan Sports University Women",
+    "startTime": "2026-06-14T06:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014536",
+    "home": "Test Spain",
+    "away": "Test France",
+    "startTime": "2026-06-14T06:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014541",
+    "home": "Test Liverpool",
+    "away": "Test Manchester United",
+    "startTime": "2026-06-14T06:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014708",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T06:08:30.3453950Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014558",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T06:21:41.3250540Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014731",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T06:26:54.6056600Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13394971",
+    "home": "Rockdale Ilinden FC",
+    "away": "SD Raiders FC",
+    "startTime": "2026-06-14T06:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002819",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T06:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002838",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T06:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014741",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T06:37:06.6059870Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014586",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T06:50:18.0840670Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014751",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T06:51:26.3325510Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13484724",
+    "home": "Western Sydney Wanderers II Women",
+    "away": "UNSW FC Women",
+    "startTime": "2026-06-14T07:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13484726",
+    "home": "Sydney University Women",
+    "away": "Gladesville Ravens Women",
+    "startTime": "2026-06-14T07:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13484727",
+    "home": "Manly United Women",
+    "away": "Sydney Olympic Women",
+    "startTime": "2026-06-14T07:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13624263",
+    "home": "Sorrento FC Women",
+    "away": "UWA-Nedlands FC Women",
+    "startTime": "2026-06-14T07:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13624265",
+    "home": "Perth Azzurri Women",
+    "away": "Hyundai Football West Academy Women",
+    "startTime": "2026-06-14T07:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13830583",
+    "home": "Deren",
+    "away": "Central Stallions FC",
+    "startTime": "2026-06-14T07:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014781",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T07:08:06.2543050Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014677",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T07:21:36.1068800Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014856",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T07:21:57.0011390Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13484723",
+    "home": "Hills United FC Women",
+    "away": "APIA Leichhardt Tigers Women",
+    "startTime": "2026-06-14T07:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13864322",
+    "home": "EPS/Reservi",
+    "away": "MPS",
+    "startTime": "2026-06-14T07:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002821",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T07:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002840",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T07:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014920",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T07:37:35.1666640Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13624262",
+    "home": "Subiaco AFC Women",
+    "away": "Perth RedStar FC Women",
+    "startTime": "2026-06-14T07:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014699",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T07:51:08.8362180Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014982",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T07:51:23.6405900Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13691520",
+    "home": "Qingdao Red Lions",
+    "away": "Shanghai Port B",
+    "startTime": "2026-06-14T08:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13945644",
+    "home": "Yeoju FC",
+    "away": "Busan Transportation Corporation",
+    "startTime": "2026-06-14T08:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14001234",
+    "home": "Guangdong GZ-Power U20",
+    "away": "Shaanxi Union FC U20",
+    "startTime": "2026-06-14T08:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014538",
+    "home": "Test Spain",
+    "away": "Test France",
+    "startTime": "2026-06-14T08:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014543",
+    "home": "Test Liverpool",
+    "away": "Test Manchester United",
+    "startTime": "2026-06-14T08:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14015039",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T08:08:00.6111480Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13966554",
+    "home": "G. Universe",
+    "away": "Chiba FC",
+    "startTime": "2026-06-14T08:09:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13997715",
+    "home": "Shanghai Shenhua Women",
+    "away": "Shandong Jinghua B Women",
+    "startTime": "2026-06-14T08:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14015047",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T08:22:16.1061030Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014730",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T08:25:50.3313320Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13668292",
+    "home": "Rockdale Ilinden U20",
+    "away": "SD Raiders FC U20",
+    "startTime": "2026-06-14T08:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13831465",
+    "home": "Hellenic Athletic",
+    "away": "Azzurri United FC",
+    "startTime": "2026-06-14T08:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13997707",
+    "home": "Henan Songshan Longmen Women",
+    "away": "Tianjin Shengde Women",
+    "startTime": "2026-06-14T08:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13997711",
+    "home": "Qingdao West Coast Women",
+    "away": "Dalian Renhe Women",
+    "startTime": "2026-06-14T08:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014595",
+    "home": "Chongqing Olympic Center Women",
+    "away": "Guangdong Sports Lottery Yuezhan Women",
+    "startTime": "2026-06-14T08:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002823",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T08:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002842",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T08:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14015055",
+    "home": "[Test] West Bromwich",
+    "away": "[Test] Wolverhampton",
+    "startTime": "2026-06-14T08:37:38.6441940Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13987810",
+    "home": "Selangor FC Women",
+    "away": "Red Eagles SC Women",
+    "startTime": "2026-06-14T08:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014750",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T08:50:21.7385560Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13584337",
+    "home": "Canberra Juventus FC",
+    "away": "Tigers FC",
+    "startTime": "2026-06-14T09:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13832994",
+    "home": "Changchun Dazhong Zh. Women",
+    "away": "Shannxi Zhidan Women",
+    "startTime": "2026-06-14T09:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13894293",
+    "home": "Bunyodkor Women",
+    "away": "Qizilqum Women",
+    "startTime": "2026-06-14T09:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13894294",
+    "home": "Paxtakor Women",
+    "away": "Buxoro Women",
+    "startTime": "2026-06-14T09:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13894295",
+    "home": "Sevinch Women",
+    "away": "FK Dinamo Samarkand Women",
+    "startTime": "2026-06-14T09:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13894296",
+    "home": "FC AGMK Women",
+    "away": "Lokomotiv Tashkent Women",
+    "startTime": "2026-06-14T09:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13920501",
+    "home": "KCB Nairobi",
+    "away": "Bandari FC",
+    "startTime": "2026-06-14T09:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13944327",
+    "home": "ISPE FC U20",
+    "away": "Yadanarbon FC U20",
+    "startTime": "2026-06-14T09:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13987620",
+    "home": "Real Murcia B",
+    "away": "CD Pamplona",
+    "startTime": "2026-06-14T09:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014855",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T09:20:46.0903040Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13558293",
+    "home": "Tallinna FC Flora U21",
+    "away": "JK Tallinna Kalev",
+    "startTime": "2026-06-14T09:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13595230",
+    "home": "Jõhvi FC Phoenix",
+    "away": "Tartu JK Tammeka U21",
+    "startTime": "2026-06-14T09:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13987621",
+    "home": "CF Trival Valderas Alcorcon",
+    "away": "CF La Nucia",
+    "startTime": "2026-06-14T09:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002825",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T09:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002844",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T09:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014983",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T09:50:24.8637580Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13678930",
+    "home": "MFA Zalgiris-MRU Women",
+    "away": "FK Transinvest Women",
+    "startTime": "2026-06-14T10:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13830584",
+    "home": "FC Ulaanbaatar",
+    "away": "Khoromkhon FC",
+    "startTime": "2026-06-14T10:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13987614",
+    "home": "Arenas de Armilla Cultura y Deporte",
+    "away": "Peña Deportiva",
+    "startTime": "2026-06-14T10:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13987618",
+    "home": "Guijuelo",
+    "away": "UD Tamaraceite",
+    "startTime": "2026-06-14T10:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13988337",
+    "home": "Prospect United",
+    "away": "Dulwich Hill",
+    "startTime": "2026-06-14T10:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14001236",
+    "home": "Shanghai Port U20",
+    "away": "Beijing Guoan U20",
+    "startTime": "2026-06-14T10:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14001237",
+    "home": "Shandong Taishan U20",
+    "away": "Henan U20",
+    "startTime": "2026-06-14T10:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014540",
+    "home": "Test Spain",
+    "away": "Test France",
+    "startTime": "2026-06-14T10:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014546",
+    "home": "Test Liverpool",
+    "away": "Test Manchester United",
+    "startTime": "2026-06-14T10:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14015046",
+    "home": "[Test] Manchester United",
+    "away": "[Test] Arsenal",
+    "startTime": "2026-06-14T10:21:02.3195390Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002827",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T10:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002846",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T10:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14004473",
+    "home": "Ninh Binh Football Club",
+    "away": "Ho Chi Minh City FC",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13392821",
+    "home": "Lysekloster",
+    "away": "Notodden FK",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13392823",
+    "home": "Sotra",
+    "away": "Brattvåg",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393001",
+    "home": "Skeid",
+    "away": "Rana FK",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13400609",
+    "home": "Norrby IF",
+    "away": "IK Oddevold",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13433019",
+    "home": "Umeå IK Women",
+    "away": "Linköpings FC Women",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13456770",
+    "home": "VIFK Women",
+    "away": "Ilves Women",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13493307",
+    "home": "Karlbergs BK",
+    "away": "Hammarby TFF",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13493939",
+    "home": "Hässleholms IF",
+    "away": "Trelleborgs FF",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13508085",
+    "home": "Ängby IF",
+    "away": "Skiljebo SK",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13509719",
+    "home": "Husqvarna FF",
+    "away": "Vänersborgs FK",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13512680",
+    "home": "Västra Frölunda IF",
+    "away": "IF Böljan",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13512681",
+    "home": "Åstorps FF",
+    "away": "Landvetter IS",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13512683",
+    "home": "Onsala BK",
+    "away": "Torslanda IK",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13534828",
+    "home": "IFK Östersund",
+    "away": "Kubikenborgs IF",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13534829",
+    "home": "Gottne IF",
+    "away": "Ljunga/Fränsta",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13599445",
+    "home": "PK Keski-Uusimaa",
+    "away": "TPV",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13604489",
+    "home": "FC Lahti Women",
+    "away": "FC Honka Women",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13658729",
+    "home": "Shenzhen Juniors FC",
+    "away": "Guangxi Hengchen",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13658730",
+    "home": "Wuxi Wugou",
+    "away": "Meizhou Hakka",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13679384",
+    "home": "FK Tukums 2000/Tss 2",
+    "away": "Valmiera FC",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14001235",
+    "home": "Zhejiang Professional U20",
+    "away": "Shanghai Shenhua U20",
+    "startTime": "2026-06-14T11:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13585683",
+    "home": "FC Hegelmann Litauen",
+    "away": "FK Kauno Žalgiris",
+    "startTime": "2026-06-14T11:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13511133",
+    "home": "Nõmme Kalju FC",
+    "away": "Paide Linnameeskond",
+    "startTime": "2026-06-14T11:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13658887",
+    "home": "Nantong Zhiyun F.C",
+    "away": "Yanbian Longding",
+    "startTime": "2026-06-14T11:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13658918",
+    "home": "Foshan Nanshi F.C.",
+    "away": "Shaanxi Union FC",
+    "startTime": "2026-06-14T11:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13691517",
+    "home": "Ganzhou Ruishi FC",
+    "away": "Wuhan Three Towns II",
+    "startTime": "2026-06-14T11:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13691518",
+    "home": "Guizhou Guiyang Athletic",
+    "away": "Guangzhou Dandelion",
+    "startTime": "2026-06-14T11:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13691519",
+    "home": "Hubei Istar F.C.",
+    "away": "Shenzhen 2028",
+    "startTime": "2026-06-14T11:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014585",
+    "home": "Shijiazhuang Gongfu FC",
+    "away": "Suzhou Dongwu",
+    "startTime": "2026-06-14T11:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002829",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T11:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002848",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T11:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13832995",
+    "home": "Zhejiang Hangzhou Xizi Women",
+    "away": "Guangxi Pingguo Beinong Women",
+    "startTime": "2026-06-14T11:35:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13998492",
+    "home": "LS Valen U20",
+    "away": "Americano MA U20",
+    "startTime": "2026-06-14T11:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393268",
+    "home": "Lørenskog",
+    "away": "Tromsdalen",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13431496",
+    "home": "Bryne FK Women",
+    "away": "Tromsø Women",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13431498",
+    "home": "Kolbotn Women",
+    "away": "Frigg Women",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13433018",
+    "home": "Trelleborgs FF Women",
+    "away": "Orebro SK Women",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13433769",
+    "home": "Byåsen",
+    "away": "Melhus IL",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13438920",
+    "home": "Austevoll",
+    "away": "Brann 2",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13510449",
+    "home": "Linero IF",
+    "away": "FK Karlskrona",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13637965",
+    "home": "FK Ulytau Zhezkazgan",
+    "away": "FK Zhenys",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13678932",
+    "home": "FC Gintra Women",
+    "away": "FK Žalgiris Vilnius Women",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13679385",
+    "home": "Rigas Futbola Skola II",
+    "away": "FK Rezeknes BJSS",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13715842",
+    "home": "Fjardabyggd/Leiknir/Höttur Women",
+    "away": "KR Reykjavik Women",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13849704",
+    "home": "Transport United FC",
+    "away": "Thimphu City",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13932021",
+    "home": "Ethiopian Coffee Sport Club",
+    "away": "Cafe Sidama",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13932022",
+    "home": "Saint-George FC",
+    "away": "Defence Force SC",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13960987",
+    "home": "Nara United",
+    "away": "Uttaradit FC",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994657",
+    "home": "Club Sportivo Italiano U20",
+    "away": "Ituzaingo U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994658",
+    "home": "San Martin Burzaco U20",
+    "away": "Canuelas U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994659",
+    "home": "Club Social y Deportivo Camioneros U20",
+    "away": "Berazategui U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994664",
+    "home": "Deportivo Espanol U20",
+    "away": "Sportivo Dock Sud U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994666",
+    "home": "Real Pilar FC U20",
+    "away": "Argentino de Quilmes U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994677",
+    "home": "Roma U20",
+    "away": "Leandro N. Alem U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994679",
+    "home": "Control Orientado U20",
+    "away": "D10 FC U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994680",
+    "home": "Deportivo Metalurgico U20",
+    "away": "Nautico Hacoaj U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Postponed"
+  },
+  {
+    "geniusId": "13994681",
+    "home": "Central Ballester U20",
+    "away": "Juventud Unida San Miguel U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994682",
+    "home": "Belgrano de Zarate U20",
+    "away": "Victoriano Arenas U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994687",
+    "home": "Deportivo Paraguayo U20",
+    "away": "CA Lugano U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994688",
+    "home": "Defensores de Cambaceres U20",
+    "away": "Club El Porvenir U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994689",
+    "home": "Centro Espanol U20",
+    "away": "Yupanqui U20",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14003754",
+    "home": "Tupan",
+    "away": "Sao Jose MA",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014542",
+    "home": "Test Spain",
+    "away": "Test France",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014548",
+    "home": "Test Liverpool",
+    "away": "Test Manchester United",
+    "startTime": "2026-06-14T12:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13392820",
+    "home": "Jerv",
+    "away": "Sandviken",
+    "startTime": "2026-06-14T12:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13392824",
+    "home": "Træff",
+    "away": "Bjarg",
+    "startTime": "2026-06-14T12:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13920502",
+    "home": "Tusker FC",
+    "away": "Kenya Police FC",
+    "startTime": "2026-06-14T12:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968674",
+    "home": "Louves Minproff Women",
+    "away": "Authentic Women",
+    "startTime": "2026-06-14T12:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002831",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T12:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002850",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T12:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13987809",
+    "home": "Kelana United F.C. Women",
+    "away": "Kuala Lumpur City FC Women",
+    "startTime": "2026-06-14T12:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13392998",
+    "home": "Eidsvold Turn",
+    "away": "Levanger",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393002",
+    "home": "Stjørdals-Blink IL",
+    "away": "Trygg/Lade",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13400606",
+    "home": "Falkenbergs FF",
+    "away": "Örebro SK",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13400608",
+    "home": "Ljungskile SK",
+    "away": "Östersunds FK",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13431497",
+    "home": "Klepp Women",
+    "away": "Arna-Bjørnar Women",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13431500",
+    "home": "IK Start Women",
+    "away": "Grei Kvinner Elite Women",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13439664",
+    "home": "Fauske/Sprint",
+    "away": "Lillestrøm SK 2",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13453088",
+    "home": "Flekkerøy IL",
+    "away": "Hinna",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13509549",
+    "home": "Jitex BK Women",
+    "away": "Enskede IK Women",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13534827",
+    "home": "Lucksta IF",
+    "away": "Umeå FF",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13576887",
+    "home": "Lindö FF",
+    "away": "FC Nacka",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13604074",
+    "home": "FF Jaro Akademi",
+    "away": "JS Hercules",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13604075",
+    "home": "FC Vaajakoski",
+    "away": "TP-47",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13765077",
+    "home": "Simba SC",
+    "away": "Pamba Jiji FC",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13781857",
+    "home": "Grêmio Catanduvense U23",
+    "away": "SE Matonense U23",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13872410",
+    "home": "Cotonsport",
+    "away": "Canon Yaoundé",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13899407",
+    "home": "Porto Foot Ball U20",
+    "away": "Sfera U20",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13924152",
+    "home": "FC Farul Constanta Women",
+    "away": "FCU Olimpia Cluj Women",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13957896",
+    "home": "Barrancas FC",
+    "away": "Alumni-Los Hornos",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968407",
+    "home": "ZPC Kariba",
+    "away": "Triangle United FC",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13983172",
+    "home": "Olaria AC U20",
+    "away": "Portuguesa RJ U20",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13991413",
+    "home": "Al-Taliya (Syria)",
+    "away": "Al-Wahda Damascus",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13991414",
+    "home": "Homs Al Fidaa SC",
+    "away": "Hottin",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994640",
+    "home": "Club Comunicaciones U20",
+    "away": "CA Ferrocarril Midland U20",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994647",
+    "home": "San Telmo U20",
+    "away": "Agropecuario U20",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994656",
+    "home": "CSD Liniers U20",
+    "away": "Villa San Carlos U20",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994676",
+    "home": "JJ Urquiza U20",
+    "away": "Club Sportivo Barracas U20",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13998061",
+    "home": "Club Social Y Deportivo Los Halcones",
+    "away": "Alto Peru",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13998062",
+    "home": "Centro Atletico Lito",
+    "away": "Durazno FC",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13765078",
+    "home": "Tanzania Prisons",
+    "away": "Dodoma Jiji FC",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13781856",
+    "home": "Itaquaquecetuba AC U23",
+    "away": "Mauá FC U23",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13781858",
+    "home": "Riopretano FC U23",
+    "away": "Tupa FC U23",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13814385",
+    "home": "Patrocinense MG",
+    "away": "AA Caldense",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13895023",
+    "home": "KT Reykjavik Women",
+    "away": "Einherji Women",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968399",
+    "home": "Agama FC",
+    "away": "CAPS United FC",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968400",
+    "home": "Bulawayo Chiefs",
+    "away": "Highlanders FC",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968401",
+    "home": "Scottland FC",
+    "away": "Hardrock FC",
+    "startTime": "2026-06-14T13:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13692261",
+    "home": "PIF",
+    "away": "SalPa 2",
+    "startTime": "2026-06-14T13:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13814387",
+    "home": "Boa Esporte Clube",
+    "away": "Uberaba SC",
+    "startTime": "2026-06-14T13:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13998063",
+    "home": "Sud América",
+    "away": "Los Gorriones",
+    "startTime": "2026-06-14T13:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002833",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T13:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002852",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T13:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13508088",
+    "home": "IFK Lidingö FK",
+    "away": "Taby FK",
+    "startTime": "2026-06-14T13:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393000",
+    "home": "Junkeren",
+    "away": "Hønefoss BK",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393391",
+    "home": "Haugesund",
+    "away": "Ranheim",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393392",
+    "home": "Hødd",
+    "away": "Kongsvinger IL",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393393",
+    "home": "FK Lyn",
+    "away": "Bryne",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393394",
+    "home": "Sandnes Ulf",
+    "away": "Strømmen",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393395",
+    "home": "Sogndal",
+    "away": "Moss",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393396",
+    "home": "Stabæk",
+    "away": "Egersund",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393397",
+    "home": "Strømsgodset",
+    "away": "Raufoss",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13393398",
+    "home": "Åsane",
+    "away": "Odds Ballklubb",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13431694",
+    "home": "KFUM 2 Oslo",
+    "away": "Bærum",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13433016",
+    "home": "KIF Örebro DFF Women",
+    "away": "BK Hacken B Women",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13493308",
+    "home": "AFC Eskilstuna",
+    "away": "Assyriska FF",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13493309",
+    "home": "Enköpings SK",
+    "away": "Vasalunds IF",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13493310",
+    "home": "FC Stockholm Internazionale",
+    "away": "FBK Karlstad",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13493940",
+    "home": "FC Rosengård",
+    "away": "Skövde AIK",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13507423",
+    "home": "Skála ÍF",
+    "away": "Klaksvíkar Ítróttarfelag",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13507424",
+    "home": "EB/Streymur",
+    "away": "B68 Toftir",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13508086",
+    "home": "Helges IF",
+    "away": "Korsnäs IF",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13586635",
+    "home": "EC Juventude",
+    "away": "Atlética Ponte Preta",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13586640",
+    "home": "São Bernardo FC",
+    "away": "Sport Club do Recife",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13602646",
+    "home": "Hviti Riddarinn",
+    "away": "KFA Austfjarda",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13637961",
+    "home": "FC Astana",
+    "away": "Irtysh Pavlodar",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13637966",
+    "home": "Yelimay Semey",
+    "away": "FC Ordabasy",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13638462",
+    "home": "Brusque FC",
+    "away": "Santa Cruz FC",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13640245",
+    "home": "FK Istaravshan",
+    "away": "Istiklol FC",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13660713",
+    "home": "Šiauliai II",
+    "away": "TransINVEST Vilnius 2",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13679386",
+    "home": "Marupes SC",
+    "away": "JFK Ventspils",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13688724",
+    "home": "Chapecoense U20",
+    "away": "Brusque FC U20",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13812149",
+    "home": "Tindastoll",
+    "away": "Augnablik",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13812150",
+    "home": "Reynir Sandgerði",
+    "away": "Sindri",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13812151",
+    "home": "Höttur",
+    "away": "Vidir Gardur",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13813551",
+    "home": "Serrano RJ",
+    "away": "Maricá F.C.",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13975843",
+    "home": "River Plate-URU",
+    "away": "Cerrito",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13976318",
+    "home": "Yaypan FK",
+    "away": "Olimpik Mobiuz",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13991480",
+    "home": "Grêmio FBPA U20",
+    "away": "SC Internacional U20",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14003551",
+    "home": "Real Santa Cruz",
+    "away": "Royal Pari FC",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14003552",
+    "home": "Virginia USC",
+    "away": "Esperanza",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14007880",
+    "home": "Liverpool Montevideo FC Women",
+    "away": "Canadian Women",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014545",
+    "home": "Test Spain",
+    "away": "Test France",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014551",
+    "home": "Test Liverpool",
+    "away": "Test Manchester United",
+    "startTime": "2026-06-14T14:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706757",
+    "home": "FADEP Mendoza",
+    "away": "Argentino Monte Maiz",
+    "startTime": "2026-06-14T14:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13872409",
+    "home": "AS Fortuna Mfou",
+    "away": "Victoria United Limbe",
+    "startTime": "2026-06-14T14:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13872412",
+    "home": "Aigle Royal de la Menoua",
+    "away": "Aigle Royal du Moungo",
+    "startTime": "2026-06-14T14:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13872413",
+    "home": "Stade Renard",
+    "away": "Fauve Azur Elite",
+    "startTime": "2026-06-14T14:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968673",
+    "home": "FC Ebolowa Women",
+    "away": "Amazone FAP Women",
+    "startTime": "2026-06-14T14:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002835",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T14:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002854",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T14:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13400611",
+    "home": "Sandvikens IF",
+    "away": "IK Brage",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13508330",
+    "home": "Syrianska FC",
+    "away": "BK Forward",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13604490",
+    "home": "PK Keski-Uusimaa Women",
+    "away": "HJS Women",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13637960",
+    "home": "FK Aktobe",
+    "away": "FK Altay",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13637963",
+    "home": "FK Kaspiy Aktau",
+    "away": "FC Kaisar Kyzylorda",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13640246",
+    "home": "Sardor Tursunzade",
+    "away": "Regar-TadAZ Tursunzoda",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13679387",
+    "home": "Riga FC Reserves",
+    "away": "FK Smiltene/BJSS",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13679388",
+    "home": "Skanstes SK",
+    "away": "Riga Mariners",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13872154",
+    "home": "Rezekne BJSS Women",
+    "away": "FK Auda Women",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13872411",
+    "home": "Dynamo Douala",
+    "away": "Panthère du Ndé",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13872414",
+    "home": "PWD Bamenda",
+    "away": "Colombe du Dja et Lobo",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13872415",
+    "home": "Gazelle de Garoua",
+    "away": "Unisport de Bafang",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13932023",
+    "home": "Ethiopian Medhin",
+    "away": "Dire Dawa Kima FC",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13963636",
+    "home": "Club Yanapuma Women",
+    "away": "Carlos Mannucci Women",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13971035",
+    "home": "Atletico Nacional U19",
+    "away": "Envigado U19",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13976862",
+    "home": "San Marcos de Arica Women",
+    "away": "La Serena Women",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13979739",
+    "home": "O'Higgins Women",
+    "away": "Curicó Unido Women",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13989361",
+    "home": "Raja Casablanca",
+    "away": "Union de Touarga",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13989362",
+    "home": "Hassania Agadir",
+    "away": "Renaissance de Berkane",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13989363",
+    "home": "IRT Tanger",
+    "away": "Yacoub El Mansour",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13989364",
+    "home": "FAR Rabat",
+    "away": "Wydad Casablanca",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14004431",
+    "home": "C.D. Alexis Garcia",
+    "away": "Color Esperanza",
+    "startTime": "2026-06-14T15:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13310156",
+    "home": "1. BFK Frýdlant",
+    "away": "TJ Petrvald na Morave",
+    "startTime": "2026-06-14T15:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13440191",
+    "home": "River Plate Women",
+    "away": "Club Atlético San Lorenzo de Almagro Women",
+    "startTime": "2026-06-14T15:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13444114",
+    "home": "MP",
+    "away": "Klubi-04",
+    "startTime": "2026-06-14T15:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13604077",
+    "home": "Närpes Kraft",
+    "away": "Huima/Urho",
+    "startTime": "2026-06-14T15:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13992860",
+    "home": "Boca Junior Soledad U19",
+    "away": "Fusion Caribe U19",
+    "startTime": "2026-06-14T15:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002837",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T15:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002856",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T15:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13440185",
+    "home": "Gimnasia de La Plata Women",
+    "away": "Newell's Old Boys Women",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13489171",
+    "home": "FC Gagra Tbilisi",
+    "away": "Dinamo Tbilisi",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13602645",
+    "home": "Kormákur/Hvöt",
+    "away": "KFG",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13602648",
+    "home": "Dalvík/Reynir",
+    "away": "Haukar Hafnarfjordur",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13604078",
+    "home": "VPS Akatemia",
+    "away": "GBK",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13838992",
+    "home": "Tallinna FC Levadia U21",
+    "away": "Viimsi JK",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977320",
+    "home": "Sporting Cristal Reserves",
+    "away": "Juventud Huracan FC",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13988390",
+    "home": "Ayacucho FC",
+    "away": "CD Los Chankas",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014547",
+    "home": "Test Spain",
+    "away": "Test France",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014552",
+    "home": "Test Liverpool",
+    "away": "Test Manchester United",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13602647",
+    "home": "Víkingur Ólafsvík",
+    "away": "Magni",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13812148",
+    "home": "KF Fjallabyggd",
+    "away": "KÁ Ásvellir",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968048",
+    "home": "SCCM Chabab Mohamedia",
+    "away": "Widad Temara",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968052",
+    "home": "US Amal Tiznit",
+    "away": "Jeunesse Sportive de Soualem",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968053",
+    "home": "KAC Kenitra",
+    "away": "Mouloudia Oujda",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13968054",
+    "home": "Stade Marocain du Rabat",
+    "away": "Jeunesse Massira",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977314",
+    "home": "FBC Melgar Reserves",
+    "away": "CD Defensor Jose María Arguedas",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13979740",
+    "home": "Audax Italiano Women",
+    "away": "Unión La Calera Women",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13987617",
+    "home": "SD Compostela",
+    "away": "CF Badalona",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13996623",
+    "home": "Valur/KH U20 Women",
+    "away": "FH Hafnarfjodur Women U20",
+    "startTime": "2026-06-14T16:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13507422",
+    "home": "Argja Bóltfelag",
+    "away": "Havnar Bóltfelag",
+    "startTime": "2026-06-14T16:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994054",
+    "home": "Deportivo Cali U19",
+    "away": "America de Cali U19",
+    "startTime": "2026-06-14T16:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14003433",
+    "home": "AS Bakary Djan",
+    "away": "US Bougouni",
+    "startTime": "2026-06-14T16:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14003434",
+    "home": "Afrique Football Elite",
+    "away": "Derby Academie",
+    "startTime": "2026-06-14T16:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13439663",
+    "home": "Bossekop",
+    "away": "Finnsnes",
+    "startTime": "2026-06-14T16:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13457814",
+    "home": "Deportes Concepción",
+    "away": "Deportes Limache",
+    "startTime": "2026-06-14T16:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13476428",
+    "home": "Þór Akureyri",
+    "away": "ÍB Vestmannaeyja",
+    "startTime": "2026-06-14T16:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13715501",
+    "home": "Luawa FC",
+    "away": "Bai Bureh Warriors FC",
+    "startTime": "2026-06-14T16:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13715502",
+    "home": "Wilberforce Strikers FC",
+    "away": "Star Sport Academy FC",
+    "startTime": "2026-06-14T16:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13825905",
+    "home": "Club Libertad San Carlos",
+    "away": "Lavalleja de Rocha",
+    "startTime": "2026-06-14T16:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13825906",
+    "home": "Ituzaingo de Maldonaldo",
+    "away": "Barrio Olimpico",
+    "startTime": "2026-06-14T16:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002839",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T16:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002858",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T16:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13344932",
+    "home": "Germany",
+    "away": "Curaçao",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13476427",
+    "home": "Keflavik IF",
+    "away": "FH Hafnarfjördur",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13548622",
+    "home": "Argentino de Quilmes",
+    "away": "Deportivo Armenio",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13606280",
+    "home": "San Antonio FC II",
+    "away": "Houston FC",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13841077",
+    "home": "SI Guardians",
+    "away": "Wisconsin Conquerors FC",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13950544",
+    "home": "KM Reykjavik",
+    "away": "Stokkseyri",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13987615",
+    "home": "Atletico Central",
+    "away": "Caudal Deportivo",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13994061",
+    "home": "Bogota FC U19",
+    "away": "Inter Albinegro U19",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14004432",
+    "home": "Rionegro Aguilas Reserves",
+    "away": "Leones FC Reserves",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14004433",
+    "home": "Molino Viejo",
+    "away": "Olimpia J.V.",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14007881",
+    "home": "Wanderers Women",
+    "away": "Defensor Sporting Women",
+    "startTime": "2026-06-14T17:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533857",
+    "home": "Almirante Brown",
+    "away": "Godoy Cruz",
+    "startTime": "2026-06-14T17:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706762",
+    "home": "CA Kimberley",
+    "away": "CA Alvarado",
+    "startTime": "2026-06-14T17:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13987616",
+    "home": "CD Badajoz",
+    "away": "CD Cuarte",
+    "startTime": "2026-06-14T17:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002841",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T17:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002860",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T17:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13813474",
+    "home": "Audax RJ",
+    "away": "Perolas Negras",
+    "startTime": "2026-06-14T17:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13813476",
+    "home": "AD Cabofriense",
+    "away": "Americano FC",
+    "startTime": "2026-06-14T17:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13813477",
+    "home": "Araruama",
+    "away": "São Gonçalo EC",
+    "startTime": "2026-06-14T17:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13989848",
+    "home": "Serrano FC U20",
+    "away": "Botafogo FR U20",
+    "startTime": "2026-06-14T17:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13989849",
+    "home": "Paduano EC U20",
+    "away": "Flamengo U20",
+    "startTime": "2026-06-14T17:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13989850",
+    "home": "Americano FC U20",
+    "away": "Bangu U20",
+    "startTime": "2026-06-14T17:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13440193",
+    "home": "Social Atletico Television Women",
+    "away": "San Luis FC Women",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533855",
+    "home": "Estudiantes de Buenos Aires",
+    "away": "All Boys",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533860",
+    "home": "Deportivo Madryn",
+    "away": "CA San Miguel",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13606281",
+    "home": "San Francisco Glens SC",
+    "away": "Project 51O FC",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13634084",
+    "home": "Deportes Iquique Women",
+    "away": "Colo-Colo Women",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13689199",
+    "home": "Jaragua SC",
+    "away": "Hercilio Luz Futebol Clube",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13689200",
+    "home": "CA Metropolitano",
+    "away": "Guarani de Palhoça",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706748",
+    "home": "Club Atletico el Linqueno",
+    "away": "Douglas Haig",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706750",
+    "home": "Independiente de Chivilcoy",
+    "away": "Gimnasia y Esgrima de Concepción del Uruguay",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706758",
+    "home": "Deportivo Rincon",
+    "away": "Juventud Unida Universitario",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706761",
+    "home": "Sol de Mayo",
+    "away": "Olimpo",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706763",
+    "home": "Circulo Deportivo Otamendi",
+    "away": "Deportivo Santamarina",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706764",
+    "home": "Club Villa Mitre",
+    "away": "CA Germinal",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13760083",
+    "home": "Grapiuna",
+    "away": "Feira FC",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13760087",
+    "home": "EC Vitória da Conquista",
+    "away": "Redencao",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13781855",
+    "home": "Barcelona Esportivo Capela U23",
+    "away": "Manthiqueira U23",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13781859",
+    "home": "José Bonifácio EC U23",
+    "away": "Assisense U23",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13781860",
+    "home": "SC Paulinense U23",
+    "away": "Gremio Osasco Audax U23",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13814836",
+    "home": "Grande Rio Brescia Clube",
+    "away": "Rio Barra FC",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Postponed"
+  },
+  {
+    "geniusId": "13814840",
+    "home": "Itaboraí Profute",
+    "away": "Barra Mansa FC",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Postponed"
+  },
+  {
+    "geniusId": "13814842",
+    "home": "Barcelona Esporte Clube",
+    "away": "SE Buzios",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Postponed"
+  },
+  {
+    "geniusId": "13836893",
+    "home": "Albion San Diego Women",
+    "away": "So Cal Union Women",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13837265",
+    "home": "New York Dutch Lions FC Women",
+    "away": "STA Women",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891656",
+    "home": "Central SC",
+    "away": "Club Laguna SAF",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891657",
+    "home": "Sousa EC",
+    "away": "América-RN",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891658",
+    "home": "ABC Futebol",
+    "away": "Maguary",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13902956",
+    "home": "Maine Mystics Women",
+    "away": "New England Mutiny Women",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13941807",
+    "home": "Brasil De Farroupilha",
+    "away": "Futebol Clube Santa Cruz",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13963637",
+    "home": "Defensores del Ilucan Women",
+    "away": "Atletico Andahuaylas Women",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13975844",
+    "home": "Club Atlético Atenas",
+    "away": "La Luz FC",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13976381",
+    "home": "Conquista FC U20",
+    "away": "Jacobina U20",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13982704",
+    "home": "Cardoso Moreira",
+    "away": "AE Independente",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Postponed"
+  },
+  {
+    "geniusId": "13983117",
+    "home": "Rio Branco-VN",
+    "away": "Porto Vitoria",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13990938",
+    "home": "Grêmio Esportivo Brasil U20",
+    "away": "Clube 1992 U20",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13990939",
+    "home": "Aimore RS U20",
+    "away": "Esporte Clube Pelotas U20",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13990940",
+    "home": "Gremio Esportivo Gloria U20",
+    "away": "SER Panambi U20",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13991412",
+    "home": "Al-Ittihad Aleppo",
+    "away": "Al-Horiyah",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13992242",
+    "home": "Cruzeiro PB U20",
+    "away": "Serrano PB U20",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13992243",
+    "home": "Confianca PB U20",
+    "away": "Queimadense U20",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13998064",
+    "home": "Frontera Rivera Renegades",
+    "away": "Deportivo Italiano",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13999470",
+    "home": "CA Villa Teresa",
+    "away": "Villa Espanola",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14007882",
+    "home": "Danubio Women",
+    "away": "Club Nacional de Football Women",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014549",
+    "home": "Test Spain",
+    "away": "Test France",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014553",
+    "home": "Test Liverpool",
+    "away": "Test Manchester United",
+    "startTime": "2026-06-14T18:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13988391",
+    "home": "Alianza Universidad",
+    "away": "Sport Huancayo",
+    "startTime": "2026-06-14T18:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14003435",
+    "home": "AS Korofina",
+    "away": "Djoliba AC",
+    "startTime": "2026-06-14T18:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14003436",
+    "home": "USFAS Bamako",
+    "away": "Mali Coura",
+    "startTime": "2026-06-14T18:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533865",
+    "home": "Patronato",
+    "away": "Atlético de Rafaela",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706756",
+    "home": "Boca Unidos",
+    "away": "San Martín de Formosa",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13767353",
+    "home": "CSD Central Ballester",
+    "away": "Cañuelas",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13767355",
+    "home": "Claypole",
+    "away": "Deportivo Muniz",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13767364",
+    "home": "Puerto Nuevo",
+    "away": "Centro Espanol",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13809293",
+    "home": "Paranoa U20",
+    "away": "Gremio Desportivo Valparaiso U20",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13825873",
+    "home": "Rio Negro de San Jose",
+    "away": "Wanderers Durazno",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14003793",
+    "home": "Itupiranga",
+    "away": "Izabelense",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13440182",
+    "home": "Club Atlético Belgrano Women",
+    "away": "Club Atlético Talleres de Cordoba Women",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533862",
+    "home": "Ferro Carril Oeste",
+    "away": "Acassuso",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13548627",
+    "home": "CSD Liniers",
+    "away": "Real Pilar FC",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13634086",
+    "home": "Universidad Catolica Women",
+    "away": "Deportes Temuco Women",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706760",
+    "home": "CA Huracan Las Heras",
+    "away": "Sportivo y Biblioteca Atenas",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13767356",
+    "home": "Club Lujan",
+    "away": "Yupanqui",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13767361",
+    "home": "Juventud Unida San Miguel",
+    "away": "Estrella del Sur",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13767363",
+    "home": "CA Lugano",
+    "away": "Club Mercedes",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13809290",
+    "home": "Canaã Esporte Clube U20",
+    "away": "Ceilandense U20",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13809291",
+    "home": "Candango U20",
+    "away": "Brasiliense FC U20",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13809298",
+    "home": "Sobradinho EC U20",
+    "away": "Taguatinga U20",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13825805",
+    "home": "Universitario de Salto",
+    "away": "Estudiantes de Tacuarembo",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13825806",
+    "home": "Club Atletico Uruguay",
+    "away": "Gladiador FC de Salto",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13825921",
+    "home": "San Carlos de Maldonado",
+    "away": "Cerro Vergara",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13832274",
+    "home": "Brasilia FC U20",
+    "away": "Cruzeiro Futebol Clube U20",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13998493",
+    "home": "Juventude MA U20",
+    "away": "IAPE FC U20",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13999471",
+    "home": "CA Bella Vista",
+    "away": "Rampla Juniors",
+    "startTime": "2026-06-14T18:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002843",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T18:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002862",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T18:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706754",
+    "home": "Sol de América de Formosa",
+    "away": "CA Bartolome Mitre",
+    "startTime": "2026-06-14T18:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14007883",
+    "home": "Montevideo City Torque Women",
+    "away": "CA Peñarol Women",
+    "startTime": "2026-06-14T18:45:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13457818",
+    "home": "Unión La Calera",
+    "away": "Universidad de Chile",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533854",
+    "home": "Racing de Cordoba",
+    "away": "CA Chaco For Ever",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533856",
+    "home": "Club Atlético Mitre",
+    "away": "Los Andes",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533868",
+    "home": "Temperley",
+    "away": "CA Guemes",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13555882",
+    "home": "Minnesota United FC 2",
+    "away": "Austin FC II",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13555888",
+    "home": "Philadelphia Union II",
+    "away": "New York City FC 2",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13555890",
+    "home": "Toronto FC II",
+    "away": "CT United FC",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13555893",
+    "home": "New England Revolution 2",
+    "away": "New York Red Bulls II",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13586626",
+    "home": "Athletic Club MG",
+    "away": "Goiás EC",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13638467",
+    "home": "Paysandu PA",
+    "away": "Inter Limeira",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13689198",
+    "home": "Caravaggio FC",
+    "away": "Fluminense de Joinville",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706755",
+    "home": "Sarmiento de Resistencia",
+    "away": "Defensores de Puerto Vilelas",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13801882",
+    "home": "GA Sampaio",
+    "away": "Manaus FC",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13801883",
+    "home": "Nacional FC AM",
+    "away": "Monte Roraima FC",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13801884",
+    "home": "Manauara Esporte Clube",
+    "away": "Sao Raimundo EC",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13825819",
+    "home": "Nacional de Nueva Helvecia",
+    "away": "Juventud de Colonia",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13825820",
+    "home": "Laureles de Fray Bentos",
+    "away": "Club Atletico San Carlos de Colonia",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13881872",
+    "home": "Gremio Esportivo Bage",
+    "away": "Guarany de Bage",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891647",
+    "home": "Betim Futebol",
+    "away": "Operario FC-MS",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891648",
+    "home": "Uberlândia EC",
+    "away": "Abecat Ouvidorense",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891649",
+    "home": "C.R.A. Catalano",
+    "away": "Ivinhema FC",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891650",
+    "home": "Esporte Clube Jacuipense",
+    "away": "ASA",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891651",
+    "home": "Alagoinhas Atlético Clube",
+    "away": "CS Alagoano",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891652",
+    "home": "Clube Sociedade Esportiva",
+    "away": "SD Juazeirense",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891653",
+    "home": "Sergipe",
+    "away": "Serra Branca",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891654",
+    "home": "Lagarto",
+    "away": "Decisão PE",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891655",
+    "home": "Retrô F.C",
+    "away": "Treze FC",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13912797",
+    "home": "Always Ready",
+    "away": "San Antonio",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Postponed"
+  },
+  {
+    "geniusId": "13966625",
+    "home": "Uirapuru FC U20",
+    "away": "União EC U20",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13966626",
+    "home": "Cuiabá EC U20",
+    "away": "Chapada FC U20",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13988346",
+    "home": "Blooming Santa Cruz",
+    "away": "Real Tomayapo",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Postponed"
+  },
+  {
+    "geniusId": "13991236",
+    "home": "Long Island Rough Riders Women",
+    "away": "New Jersey Copa FC Women",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13999473",
+    "home": "CA Platense",
+    "away": "Club Atletico Basanez",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13999837",
+    "home": "Málaga",
+    "away": "UD Almería",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14011800",
+    "home": "CD Guadalajara Qaqachaca",
+    "away": "AFIZ FC",
+    "startTime": "2026-06-14T19:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533861",
+    "home": "Central Norte de Salta",
+    "away": "San Telmo",
+    "startTime": "2026-06-14T19:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13533867",
+    "home": "CD Maipu",
+    "away": "Tristán Suárez",
+    "startTime": "2026-06-14T19:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13638466",
+    "home": "AO de Itabaiana",
+    "away": "Ituano FC",
+    "startTime": "2026-06-14T19:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13765502",
+    "home": "Futuro FC",
+    "away": "Club de Deportes Malleco Unido",
+    "startTime": "2026-06-14T19:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13960953",
+    "home": "ADRC Icasa",
+    "away": "Itapipoca EC",
+    "startTime": "2026-06-14T19:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002845",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T19:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002864",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T19:32:25.7381130Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13344890",
+    "home": "Netherlands",
+    "away": "Japan",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13555891",
+    "home": "Chicago Fire 2",
+    "away": "Inter Miami 2",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13586632",
+    "home": "Cuiabá EC",
+    "away": "Vila Nova FC",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13706759",
+    "home": "Club Atlético Costa Brava",
+    "away": "Club Cipolletti",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13836889",
+    "home": "Side FC 92 Women",
+    "away": "Union KC Women",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13836890",
+    "home": "Little Rock Rangers Women",
+    "away": "Mississippi Blues SC Women",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13836891",
+    "home": "Milwaukee City AFC Women",
+    "away": "Chicago KICS Women",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13836892",
+    "home": "Chicago House AC Women",
+    "away": "Green Bay Glory Women",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13837264",
+    "home": "New York Athletic Club Women",
+    "away": "Force FC New York Women",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13858927",
+    "home": "Deportes Linares",
+    "away": "Lota Schwager",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13879145",
+    "home": "Middleham United FC",
+    "away": "CCCUL Dublanc SC",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891644",
+    "home": "Rio Branco Atlético Clube",
+    "away": "Porto Sport Club",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891645",
+    "home": "Real Noroeste Capixaba",
+    "away": "Democrata GV",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13891646",
+    "home": "Tombense",
+    "away": "Vitória FC",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13905117",
+    "home": "Lago Verde EC",
+    "away": "EC Viana",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13976866",
+    "home": "Pacífico FC",
+    "away": "Centro Social Pariacoto",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13976868",
+    "home": "CSD Juventud Santo Domingo",
+    "away": "Deportivo Lute",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977058",
+    "home": "Amazon Callao FC",
+    "away": "Deportivo Coopsol",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977086",
+    "home": "Juan Aurich",
+    "away": "Juventus Huamachuco FC",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977306",
+    "home": "Asociacion Deportiva Tarma Reserves",
+    "away": "Deportivo Municipal Pangoa",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977308",
+    "home": "Universitario de Deportes Reserves",
+    "away": "Sport Boys Reserves",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977309",
+    "home": "Juventud Cautivo",
+    "away": "Cesar Vallejo Reserves",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977315",
+    "home": "Corazon de Leon AR",
+    "away": "Deportivo ANBA",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977318",
+    "home": "CD Nuevo San Cristóbal",
+    "away": "AD Tahuishco",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977319",
+    "home": "Ucayali FC",
+    "away": "UDA de Huancavelica",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977321",
+    "home": "Union Santo Domingo",
+    "away": "Carlos Stein",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13998092",
+    "home": "Club Atlético Minero Argentino",
+    "away": "CS 9 de Julio San Juan",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014550",
+    "home": "Test Spain",
+    "away": "Test France",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14014554",
+    "home": "Test Liverpool",
+    "away": "Test Manchester United",
+    "startTime": "2026-06-14T20:00:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977311",
+    "home": "Patriotas Tacna FC",
+    "away": "Cienciano del Cuzco Reserves",
+    "startTime": "2026-06-14T20:15:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13715268",
+    "home": "Burlington SC",
+    "away": "Woodbridge Strikers SC",
+    "startTime": "2026-06-14T20:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13841076",
+    "home": "Alexandria Reds",
+    "away": "DMV Elite FC",
+    "startTime": "2026-06-14T20:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13974598",
+    "home": "Union Huaral",
+    "away": "Alianza Lima Reserves",
+    "startTime": "2026-06-14T20:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13977317",
+    "home": "A.S.A. FC de Chancay",
+    "away": "Deportivo Ucrania",
+    "startTime": "2026-06-14T20:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "13988392",
+    "home": "Cesar Vallejo",
+    "away": "Alianza Lima",
+    "startTime": "2026-06-14T20:30:00.0000000Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002847",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T20:32:18.9209340Z",
+    "status": "Notstarted"
+  },
+  {
+    "geniusId": "14002866",
+    "home": "[Test] Arsenal",
+    "away": "[Test] Manchester United",
+    "startTime": "2026-06-14T20:32:25.7381130Z",
+    "status": "Notstarted"
+  }
+]

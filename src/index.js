@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { login } from './services/betfair-auth.service.js'
 import { startPolling } from './services/overlap.service.js'
 import { startEngine } from './scalpy/scalpy.engine.js'
+import { startLiveSettlement } from './scalpy/scalpy.live-settlement.js'
 import { app } from './server.js'
 
 const PORT = process.env.PORT ?? 4001
@@ -17,6 +18,9 @@ async function main() {
 
   // Start Scalpy trading engine
   startEngine()
+
+  // Start live settlement poller (no-op unless SCALPY_DRY_RUN=false)
+  startLiveSettlement()
 
   app.listen(PORT, () => {
     console.log(`[engine] Listening on http://localhost:${PORT}`)

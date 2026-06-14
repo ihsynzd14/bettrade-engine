@@ -6,18 +6,34 @@ import {
 import { goalCountToMarketType, getOuMarket } from '../services/betfair-ou-market.service.js'
 import { placeOrder } from '../services/betfair-orders.service.js'
 import { decide, loadConfig } from './scalpy.algorithm.js'
-import { saveTrade } from '../repositories/trade.repository.js'
+import { saveTrade, upsertMatchState } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
-import { getOverlap } from '../services/overlap.service.js'
+import { getOverlap, onOverlapSync } from '../services/overlap.service.js'
 import { settleFixture } from './scalpy.settlement.js'
 
 const FEED_POLL_MS = parseInt(process.env.SCALPY_FEED_POLL_MS ?? '3000', 10)
 const GENIUS_URL   = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3003'
 
+// Each poll re-requests a small window before lastSeenTs so an event that shares a
+// timestamp with an already-seen event isn't skipped by the server's strict `>` filter.
+// Re-fetched events are de-duped by id (seenEventKeys), so nothing is processed twice.
+const POLL_LOOKBACK_MS = 5000
+
 /** Set of geniusIds currently being polled */
 const polledFixtures = new Set()
 
-let pollIntervals = []
+/** geniusId -> Set of processed `${type}:${id}` keys (cross-poll de-dupe) */
+const seenEventKeys = new Map()
+
+/** geniusId -> feed-poll interval id (so a finished fixture can be stopped individually) */
+const feedIntervals = new Map()
+
+/** geniusId -> consecutive syncs the fixture has NOT been live (used to detect match end) */
+const notLiveCount = new Map()
+
+// A tracked match that leaves the live set for this many consecutive syncs is treated as
+// finished. The Genius feed unsubscribes at match end, so we can't rely on a FullTime event.
+const FINALIZE_AFTER_SYNCS = 2
 
 // ------------------------------------------------------------------
 // Public API
@@ -27,17 +43,18 @@ export function startEngine() {
   loadConfig()
   console.log('[scalpy.engine] Engine started')
 
-  // Every 30s: sync live fixtures from overlap store
-  const syncInterval = setInterval(syncLiveFixtures, 30_000)
-  syncLiveFixtures() // immediate first run
-
-  pollIntervals.push(syncInterval)
+  // Re-check live fixtures immediately after every overlap refresh (including the first
+  // one at startup), so newly-live matches are picked up as soon as the data is fresh —
+  // no fixed-interval lag waiting for the next 30s tick.
+  onOverlapSync(syncLiveFixtures)
 }
 
 export function stopEngine() {
-  pollIntervals.forEach(clearInterval)
-  pollIntervals = []
+  for (const interval of feedIntervals.values()) clearInterval(interval)
+  feedIntervals.clear()
   polledFixtures.clear()
+  seenEventKeys.clear()
+  notLiveCount.clear()
   console.log('[scalpy.engine] Engine stopped')
 }
 
@@ -45,25 +62,89 @@ export function stopEngine() {
 // Internal
 // ------------------------------------------------------------------
 
+/**
+ * Persist a fixture's in-memory state to Supabase (fire-and-forget).
+ * Failures are logged but never interrupt the trading loop.
+ */
+function persistState(geniusId) {
+  const state = getState(geniusId)
+  if (!state) return
+  upsertMatchState(state).catch(err =>
+    console.error(`[scalpy.engine] match-state persist failed for ${geniusId}:`, err.message)
+  )
+}
+
 async function syncLiveFixtures() {
   const { fixtures } = getOverlap()
+  // Genius reports an in-play match as eventStatusType "InProgress" (NOT "IN_PLAY");
+  // Betfair's market.inplay is the secondary signal. Either one marks a fixture live.
   const liveFixtures = fixtures.filter(f =>
-    f.status === 'IN_PLAY' || f.market?.inplay === true
+    f.status?.toLowerCase() === 'inprogress' || f.market?.inplay === true
   )
+
+  console.log(`[scalpy.engine] sync: ${fixtures.length} overlap fixtures, ${liveFixtures.length} live (InProgress / inplay)`)
+
+  const liveIds = new Set(liveFixtures.map(f => f.geniusId))
 
   for (const fixture of liveFixtures) {
     const { geniusId } = fixture
     initState(fixture)
+    notLiveCount.delete(geniusId) // still live → reset the end-of-match counter
 
     if (!polledFixtures.has(geniusId)) {
       polledFixtures.add(geniusId)
       await startFeedForFixture(geniusId)
       const interval = setInterval(() => pollEvents(geniusId), FEED_POLL_MS)
-      pollIntervals.push(interval)
+      feedIntervals.set(geniusId, interval)
+      persistState(geniusId)
       console.log(`[scalpy.engine] Now polling fixture geniusId=${geniusId}`)
     }
   }
 
+  // Finalize tracked matches that have left the live set (ended / feed dropped).
+  // Skip when the overlap is empty (likely a transient fetch failure, not all matches ending).
+  if (fixtures.length > 0) {
+    for (const geniusId of [...polledFixtures]) {
+      if (liveIds.has(geniusId)) continue
+      const misses = (notLiveCount.get(geniusId) ?? 0) + 1
+      notLiveCount.set(geniusId, misses)
+      if (misses >= FINALIZE_AFTER_SYNCS) {
+        await finalizeFixture(geniusId)
+      }
+    }
+  }
+
+  broadcast({ type: 'match_states', data: getAllStates() })
+}
+
+/**
+ * A tracked match is no longer live (Genius marked it Finished → dropped from the overlap,
+ * or its feed unsubscribed at full time). We can't rely on a FullTime event from the dead
+ * feed, so finalize directly: mark FullTime, settle DRY_RUN trades with the last-known
+ * score, stop polling, and clean up.
+ */
+async function finalizeFixture(geniusId) {
+  const interval = feedIntervals.get(geniusId)
+  if (interval) clearInterval(interval)
+  feedIntervals.delete(geniusId)
+  polledFixtures.delete(geniusId)
+  notLiveCount.delete(geniusId)
+  seenEventKeys.delete(geniusId)
+
+  const state = getState(geniusId)
+  if (!state || state.phase === 'FullTime') return // already finalized via the feed
+
+  setPhase(geniusId, 'FullTime')
+  broadcast({ type: 'phase_change', geniusId, data: { phase: 'FullTime' } })
+  broadcast({ type: 'full_time', geniusId })
+  console.log(`[scalpy.engine] Fixture ${geniusId} left live set — finalizing (FullTime), settling with totalGoals=${state.totalGoals}`)
+
+  try {
+    await settleFixture(geniusId, state.totalGoals)
+  } catch (err) {
+    console.error(`[scalpy.engine] settle-on-finalize failed for ${geniusId}:`, err.message)
+  }
+  persistState(geniusId)
   broadcast({ type: 'match_states', data: getAllStates() })
 }
 
@@ -81,8 +162,12 @@ async function pollEvents(geniusId) {
   if (!state) return
 
   try {
+    const sinceTs = state.lastSeenTs
+      ? new Date(new Date(state.lastSeenTs).getTime() - POLL_LOOKBACK_MS).toISOString()
+      : undefined
+
     const res = await axios.get(`${GENIUS_URL}/api/feed/${geniusId}/events`, {
-      params: { since: state.lastSeenTs ?? undefined },
+      params: { since: sinceTs },
     })
 
     const events = res.data?.events ?? []
@@ -95,6 +180,9 @@ async function pollEvents(geniusId) {
     // Update lastSeenTs to the timestamp of the most recent event processed
     const lastTs = events[events.length - 1]?.timestamp
     if (lastTs) setLastSeenTs(geniusId, lastTs)
+
+    // Persist the updated state (goals / phase / bettingDone / lastSeenTs)
+    persistState(geniusId)
   } catch (err) {
     if (err.response?.status !== 404) {
       console.error(`[scalpy.engine] Poll error for ${geniusId}:`, err.message)
@@ -102,9 +190,29 @@ async function pollEvents(geniusId) {
   }
 }
 
+/**
+ * True if this event was already processed for the fixture (cross-poll de-dupe by id).
+ * Guards against re-counting goals when the poll look-back window overlaps.
+ */
+function alreadyProcessed(geniusId, event) {
+  let keys = seenEventKeys.get(geniusId)
+  if (!keys) {
+    keys = new Set()
+    seenEventKeys.set(geniusId, keys)
+  }
+  const key = event.id != null
+    ? `${event.type}:${event.id}`
+    : `${event.type}:${event.timestamp ?? ''}`
+  if (keys.has(key)) return true
+  keys.add(key)
+  return false
+}
+
 async function processEvent(geniusId, event) {
   const state = getState(geniusId)
   if (!state) return
+
+  if (alreadyProcessed(geniusId, event)) return
 
   switch (event.type) {
     case 'goals':

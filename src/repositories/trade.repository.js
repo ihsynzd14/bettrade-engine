@@ -54,6 +54,38 @@ export async function settleTrade(tradeId, outcome, pnl) {
 }
 
 /**
+ * Mark a trade as MATCHED (order fully executed on Betfair).
+ * @param {string} tradeId
+ * @param {number|null} matchedPrice - average matched price, if known
+ */
+export async function markTradeMatched(tradeId, matchedPrice) {
+  const { error } = await supabase
+    .from('scalpy_trades')
+    .update({
+      status: 'MATCHED',
+      ...(matchedPrice != null ? { matched_price: matchedPrice } : {}),
+    })
+    .eq('id', tradeId)
+
+  if (error) throw new Error(`[trade.repository] markTradeMatched failed: ${error.message}`)
+}
+
+/**
+ * Get live (non-dry-run) trades that are not yet settled — i.e. still PENDING
+ * or MATCHED. Used by the live settlement poller.
+ */
+export async function getOpenLiveTrades() {
+  const { data, error } = await supabase
+    .from('scalpy_trades')
+    .select('*')
+    .eq('dry_run', false)
+    .in('status', ['PENDING', 'MATCHED'])
+
+  if (error) throw new Error(`[trade.repository] getOpenLiveTrades failed: ${error.message}`)
+  return data
+}
+
+/**
  * Get recent trades with optional filters.
  * @param {{ limit?: number, dryRun?: boolean, status?: string }} opts
  */
@@ -124,4 +156,29 @@ export async function getSummary() {
     totalPnl: settled.reduce((sum, t) => sum + (t.pnl ?? 0), 0),
     todayPnl: todaySettled.reduce((sum, t) => sum + (t.pnl ?? 0), 0),
   }
+}
+
+// ------------------------------------------------------------------
+// Match-state persistence (scalpy_match_states) — audit / restart recovery
+// ------------------------------------------------------------------
+
+/**
+ * Upsert the in-memory match state for a fixture (keyed by genius_id).
+ * @param {Object} state - MatchState from scalpy.match-state.js
+ */
+export async function upsertMatchState(state) {
+  const { error } = await supabase
+    .from('scalpy_match_states')
+    .upsert({
+      genius_id:     state.geniusId,
+      home_team:     state.homeTeam,
+      away_team:     state.awayTeam,
+      total_goals:   state.totalGoals,
+      phase:         state.phase ?? null,
+      betting_done:  state.bettingDone,
+      last_event_ts: state.lastSeenTs ?? null,
+      updated_at:    new Date().toISOString(),
+    }, { onConflict: 'genius_id' })
+
+  if (error) throw new Error(`[trade.repository] upsertMatchState failed: ${error.message}`)
 }

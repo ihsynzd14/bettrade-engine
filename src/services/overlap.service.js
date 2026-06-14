@@ -12,6 +12,14 @@ let overlappedFixtures = []
 let lastUpdated = null
 let isPolling = false
 
+/** Callbacks fired right after every successful sync (e.g. ScalpyEngine live-fixture check) */
+const syncListeners = []
+
+/** Register a callback invoked immediately after each successful overlap sync. */
+export function onOverlapSync(fn) {
+  syncListeners.push(fn)
+}
+
 /**
  * Returns the current overlapped fixtures list.
  *
@@ -111,8 +119,13 @@ export async function syncOnce() {
       console.log(`[overlap] Booking coverage: ${bookingFixtures.length} fixtures`)
 
       const before = matched.length
+      const nowMs = Date.now()
       for (let i = matched.length - 1; i >= 0; i--) {
         const fixture = matched[i]
+        // Booking coverage only lists UPCOMING fixtures, so a match drops out of it the
+        // moment it kicks off. Never filter out already-started matches — those are exactly
+        // the in-play fixtures Scalpy needs to track.
+        if (new Date(fixture.startTime).getTime() <= nowMs) continue
         let found = false
         for (const booking of bookingFixtures) {
           const score = bookingFixtureSimilarity(fixture, booking)
@@ -168,6 +181,11 @@ export async function syncOnce() {
   lastUpdated = new Date().toISOString()
 
   console.log(`[overlap] Sync complete — ${enriched.length} overlapped fixtures`)
+
+  // Notify listeners (ScalpyEngine) so live fixtures are picked up as soon as data is fresh.
+  for (const fn of syncListeners) {
+    Promise.resolve().then(fn).catch(err => console.error('[overlap] sync listener error:', err.message))
+  }
 }
 
 /**
