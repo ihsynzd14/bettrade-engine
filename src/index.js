@@ -6,6 +6,9 @@ import { startLiveSettlement } from './scalpy/scalpy.live-settlement.js'
 import { app } from './server.js'
 
 const PORT = process.env.PORT ?? 4001
+// Bind all interfaces by default so the engine is reachable on the machine's real/public IP
+// (not just localhost). Override with HOST=127.0.0.1 to restrict to local only.
+const HOST = process.env.HOST ?? '0.0.0.0'
 
 async function main() {
   console.log('[engine] Starting bettrade-engine...')
@@ -22,10 +25,10 @@ async function main() {
   // Start live settlement poller (no-op unless SCALPY_DRY_RUN=false)
   startLiveSettlement()
 
-  app.listen(PORT, () => {
-    console.log(`[engine] Listening on http://localhost:${PORT}`)
-    console.log(`[engine] Overlap: http://localhost:${PORT}/api/v1/fixtures/overlap`)
-    console.log(`[engine] Scalpy stream: http://localhost:${PORT}/api/scalpy/stream`)
+  app.listen(PORT, HOST, () => {
+    console.log(`[engine] Listening on http://${HOST}:${PORT} (all interfaces — reachable on this machine's IP)`)
+    console.log(`[engine] Overlap:       /api/v1/fixtures/overlap`)
+    console.log(`[engine] Scalpy stream: /api/scalpy/stream`)
     console.log(`[engine] DRY_RUN mode: ${process.env.SCALPY_DRY_RUN !== 'false'}`)
   })
 }

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {
   initState, getState, getAllStates,
-  incrementGoals, setPhase, setBettingDone, setLastSeenTs
+  recordGoal, setPhase, setClock, setBettingDone, setLastSeenTs
 } from './scalpy.match-state.js'
 import { goalCountToMarketType, getOuMarket } from '../services/betfair-ou-market.service.js'
 import { placeOrder } from '../services/betfair-orders.service.js'
@@ -214,11 +214,18 @@ async function processEvent(geniusId, event) {
 
   if (alreadyProcessed(geniusId, event)) return
 
+  // Any event that carries phase + timeElapsed advances the displayed minute.
+  if (event.phase && event.timeElapsed) setClock(geniusId, event.phase, event.timeElapsed)
+
   switch (event.type) {
-    case 'goals':
-      incrementGoals(geniusId)
-      broadcast({ type: 'goal', geniusId, data: { totalGoals: getState(geniusId).totalGoals } })
+    case 'goals': {
+      recordGoal(geniusId, event)
+      const s = getState(geniusId)
+      broadcast({ type: 'goal', geniusId, data: {
+        totalGoals: s.totalGoals, homeGoals: s.homeGoals, awayGoals: s.awayGoals,
+      } })
       break
+    }
 
     case 'phaseChanges':
       setPhase(geniusId, event.currentPhase)
@@ -235,6 +242,11 @@ async function processEvent(geniusId, event) {
       break
 
     case 'stoppageTimeAnnouncements':
+      // Surface the announced added minutes on the card immediately ("90+N")
+      if (event.phase === 'SecondHalf' && Number.isFinite(event.addedMinutes)) {
+        const s = getState(geniusId)
+        if (s) s.currentMinute = `90+${event.addedMinutes}`
+      }
       await handleStoppageTime(geniusId, event)
       break
 
