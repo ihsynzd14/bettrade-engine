@@ -5,12 +5,14 @@ const BETTING_API = 'https://api.betfair.com/exchange/betting/rest/v1.0'
 
 /**
  * Maps total goals to the Betfair marketTypeCode for Under/Over betting.
- * Caps at 5 goals (OVER_UNDER_55 is the max standard market).
- * e.g. 2 goals → 'OVER_UNDER_25', 0 goals → 'OVER_UNDER_05'
+ * The threshold tracks the current goal count exactly (Scalpy bets that no further
+ * goals are scored), so 6 goals → OVER_UNDER_65, 7 → OVER_UNDER_75, etc.
+ * If Betfair doesn't offer that market for the fixture, getOuMarket returns null
+ * and the engine skips the trade with reason 'no_market_found'.
  */
 export function goalCountToMarketType(totalGoals) {
-  const capped = Math.min(totalGoals, 5)
-  return `OVER_UNDER_${capped}5`
+  const safe = Math.max(0, Math.floor(totalGoals))
+  return `OVER_UNDER_${safe}5`
 }
 
 /**
