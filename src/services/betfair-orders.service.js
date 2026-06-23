@@ -79,3 +79,23 @@ export async function placeOrder({ marketId, selectionId, side, price, size, cus
     averagePrice: report.averagePriceMatched ?? null,
   }
 }
+
+/**
+ * Cancel the UNMATCHED portion of the given bets on a market (used by the kill-switch in live
+ * mode). Fully-matched bets are unaffected (nothing to cancel). No-op in DRY_RUN.
+ */
+export async function cancelOrders(marketId, betIds = []) {
+  if (DRY_RUN) {
+    console.log(`[betfair-orders] DRY_RUN — would cancel ${betIds.length} order(s) on ${marketId}`)
+    return { status: 'DRY_RUN' }
+  }
+  const response = await axios.post(
+    `${BETTING_API}/cancelOrders/`,
+    { marketId, instructions: betIds.map(betId => ({ betId })) },
+    { headers: {
+      'X-Application': process.env.BETFAIR_APP_KEY, 'X-Authentication': getSessionToken(),
+      'Content-Type': 'application/json', Accept: 'application/json',
+    } }
+  )
+  return response.data
+}

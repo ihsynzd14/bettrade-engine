@@ -2,11 +2,11 @@ import 'dotenv/config'
 import { login } from './services/betfair-auth.service.js'
 import { startPolling } from './services/overlap.service.js'
 import { startEngine } from './scalpy/scalpy.engine.js'
-import { startLiveSettlement } from './scalpy/scalpy.live-settlement.js'
+import { startLiveSettlement, cancelAllUnmatchedLive } from './scalpy/scalpy.live-settlement.js'
 import { startPricePoller } from './scalpy/scalpy.price-poller.js'
 import { app } from './server.js'
 import { DRY_RUN, LIVE_ARMED } from './lib/env.js'
-import { loadControl, kill, isKilled, isPersistenceAvailable } from './lib/control.js'
+import { loadControl, kill, isKilled, isPersistenceAvailable, onKill } from './lib/control.js'
 
 const PORT = process.env.PORT ?? 4001
 // Bind all interfaces by default so the engine is reachable on the machine's real/public IP
@@ -40,6 +40,10 @@ async function main() {
 
   // Start the live U/O price poller for the Live Fixtures cards
   startPricePoller()
+
+  // A runtime kill (admin/auto) cancels unmatched live orders. Registered AFTER the startup
+  // force-kill above, so merely refusing to arm never cancels anything.
+  onKill(() => cancelAllUnmatchedLive())
 
   app.listen(PORT, HOST, () => {
     console.log(`[engine] Listening on http://${HOST}:${PORT} (all interfaces — reachable on this machine's IP)`)

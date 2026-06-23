@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { getSessionToken } from '../services/betfair-auth.service.js'
 import { getOpenLiveTrades, markTradeMatched, settleTrade } from '../repositories/trade.repository.js'
+import { cancelOrders } from '../services/betfair-orders.service.js'
 import { broadcast } from './scalpy.sse.js'
 import { recordSettlement } from '../lib/control.js'
 import { getConfig } from './scalpy.algorithm.js'
@@ -46,6 +47,35 @@ export function stopLiveSettlement() {
   if (intervalRef) {
     clearInterval(intervalRef)
     intervalRef = null
+  }
+}
+
+/**
+ * Emergency: cancel the unmatched portion of every open LIVE bet (called by the kill-switch).
+ * No-op in DRY_RUN. Best-effort — errors are logged, never thrown.
+ */
+export async function cancelAllUnmatchedLive() {
+  if (DRY_RUN) return
+  try {
+    const open = await getOpenLiveTrades()
+    const withBet = open.filter(t => t.bet_id)
+    if (withBet.length === 0) return
+
+    const byMarket = new Map()
+    for (const t of withBet) {
+      if (!byMarket.has(t.betfair_market_id)) byMarket.set(t.betfair_market_id, [])
+      byMarket.get(t.betfair_market_id).push(t.bet_id)
+    }
+    for (const [marketId, betIds] of byMarket) {
+      try {
+        await cancelOrders(marketId, betIds)
+        console.log(`[scalpy.live-settlement] 🛑 Kill cancelled unmatched on ${marketId} (${betIds.length} bet(s))`)
+      } catch (err) {
+        console.error(`[scalpy.live-settlement] cancel failed for ${marketId}:`, err.message)
+      }
+    }
+  } catch (err) {
+    console.error('[scalpy.live-settlement] cancelAllUnmatchedLive error:', err.message)
   }
 }
 

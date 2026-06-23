@@ -102,11 +102,18 @@ export function getControl() { return { ...control, persistenceAvailable } }
 export function isKilled() { return control.killed }
 export function isTrackingPaused() { return control.trackingPaused }
 
+/** Register a handler fired when the engine transitions to KILLED (e.g. cancel live orders). */
+const onKillHandlers = []
+export function onKill(fn) { onKillHandlers.push(fn) }
+
 export async function kill(reason, by = 'system') {
   if (control.killed) return getControl() // monotonic: keep the original kill reason
   await persist({ killed: true, killReason: reason, killedAt: new Date().toISOString(), killedBy: by })
   console.warn(`[control] 🔴 KILLED by ${by}: ${reason}`)
   broadcast({ type: 'control_changed', data: getControl() })
+  for (const fn of onKillHandlers) {
+    Promise.resolve().then(() => fn(reason, by)).catch(e => console.error('[control] onKill handler error:', e.message))
+  }
   return getControl()
 }
 
