@@ -29,12 +29,20 @@ export function initState(fixture) {
     awayTeam:           fixture.awayTeam,
     betfairEventId:     fixture.betfairEventId,
     betfairMarketId:    fixture.betfairMarketId,
+    competition:        fixture.market?.competition ?? null,
     similarityScore:    fixture.similarityScore ?? null,
     totalGoals:         0,
     homeGoals:          0,
     awayGoals:          0,
     phase:              null,
     currentMinute:      null,
+    estimatedStoppage:  null,
+    watching:           true,
+    ouBook:             null,
+    redCards:           { Home: 0, Away: 0 },
+    risk:               { dangerousAttack: false, pendingCorner: false, varInReview: false, penaltyRisk: false },
+    riskTs:             {},
+    pendingBet:         null,
     bettingDone:        false,
     betPlaced:          false,
     tradeId:            null,
@@ -151,6 +159,97 @@ export function setLastSeenTs(geniusId, ts) {
   const s = states.get(geniusId)
   if (!s) return
   s.lastSeenTs = ts
+}
+
+// ------------------------------------------------------------------
+// Live Fixtures enrichment + watch toggle (Phase 4/5)
+// ------------------------------------------------------------------
+
+export function setWatching(geniusId, watching) {
+  const s = states.get(geniusId)
+  if (!s) return
+  s.watching = !!watching
+}
+
+/** @param {Object|null} ouBook - { marketId, marketType, threshold, underSelectionId, bbp, blp, ltp, status } */
+export function setOuBook(geniusId, ouBook) {
+  const s = states.get(geniusId)
+  if (!s) return
+  s.ouBook = ouBook
+}
+
+export function setEstimatedStoppage(geniusId, minutes) {
+  const s = states.get(geniusId)
+  if (!s) return
+  s.estimatedStoppage = minutes
+}
+
+// ------------------------------------------------------------------
+// Red cards + risk flags (Phase 6 betting rules)
+// ------------------------------------------------------------------
+
+/** @param {'Home'|'Away'} team */
+export function recordRedCard(geniusId, team) {
+  const s = states.get(geniusId)
+  if (!s || (team !== 'Home' && team !== 'Away')) return
+  s.redCards[team] += 1
+  console.log(`[match-state] Red card: geniusId=${geniusId} ${team} → ${s.redCards.Home}-${s.redCards.Away}`)
+}
+
+/** Largest red-card count on a single team (= "down N players"). */
+export function maxRedCards(geniusId) {
+  const s = states.get(geniusId)
+  if (!s) return 0
+  return Math.max(s.redCards.Home, s.redCards.Away)
+}
+
+/** @param {'dangerousAttack'|'pendingCorner'|'varInReview'|'penaltyRisk'} flag */
+export function setRisk(geniusId, flag, active) {
+  const s = states.get(geniusId)
+  if (!s || !(flag in s.risk)) return
+  s.risk[flag] = !!active
+  if (active) s.riskTs[flag] = Date.now()
+}
+
+/**
+ * True if any risk flag is active. A flag whose last confirming event is older than `ttlMs`
+ * is treated as stale (a missed "clear" transition) and ignored.
+ */
+export function isAnyRiskActive(geniusId, ttlMs = 60000) {
+  const s = states.get(geniusId)
+  if (!s) return false
+  const now = Date.now()
+  return Object.keys(s.risk).some(flag =>
+    s.risk[flag] && (now - (s.riskTs[flag] ?? 0) < ttlMs)
+  )
+}
+
+/** Names of the currently-active (non-stale) risk flags, for logging. */
+export function activeRiskNames(geniusId, ttlMs = 60000) {
+  const s = states.get(geniusId)
+  if (!s) return []
+  const now = Date.now()
+  return Object.keys(s.risk).filter(flag => s.risk[flag] && (now - (s.riskTs[flag] ?? 0) < ttlMs))
+}
+
+// ------------------------------------------------------------------
+// Pending bet (risk-defer) (Phase 6)
+// ------------------------------------------------------------------
+
+export function setPendingBet(geniusId, pending) {
+  const s = states.get(geniusId)
+  if (!s) return
+  s.pendingBet = pending
+}
+
+export function getPendingBet(geniusId) {
+  return states.get(geniusId)?.pendingBet ?? null
+}
+
+export function clearPendingBet(geniusId) {
+  const s = states.get(geniusId)
+  if (!s) return
+  s.pendingBet = null
 }
 
 export function clearState(geniusId) {

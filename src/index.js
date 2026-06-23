@@ -3,6 +3,7 @@ import { login } from './services/betfair-auth.service.js'
 import { startPolling } from './services/overlap.service.js'
 import { startEngine } from './scalpy/scalpy.engine.js'
 import { startLiveSettlement } from './scalpy/scalpy.live-settlement.js'
+import { startPricePoller } from './scalpy/scalpy.price-poller.js'
 import { app } from './server.js'
 import { DRY_RUN, LIVE_ARMED } from './lib/env.js'
 import { loadControl, kill, isKilled, isPersistenceAvailable } from './lib/control.js'
@@ -36,6 +37,9 @@ async function main() {
 
   // Start live settlement poller (no-op unless SCALPY_DRY_RUN=false)
   startLiveSettlement()
+
+  // Start the live U/O price poller for the Live Fixtures cards
+  startPricePoller()
 
   app.listen(PORT, HOST, () => {
     console.log(`[engine] Listening on http://${HOST}:${PORT} (all interfaces — reachable on this machine's IP)`)

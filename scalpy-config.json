@@ -1,13 +1,19 @@
 {
   "stake": 2,
   "currency": "GBP",
+  "side": "BACK",
+  "selection": "UNDER",
   "maxStakeHardCap": 2,
-  "rules": [
-    { "addedMinutes": 3, "selection": "UNDER", "side": "BACK", "price": 1.18 },
-    { "addedMinutes": 4, "selection": "UNDER", "side": "BACK", "price": 1.22 },
-    { "addedMinutes": 5, "selection": "UNDER", "side": "BACK", "price": 1.25 },
-    { "addedMinutes": 6, "selection": "UNDER", "side": "BACK", "price": 1.28 }
-  ],
+  "ladder": { "1": 1.06, "2": 1.12, "3": 1.18, "4": 1.23, "5": 1.28, "6": 1.35, "7": 1.42 },
+  "maxAddedMinutes": 7,
+  "adjustments": {
+    "goalDiffThreshold": 4,
+    "goalDiffTicks": 3,
+    "redCard2Ticks": 5,
+    "redCardSkipFrom": 3,
+    "stackAdjustments": false
+  },
+  "priceBounds": { "min": 1.01, "max": 2.0 },
   "brakes": {
     "oneBetPerMarket": true,
     "maxLiabilityPerMarket": 2,

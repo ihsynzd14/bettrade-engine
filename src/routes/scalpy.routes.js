@@ -2,10 +2,10 @@ import { Router } from 'express'
 import { readFileSync, writeFileSync, renameSync } from 'fs'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { addClient } from '../scalpy/scalpy.sse.js'
+import { addClient, broadcast } from '../scalpy/scalpy.sse.js'
 import { loadConfig, getConfig } from '../scalpy/scalpy.algorithm.js'
-import { getTrades, getTradeById, getSummary, getOpenLiability } from '../repositories/trade.repository.js'
-import { getAllStates } from '../scalpy/scalpy.match-state.js'
+import { getTrades, getTradesForDay, getTradeById, getSummary, getOpenLiability } from '../repositories/trade.repository.js'
+import { getAllStates, getState, setWatching } from '../scalpy/scalpy.match-state.js'
 import { getControl, kill, resume, setTrackingPaused } from '../lib/control.js'
 import { getDecisions } from '../scalpy/scalpy.decisions.js'
 import { DRY_RUN, LIVE_ARMED } from '../lib/env.js'
@@ -49,6 +49,27 @@ router.get('/trades', async (req, res) => {
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message })
   }
+})
+
+// GET /api/scalpy/trades/today — today's PLACED bets (Istanbul day) for the Scalpy tab
+router.get('/trades/today', async (req, res) => {
+  try {
+    const trades = await getTradesForDay()
+    res.json({ ok: true, count: trades.length, trades })
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message })
+  }
+})
+
+// POST /api/scalpy/watch/:geniusId { watching } — manual eye/X tracking toggle
+router.post('/watch/:geniusId', (req, res) => {
+  const { geniusId } = req.params
+  const s = getState(geniusId)
+  if (!s) return res.status(404).json({ ok: false, error: 'fixture not tracked' })
+  const watching = req.body?.watching !== false // default true if omitted
+  setWatching(geniusId, watching)
+  broadcast({ type: 'watch_toggled', geniusId, data: { watching } })
+  res.json({ ok: true, geniusId, watching })
 })
 
 // GET /api/scalpy/trades/:id

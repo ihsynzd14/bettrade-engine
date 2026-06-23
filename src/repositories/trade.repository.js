@@ -1,5 +1,11 @@
 import { supabase } from '../lib/supabase.js'
 
+/** UTC instant of the most recent Europe/Istanbul (UTC+3, no DST) midnight. */
+export function startOfIstanbulDayUtc() {
+  const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date())
+  return new Date(`${day}T00:00:00+03:00`).toISOString()
+}
+
 /**
  * Save a new trade record. Returns the created row.
  */
@@ -230,6 +236,22 @@ export async function getTrades({ limit = 50, dryRun, status } = {}) {
 }
 
 /**
+ * Today's PLACED bets (Istanbul day) for the Scalpy tab — only fixtures we actually bet on
+ * (PENDING/MATCHED/SETTLED), newest first. "Daily reset" = this window rolls at local midnight;
+ * rows are never deleted.
+ */
+export async function getTradesForDay() {
+  const { data, error } = await supabase
+    .from('scalpy_trades')
+    .select('*')
+    .gte('created_at', startOfIstanbulDayUtc())
+    .in('status', ['PENDING', 'MATCHED', 'SETTLED'])
+    .order('created_at', { ascending: false })
+  if (error) throw new Error(`[trade.repository] getTradesForDay failed: ${error.message}`)
+  return data
+}
+
+/**
  * Get a single trade by ID.
  */
 export async function getTradeById(id) {
@@ -267,8 +289,8 @@ export async function getSummary() {
   if (error) throw new Error(`[trade.repository] getSummary failed: ${error.message}`)
 
   const settled = data.filter(t => t.status === 'SETTLED')
-  const today = new Date().toISOString().slice(0, 10)
-  const todaySettled = settled.filter(t => t.created_at?.startsWith(today))
+  const todayStart = startOfIstanbulDayUtc()
+  const todaySettled = settled.filter(t => t.created_at >= todayStart)
 
   return {
     total: data.length,

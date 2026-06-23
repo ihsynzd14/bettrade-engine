@@ -15,6 +15,58 @@ export function goalCountToMarketType(totalGoals) {
   return `OVER_UNDER_${safe}5`
 }
 
+/** Numeric Under/Over threshold from a marketType, e.g. OVER_UNDER_25 → 2.5 */
+export function thresholdFromMarketType(marketType) {
+  return parseFloat(String(marketType).replace('OVER_UNDER_', '')) / 10
+}
+
+// Catalogue resolution cache, keyed by `${eventId}:${marketType}`. A market for a given
+// (event, score) is stable, so successful results are cached indefinitely; misses are cached
+// briefly to avoid hammering the catalogue endpoint for non-existent markets.
+const ouIdCache = new Map() // key -> { result, ts }
+const NULL_TTL_MS = 30_000
+
+/**
+ * Resolve just the marketId + runner selectionIds for the U/O market (no book), for the
+ * price poller. Cheap and cached.
+ * @returns {Promise<{ marketId, marketType, threshold, underSelectionId, overSelectionId }|null>}
+ */
+export async function resolveOuMarketId(eventId, marketType) {
+  const key = `${eventId}:${marketType}`
+  const hit = ouIdCache.get(key)
+  if (hit && (hit.result || Date.now() - hit.ts < NULL_TTL_MS)) return hit.result
+
+  const res = await axios.post(
+    `${BETTING_API}/listMarketCatalogue/`,
+    { filter: { eventIds: [eventId], marketTypeCodes: [marketType] }, marketProjection: ['RUNNER_DESCRIPTION'], maxResults: 5 },
+    { headers: {
+      'X-Application': process.env.BETFAIR_APP_KEY, 'X-Authentication': getSessionToken(),
+      'Content-Type': 'application/json', Accept: 'application/json',
+    } }
+  )
+
+  const market = res.data?.[0]
+  const underRunner = market?.runners?.find(r => r.runnerName?.toLowerCase().includes('under'))
+  const overRunner  = market?.runners?.find(r => r.runnerName?.toLowerCase().includes('over'))
+  let result = null
+  if (market && underRunner && overRunner) {
+    result = {
+      marketId: market.marketId, marketType, threshold: thresholdFromMarketType(marketType),
+      underSelectionId: underRunner.selectionId, overSelectionId: overRunner.selectionId,
+    }
+  }
+  ouIdCache.set(key, { result, ts: Date.now() })
+  return result
+}
+
+/** Drop cached market resolutions for a finished event (prevents unbounded cache growth). */
+export function forgetOuMarket(eventId) {
+  const prefix = `${eventId}:`
+  for (const key of ouIdCache.keys()) {
+    if (key.startsWith(prefix)) ouIdCache.delete(key)
+  }
+}
+
 /**
  * Fetch the Under/Over market for a given Betfair eventId and marketType.
  * Returns null if no market found or runners not identifiable.

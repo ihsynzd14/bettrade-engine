@@ -1,9 +1,11 @@
 import axios from 'axios'
 import {
-  initState, getState, getAllStates,
-  recordGoal, setPhase, setClock, setBettingDone, setBetPlaced, setLastSeenTs, markEventReceived
+  initState, getState, getAllStates, clearState,
+  recordGoal, setPhase, setClock, setBettingDone, setBetPlaced, setLastSeenTs, markEventReceived,
+  setEstimatedStoppage, recordRedCard, maxRedCards, setRisk, isAnyRiskActive, activeRiskNames,
+  setPendingBet, getPendingBet, clearPendingBet,
 } from './scalpy.match-state.js'
-import { goalCountToMarketType, getOuMarket } from '../services/betfair-ou-market.service.js'
+import { goalCountToMarketType, getOuMarket, forgetOuMarket } from '../services/betfair-ou-market.service.js'
 import { placeOrder } from '../services/betfair-orders.service.js'
 import { decide, loadConfig, getConfig } from './scalpy.algorithm.js'
 import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds } from '../repositories/trade.repository.js'
@@ -11,7 +13,7 @@ import { broadcast } from './scalpy.sse.js'
 import { getOverlap, onOverlapSync } from '../services/overlap.service.js'
 import { settleFixture } from './scalpy.settlement.js'
 import { canPlaceBet } from './scalpy.brakes.js'
-import { isKilled, kill } from '../lib/control.js'
+import { isKilled, kill, istanbulDay } from '../lib/control.js'
 import { logDecision } from './scalpy.decisions.js'
 import { DRY_RUN } from '../lib/env.js'
 
@@ -37,6 +39,7 @@ const notLiveCount = new Map()
 /** Per-fixture mutexes (single-threaded JS: claim/release with no await between check+set) */
 const pollInFlight = new Set()
 const placing      = new Set()
+const finalizing   = new Set()
 
 // GLOBAL placement serialization: the per-fixture `placing` mutex does NOT bound TOTAL open
 // liability (N fixtures hitting stoppage at once could each read the same pre-claim liability
@@ -54,6 +57,19 @@ const rehydratedBetFixtures = new Set()
 
 // A tracked match that leaves the live set for this many consecutive syncs is treated as finished.
 const FINALIZE_AFTER_SYNCS = 2
+
+// Risk-defer tuning (wall-clock so a deferred bet always ages out regardless of poll cadence/watch)
+const RISK_TTL_MS    = parseInt(process.env.SCALPY_RISK_TTL_MS ?? '60000', 10)
+const MAX_PENDING_MS = parseInt(process.env.SCALPY_MAX_PENDING_MS ?? '600000', 10) // ~10 min
+const FEED_DEAD_MS   = parseInt(process.env.SCALPY_FEED_DEAD_MS ?? '30000', 10)
+
+/** geniusIds finalized this Istanbul day — refuse to re-track (flapping inplay-flag guard) */
+const finalizedToday = new Set()
+let finalizedDay = istanbulDay()
+function rolloverFinalized() {
+  const d = istanbulDay()
+  if (d !== finalizedDay) { finalizedToday.clear(); finalizedDay = d }
+}
 
 // ------------------------------------------------------------------
 // Public API
@@ -108,6 +124,7 @@ function persistState(geniusId) {
 }
 
 async function syncLiveFixtures() {
+  rolloverFinalized() // clear the finalized-fixtures guard at the Istanbul day boundary
   const { fixtures } = getOverlap()
   // Genius reports an in-play match as eventStatusType "InProgress" (NOT "IN_PLAY");
   // Betfair's market.inplay is the secondary signal. Either one marks a fixture live.
@@ -121,6 +138,8 @@ async function syncLiveFixtures() {
 
   for (const fixture of liveFixtures) {
     const { geniusId } = fixture
+    // A match finalized today must not be re-tracked if its inplay flag flaps back on.
+    if (finalizedToday.has(geniusId)) continue
     initState(fixture)
     notLiveCount.delete(geniusId) // still live → reset the end-of-match counter
 
@@ -158,28 +177,41 @@ async function syncLiveFixtures() {
  * score, stop polling, clean up.
  */
 async function finalizeFixture(geniusId) {
-  const t = feedTimers.get(geniusId)
-  if (t) clearTimeout(t)
-  feedTimers.delete(geniusId)
-  polledFixtures.delete(geniusId)
-  notLiveCount.delete(geniusId)
-  seenEventKeys.delete(geniusId)
-
-  const state = getState(geniusId)
-  if (!state || state.phase === 'FullTime') return // already finalized via the feed
-
-  setPhase(geniusId, 'FullTime')
-  broadcast({ type: 'phase_change', geniusId, data: { phase: 'FullTime' } })
-  broadcast({ type: 'full_time', geniusId })
-  console.log(`[scalpy.engine] Fixture ${geniusId} left live set — finalizing (FullTime), settling with totalGoals=${state.totalGoals}`)
-
+  if (finalizing.has(geniusId)) return
+  finalizing.add(geniusId)
   try {
-    await settleFixture(geniusId, state.totalGoals)
-  } catch (err) {
-    console.error(`[scalpy.engine] settle-on-finalize failed for ${geniusId}:`, err.message)
+    // Stop polling + clean up per-fixture state.
+    const t = feedTimers.get(geniusId)
+    if (t) clearTimeout(t)
+    feedTimers.delete(geniusId)
+    polledFixtures.delete(geniusId)
+    notLiveCount.delete(geniusId)
+    seenEventKeys.delete(geniusId)
+    clearPendingBet(geniusId)
+
+    const state = getState(geniusId)
+    if (!state) return // already cleared
+    if (state.betfairEventId) forgetOuMarket(state.betfairEventId) // evict price cache
+
+    if (!finalizedToday.has(geniusId)) {
+      setPhase(geniusId, 'FullTime')
+      broadcast({ type: 'phase_change', geniusId, data: { phase: 'FullTime' } })
+      broadcast({ type: 'full_time', geniusId })
+      console.log(`[scalpy.engine] Finalizing ${geniusId} (FullTime), settling with totalGoals=${state.totalGoals}`)
+      try {
+        await settleFixture(geniusId, state.totalGoals)
+      } catch (err) {
+        console.error(`[scalpy.engine] settle-on-finalize failed for ${geniusId}:`, err.message)
+      }
+      finalizedToday.add(geniusId)
+    }
+
+    persistState(geniusId) // persist final state before removing it from memory
+    clearState(geniusId)   // remove from Live Fixtures — the match is over
+    broadcast({ type: 'match_states', data: getAllStates() })
+  } finally {
+    finalizing.delete(geniusId)
   }
-  persistState(geniusId)
-  broadcast({ type: 'match_states', data: getAllStates() })
 }
 
 async function startFeedForFixture(geniusId) {
@@ -203,6 +235,7 @@ async function runPoll(geniusId) {
   pollInFlight.add(geniusId)
   try {
     await pollEvents(geniusId)
+    await tryPendingBet(geniusId) // re-check deferred bets each cycle (risk may have cleared / expired)
   } catch (err) {
     console.error(`[scalpy.engine] runPoll error for ${geniusId}:`, err.message)
   } finally {
@@ -251,9 +284,21 @@ function alreadyProcessed(geniusId, event) {
     keys = new Set()
     seenEventKeys.set(geniusId, keys)
   }
-  const key = event.id != null
-    ? `${event.type}:${event.id}`
-    : `${event.type}:${event.timestamp ?? ''}`
+  let key
+  if (event.type === 'cornersV2' && event.id != null) {
+    // The same corner id arrives twice (awarded → taken). Key on the taken state so the
+    // "taken" update is NOT deduped away (else pendingCorner would get stuck true forever).
+    key = `cornersV2:${event.id}:${event.taken?.isConfirmed ? 'taken' : 'awarded'}`
+  } else if (event.id != null) {
+    // Some records re-send the SAME id when their state transitions (VAR InReview→Clear, danger
+    // state, penalty risk, a revised stoppage). Fold the changing field into the key so the later
+    // "clear"/update isn't deduped away (else a risk flag would stick on → bet wrongly deferred).
+    const sub = event.varState ?? event.riskState ?? event.dangerState ?? event.currentPhase
+      ?? (event.type === 'stoppageTimeAnnouncements' ? event.addedMinutes : undefined)
+    key = sub != null ? `${event.type}:${event.id}:${sub}` : `${event.type}:${event.id}`
+  } else {
+    key = `${event.type}:${event.timestamp ?? ''}`
+  }
   if (keys.has(key)) return true
   keys.add(key)
   return false
@@ -279,14 +324,12 @@ async function processEvent(geniusId, event) {
     }
 
     case 'phaseChanges':
-      setPhase(geniusId, event.currentPhase)
-      broadcast({ type: 'phase_change', geniusId, data: { phase: event.currentPhase } })
-
-      if (event.currentPhase === 'FullTime') {
-        console.log(`[scalpy.engine] FullTime detected for geniusId=${geniusId}`)
-        broadcast({ type: 'full_time', geniusId })
-        const s = getState(geniusId)
-        if (s) await settleFixture(geniusId, s.totalGoals)
+      if (event.currentPhase === 'FullTime' || event.currentPhase === 'PostMatch') {
+        console.log(`[scalpy.engine] ${event.currentPhase} detected for geniusId=${geniusId}`)
+        await finalizeFixture(geniusId)
+      } else {
+        setPhase(geniusId, event.currentPhase)
+        broadcast({ type: 'phase_change', geniusId, data: { phase: event.currentPhase } })
       }
       break
 
@@ -295,9 +338,39 @@ async function processEvent(geniusId, event) {
       if (event.phase === 'SecondHalf' && Number.isFinite(event.addedMinutes)) {
         const s = getState(geniusId)
         if (s) s.currentMinute = `90+${event.addedMinutes}`
+        setEstimatedStoppage(geniusId, event.addedMinutes)
       }
       await handleStoppageTime(geniusId, event)
       break
+
+    // --- Red cards: a confirmed straight red OR second yellow = a player sent off ---
+    case 'straightRedCards':
+    case 'secondYellowCards':
+      if (event.isConfirmed && (event.team === 'Home' || event.team === 'Away')) {
+        recordRedCard(geniusId, event.team)
+      }
+      break
+
+    // --- Risk flags: defer betting while any of these is active ---
+    case 'dangerStateChanges':
+      setRisk(geniusId, 'dangerousAttack', /DangerousAttack/i.test(event.dangerState ?? ''))
+      break
+
+    case 'cornersV2':
+      if (event.awarded?.isConfirmed && !event.taken?.isConfirmed) setRisk(geniusId, 'pendingCorner', true)
+      else if (event.taken?.isConfirmed) setRisk(geniusId, 'pendingCorner', false)
+      break
+
+    case 'varStateChanges':
+      setRisk(geniusId, 'varInReview', event.varState === 'InReview')
+      break
+
+    case 'penaltyRiskChanges': {
+      const rs = event.riskState ?? ''
+      const active = !!rs && !/clear|none|safe|^no/i.test(rs)
+      setRisk(geniusId, 'penaltyRisk', active)
+      break
+    }
 
     default:
       break
@@ -307,9 +380,15 @@ async function processEvent(geniusId, event) {
 async function handleStoppageTime(geniusId, event) {
   const state = getState(geniusId)
   if (!state) return
+  const match = `${state.homeTeam} v ${state.awayTeam}`
 
   if (event.phase !== 'SecondHalf') {
     console.log(`[scalpy.engine] Stoppage in ${event.phase} — skipping (not SecondHalf)`)
+    return
+  }
+  if (!state.watching) {
+    broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'unwatched' } })
+    logDecision({ geniusId, match, action: 'SKIPPED', reason: 'unwatched' })
     return
   }
   if (state.bettingDone) {
@@ -318,9 +397,53 @@ async function handleStoppageTime(geniusId, event) {
   }
 
   console.log(`[scalpy.engine] Stoppage detected! geniusId=${geniusId} addedMinutes=${event.addedMinutes} totalGoals=${state.totalGoals}`)
-  setBettingDone(geniusId) // in-memory one-shot guard against re-delivered announcements
 
+  // Risk-defer: hold the bet while Dangerous Attack / pending corner / VAR / penalty risk is
+  // active; retry each poll until it clears. Do NOT setBettingDone — keep the slot open.
+  if (isAnyRiskActive(geniusId, RISK_TTL_MS)) {
+    const risks = activeRiskNames(geniusId, RISK_TTL_MS)
+    setPendingBet(geniusId, { addedMinutes: event.addedMinutes, createdTs: Date.now(), attempts: 0 })
+    console.log(`[scalpy.engine] Bet DEFERRED for ${match} — active risk: ${risks.join(',')}`)
+    broadcast({ type: 'bet_deferred', geniusId, data: { addedMinutes: event.addedMinutes, risks } })
+    logDecision({ geniusId, match, action: 'DEFERRED', reason: `risk:${risks.join(',')}` })
+    return
+  }
+
+  setBettingDone(geniusId)
+  clearPendingBet(geniusId) // committing now → don't let tryPendingBet re-fire a wasted claim
   await placeScalpyBet(geniusId, event.addedMinutes)
+}
+
+/**
+ * Re-evaluate a deferred bet each poll: place once the risk clears; expire (wall-clock) if the 2nd
+ * half ends, the cap elapses, or the feed goes dead. Expiries run independent of watch state so a
+ * deferred bet can never get stuck; placement itself still honours manual unwatch.
+ */
+async function tryPendingBet(geniusId) {
+  const state = getState(geniusId)
+  if (!state) return
+  const pending = getPendingBet(geniusId)
+  if (!pending) return
+  const match = `${state.homeTeam} v ${state.awayTeam}`
+  const expire = (reason) => {
+    clearPendingBet(geniusId)
+    broadcast({ type: 'bet_skipped', geniusId, data: { reason } })
+    logDecision({ geniusId, match, action: 'SKIPPED', reason })
+  }
+
+  // Wall-clock expiries FIRST (independent of watch state) — a deferred bet always ages out.
+  if (state.phase !== 'SecondHalf') return expire('pending_expired_phase')
+  if (Date.now() - pending.createdTs > MAX_PENDING_MS) return expire('pending_expired_cap')
+  if (state.lastEventReceivedAt && Date.now() - state.lastEventReceivedAt > FEED_DEAD_MS) {
+    return expire('pending_expired_feed_dead')
+  }
+
+  if (!state.watching) return                        // hold while unwatched (still ages out above)
+  if (isAnyRiskActive(geniusId, RISK_TTL_MS)) return // still risky → keep waiting
+
+  clearPendingBet(geniusId)
+  setBettingDone(geniusId)
+  await placeScalpyBet(geniusId, pending.addedMinutes)
 }
 
 /**
@@ -345,14 +468,8 @@ async function placeScalpyBet(geniusId, addedMinutes) {
       return
     }
 
-    const decision = decide({
-      addedMinutes,
-      totalGoals:    state.totalGoals,
-      bestBackUnder: ouMarket.bestBackUnder,
-      bestLayUnder:  ouMarket.bestLayUnder,
-      bestBackOver:  ouMarket.bestBackOver,
-      bestLayOver:   ouMarket.bestLayOver,
-    })
+    const goalDiff = Math.abs(state.homeGoals - state.awayGoals)
+    const decision = decide({ addedMinutes, goalDiff, maxRedCards: maxRedCards(geniusId) })
 
     if (decision.action === 'SKIP') {
       broadcast({ type: 'bet_skipped', geniusId, data: { reason: decision.reason, addedMinutes } })
