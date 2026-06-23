@@ -1,22 +1,25 @@
 import axios from 'axios'
 import {
   initState, getState, getAllStates,
-  recordGoal, setPhase, setClock, setBettingDone, setLastSeenTs
+  recordGoal, setPhase, setClock, setBettingDone, setBetPlaced, setLastSeenTs, markEventReceived
 } from './scalpy.match-state.js'
 import { goalCountToMarketType, getOuMarket } from '../services/betfair-ou-market.service.js'
 import { placeOrder } from '../services/betfair-orders.service.js'
-import { decide, loadConfig } from './scalpy.algorithm.js'
-import { saveTrade, upsertMatchState } from '../repositories/trade.repository.js'
+import { decide, loadConfig, getConfig } from './scalpy.algorithm.js'
+import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
 import { getOverlap, onOverlapSync } from '../services/overlap.service.js'
 import { settleFixture } from './scalpy.settlement.js'
+import { canPlaceBet } from './scalpy.brakes.js'
+import { isKilled, kill } from '../lib/control.js'
+import { logDecision } from './scalpy.decisions.js'
+import { DRY_RUN } from '../lib/env.js'
 
 const FEED_POLL_MS = parseInt(process.env.SCALPY_FEED_POLL_MS ?? '3000', 10)
 const GENIUS_URL   = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3003'
 
 // Each poll re-requests a small window before lastSeenTs so an event that shares a
 // timestamp with an already-seen event isn't skipped by the server's strict `>` filter.
-// Re-fetched events are de-duped by id (seenEventKeys), so nothing is processed twice.
 const POLL_LOOKBACK_MS = 5000
 
 /** Set of geniusIds currently being polled */
@@ -25,36 +28,69 @@ const polledFixtures = new Set()
 /** geniusId -> Set of processed `${type}:${id}` keys (cross-poll de-dupe) */
 const seenEventKeys = new Map()
 
-/** geniusId -> feed-poll interval id (so a finished fixture can be stopped individually) */
-const feedIntervals = new Map()
+/** geniusId -> self-scheduling feed-poll timeout id */
+const feedTimers = new Map()
 
 /** geniusId -> consecutive syncs the fixture has NOT been live (used to detect match end) */
 const notLiveCount = new Map()
 
-// A tracked match that leaves the live set for this many consecutive syncs is treated as
-// finished. The Genius feed unsubscribes at match end, so we can't rely on a FullTime event.
+/** Per-fixture mutexes (single-threaded JS: claim/release with no await between check+set) */
+const pollInFlight = new Set()
+const placing      = new Set()
+
+// GLOBAL placement serialization: the per-fixture `placing` mutex does NOT bound TOTAL open
+// liability (N fixtures hitting stoppage at once could each read the same pre-claim liability
+// and all pass the cap). Serializing the gate+claim critical section across ALL fixtures makes
+// the liability check and the claim atomic, so the total-open-liability bound truly holds.
+let placementChain = Promise.resolve()
+function withPlacementLock(fn) {
+  const next = placementChain.then(fn, fn)
+  placementChain = next.then(() => {}, () => {}) // never let a rejection break the chain
+  return next
+}
+
+/** Fixtures that already had an OPEN bet at boot — never re-bet them after a restart */
+const rehydratedBetFixtures = new Set()
+
+// A tracked match that leaves the live set for this many consecutive syncs is treated as finished.
 const FINALIZE_AFTER_SYNCS = 2
 
 // ------------------------------------------------------------------
 // Public API
 // ------------------------------------------------------------------
 
-export function startEngine() {
+export async function startEngine() {
   loadConfig()
-  console.log('[scalpy.engine] Engine started')
 
-  // Re-check live fixtures immediately after every overlap refresh (including the first
-  // one at startup), so newly-live matches are picked up as soon as the data is fresh —
-  // no fixed-interval lag waiting for the next 30s tick.
+  // Rehydrate: any fixture with an open (non-skipped) trade is already bet — never re-bet on restart.
+  try {
+    const ids = await getOpenBetGeniusIds()
+    ids.forEach(id => rehydratedBetFixtures.add(id))
+    if (ids.length) console.log(`[scalpy.engine] Rehydrated ${ids.length} fixtures with open bets (won't re-bet)`)
+  } catch (err) {
+    console.error('[scalpy.engine] rehydrate failed:', err.message)
+    // Fail-closed in live: without the open-bet set we might re-bet a fixture after restart.
+    if (!DRY_RUN) {
+      await kill('rehydrate_failed_live', 'startup')
+      console.error('[scalpy.engine] 🔴 rehydrate failed in LIVE — engine KILLED for safety')
+    }
+  }
+
+  console.log(`[scalpy.engine] Engine started (DRY_RUN=${DRY_RUN})`)
+
+  // Re-check live fixtures immediately after every overlap refresh (incl. the first), so
+  // newly-live matches are picked up as soon as the data is fresh — no fixed-interval lag.
   onOverlapSync(syncLiveFixtures)
 }
 
 export function stopEngine() {
-  for (const interval of feedIntervals.values()) clearInterval(interval)
-  feedIntervals.clear()
+  for (const t of feedTimers.values()) clearTimeout(t)
+  feedTimers.clear()
   polledFixtures.clear()
   seenEventKeys.clear()
   notLiveCount.clear()
+  pollInFlight.clear()
+  placing.clear()
   console.log('[scalpy.engine] Engine stopped')
 }
 
@@ -62,10 +98,7 @@ export function stopEngine() {
 // Internal
 // ------------------------------------------------------------------
 
-/**
- * Persist a fixture's in-memory state to Supabase (fire-and-forget).
- * Failures are logged but never interrupt the trading loop.
- */
+/** Persist a fixture's in-memory state to Supabase (fire-and-forget). */
 function persistState(geniusId) {
   const state = getState(geniusId)
   if (!state) return
@@ -91,11 +124,13 @@ async function syncLiveFixtures() {
     initState(fixture)
     notLiveCount.delete(geniusId) // still live → reset the end-of-match counter
 
+    // Restart-safety: a fixture that already has an open bet must not be bet again.
+    if (rehydratedBetFixtures.has(geniusId)) setBettingDone(geniusId)
+
     if (!polledFixtures.has(geniusId)) {
       polledFixtures.add(geniusId)
       await startFeedForFixture(geniusId)
-      const interval = setInterval(() => pollEvents(geniusId), FEED_POLL_MS)
-      feedIntervals.set(geniusId, interval)
+      schedulePoll(geniusId)
       persistState(geniusId)
       console.log(`[scalpy.engine] Now polling fixture geniusId=${geniusId}`)
     }
@@ -118,15 +153,14 @@ async function syncLiveFixtures() {
 }
 
 /**
- * A tracked match is no longer live (Genius marked it Finished → dropped from the overlap,
- * or its feed unsubscribed at full time). We can't rely on a FullTime event from the dead
- * feed, so finalize directly: mark FullTime, settle DRY_RUN trades with the last-known
- * score, stop polling, and clean up.
+ * A tracked match is no longer live. We can't rely on a FullTime feed event (the feed
+ * unsubscribes at match end), so finalize directly: mark FullTime, settle with the last-known
+ * score, stop polling, clean up.
  */
 async function finalizeFixture(geniusId) {
-  const interval = feedIntervals.get(geniusId)
-  if (interval) clearInterval(interval)
-  feedIntervals.delete(geniusId)
+  const t = feedTimers.get(geniusId)
+  if (t) clearTimeout(t)
+  feedTimers.delete(geniusId)
   polledFixtures.delete(geniusId)
   notLiveCount.delete(geniusId)
   seenEventKeys.delete(geniusId)
@@ -157,6 +191,26 @@ async function startFeedForFixture(geniusId) {
   }
 }
 
+// --- self-scheduling poll (no overlapping requests; a slow feed call can't pile up) ---
+function schedulePoll(geniusId) {
+  if (!polledFixtures.has(geniusId)) return
+  feedTimers.set(geniusId, setTimeout(runPoll, FEED_POLL_MS, geniusId))
+}
+
+async function runPoll(geniusId) {
+  if (!polledFixtures.has(geniusId)) return
+  if (pollInFlight.has(geniusId)) { schedulePoll(geniusId); return }
+  pollInFlight.add(geniusId)
+  try {
+    await pollEvents(geniusId)
+  } catch (err) {
+    console.error(`[scalpy.engine] runPoll error for ${geniusId}:`, err.message)
+  } finally {
+    pollInFlight.delete(geniusId)
+    schedulePoll(geniusId) // schedule the next run only if still polled
+  }
+}
+
 async function pollEvents(geniusId) {
   const state = getState(geniusId)
   if (!state) return
@@ -173,15 +227,15 @@ async function pollEvents(geniusId) {
     const events = res.data?.events ?? []
     if (events.length === 0) return
 
+    markEventReceived(geniusId) // feed-freshness stamp for the safety gate
+
     for (const event of events) {
       await processEvent(geniusId, event)
     }
 
-    // Update lastSeenTs to the timestamp of the most recent event processed
     const lastTs = events[events.length - 1]?.timestamp
     if (lastTs) setLastSeenTs(geniusId, lastTs)
 
-    // Persist the updated state (goals / phase / bettingDone / lastSeenTs)
     persistState(geniusId)
   } catch (err) {
     if (err.response?.status !== 404) {
@@ -190,10 +244,7 @@ async function pollEvents(geniusId) {
   }
 }
 
-/**
- * True if this event was already processed for the fixture (cross-poll de-dupe by id).
- * Guards against re-counting goals when the poll look-back window overlaps.
- */
+/** True if this event was already processed for the fixture (cross-poll de-dupe by id). */
 function alreadyProcessed(geniusId, event) {
   let keys = seenEventKeys.get(geniusId)
   if (!keys) {
@@ -235,9 +286,7 @@ async function processEvent(geniusId, event) {
         console.log(`[scalpy.engine] FullTime detected for geniusId=${geniusId}`)
         broadcast({ type: 'full_time', geniusId })
         const s = getState(geniusId)
-        if (s) {
-          await settleFixture(geniusId, s.totalGoals)
-        }
+        if (s) await settleFixture(geniusId, s.totalGoals)
       }
       break
 
@@ -259,31 +308,40 @@ async function handleStoppageTime(geniusId, event) {
   const state = getState(geniusId)
   if (!state) return
 
-  // Guard: only act on SecondHalf stoppage
   if (event.phase !== 'SecondHalf') {
     console.log(`[scalpy.engine] Stoppage in ${event.phase} — skipping (not SecondHalf)`)
     return
   }
-
-  // Guard: only bet once per match
   if (state.bettingDone) {
     console.log(`[scalpy.engine] bettingDone=true for geniusId=${geniusId} — skipping`)
     return
   }
 
-  const addedMinutes = event.addedMinutes
-  console.log(`[scalpy.engine] Stoppage detected! geniusId=${geniusId} addedMinutes=${addedMinutes} totalGoals=${state.totalGoals}`)
+  console.log(`[scalpy.engine] Stoppage detected! geniusId=${geniusId} addedMinutes=${event.addedMinutes} totalGoals=${state.totalGoals}`)
+  setBettingDone(geniusId) // in-memory one-shot guard against re-delivered announcements
 
-  // Set bettingDone BEFORE API call to prevent double-betting
-  setBettingDone(geniusId)
+  await placeScalpyBet(geniusId, event.addedMinutes)
+}
 
+/**
+ * The single bet-placement choke point: decide → brakes gate → claim-before-place → order.
+ * Fully guarded by the `placing` mutex and the claim's unique dedupe_key.
+ */
+async function placeScalpyBet(geniusId, addedMinutes) {
+  if (placing.has(geniusId)) return
+  placing.add(geniusId)
   try {
-    const marketType = goalCountToMarketType(state.totalGoals)
-    const ouMarket   = await getOuMarket(state.betfairEventId, marketType)
+    const state = getState(geniusId)
+    if (!state) return
+    const cfg = getConfig()
+    const match = `${state.homeTeam} v ${state.awayTeam}`
+    const goalsAtDecision = state.totalGoals
+    const currentMarketType = goalCountToMarketType(state.totalGoals)
 
+    const ouMarket = await getOuMarket(state.betfairEventId, currentMarketType)
     if (!ouMarket) {
-      console.warn(`[scalpy.engine] No ${marketType} market found — cannot bet`)
-      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'no_market_found', marketType } })
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'no_market_found', marketType: currentMarketType } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: 'no_market_found', marketType: currentMarketType })
       return
     }
 
@@ -296,68 +354,90 @@ async function handleStoppageTime(geniusId, event) {
       bestLayOver:   ouMarket.bestLayOver,
     })
 
-    console.log(`[scalpy.engine] Decision: ${JSON.stringify(decision)}`)
-
     if (decision.action === 'SKIP') {
-      console.log(`[scalpy.engine] SKIP — reason: ${decision.reason}`)
       broadcast({ type: 'bet_skipped', geniusId, data: { reason: decision.reason, addedMinutes } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: decision.reason })
       return
     }
 
-    const selectionId = decision.selection === 'UNDER'
-      ? ouMarket.underSelectionId
-      : ouMarket.overSelectionId
+    const selectionId = decision.selection === 'UNDER' ? ouMarket.underSelectionId : ouMarket.overSelectionId
+    const dedupeKey   = `scalpy:${geniusId}:${ouMarket.marketId}`
 
-    const customerRef = `scalpy_${geniusId}_${Date.now()}`
-    const orderResult = await placeOrder({
-      marketId:    ouMarket.marketId,
-      selectionId,
-      side:        decision.action,
-      price:       decision.price,
-      size:        decision.stake,
-      customerRef,
+    // --- ATOMIC GATE + CLAIM (global lock so the total-open-liability bound truly holds) ---
+    let claim = null
+    await withPlacementLock(async () => {
+      let gate
+      try {
+        gate = await canPlaceBet({ state, decision, ouMarket, goalsAtDecision, dryRun: DRY_RUN, cfg, currentMarketType })
+      } catch (err) {
+        // Any error inside the gate fails CLOSED — never place on uncertain data.
+        console.error(`[scalpy.engine] gate error for ${match}:`, err.message)
+        broadcast({ type: 'bet_blocked', geniusId, data: { reason: 'gate_error', brake: 'gate_error', detail: err.message } })
+        logDecision({ geniusId, match, action: 'BLOCKED', reason: 'gate_error', brake: 'gate_error', detail: err.message })
+        return
+      }
+      if (!gate.allow) {
+        console.warn(`[scalpy.engine] 🚫 BLOCKED ${match}: ${gate.reason} [${gate.brake}] ${gate.detail ?? ''}`)
+        broadcast({ type: 'bet_blocked', geniusId, data: { reason: gate.reason, brake: gate.brake, detail: gate.detail } })
+        logDecision({ geniusId, match, action: 'BLOCKED', reason: gate.reason, brake: gate.brake, detail: gate.detail })
+        return
+      }
+      // Claim INSIDE the lock so its CLAIMED row counts toward the next bet's liability read.
+      claim = await claimTrade({
+        dedupeKey, dryRun: DRY_RUN,
+        geniusId, betfairEventId: state.betfairEventId, betfairMarketId: ouMarket.marketId, selectionId,
+        homeTeam: state.homeTeam, awayTeam: state.awayTeam, totalGoals: state.totalGoals, addedMinutes,
+        marketType: ouMarket.marketType, selection: decision.selection, side: decision.action,
+        requestedPrice: decision.price, stake: decision.stake, reason: decision.reason,
+      })
+      if (!claim) {
+        broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'already_claimed' } })
+        logDecision({ geniusId, match, action: 'SKIPPED', reason: 'already_claimed' })
+      }
     })
+    if (!claim) return // blocked, gate-errored, or already claimed — nothing placed
 
-    console.log(`[scalpy.engine] Order result: ${JSON.stringify(orderResult)}`)
+    // --- RE-CHECK KILL at the last synchronous instant before placing ---
+    if (isKilled()) {
+      await failClaim(claim.id, 'killed_post_claim')
+      broadcast({ type: 'bet_blocked', geniusId, data: { reason: 'killed_post_claim', brake: 'kill_switch' } })
+      logDecision({ geniusId, match, action: 'BLOCKED', reason: 'killed_post_claim', brake: 'kill_switch' })
+      return
+    }
 
-    const dryRun = process.env.SCALPY_DRY_RUN !== 'false'
-    const trade = await saveTrade({
-      geniusId:         state.geniusId,
-      betfairEventId:   state.betfairEventId,
-      betfairMarketId:  ouMarket.marketId,
-      selectionId,
-      homeTeam:         state.homeTeam,
-      awayTeam:         state.awayTeam,
-      totalGoals:       state.totalGoals,
-      addedMinutes,
-      marketType:       ouMarket.marketType,
-      selection:        decision.selection,
-      side:             decision.action,
-      requestedPrice:   decision.price,
-      matchedPrice:     orderResult.averagePrice,
-      stake:            decision.stake,
-      reason:           decision.reason,
-      dryRun,
-      betId:            orderResult.betId,
-    })
+    let orderResult
+    try {
+      orderResult = await placeOrder({
+        marketId: ouMarket.marketId, selectionId, side: decision.action,
+        price: decision.price, size: decision.stake, customerRef: dedupeKey,
+      })
+    } catch (err) {
+      await failClaim(claim.id, err.message)
+      console.error(`[scalpy.engine] placeOrder failed for ${match}:`, err.message)
+      broadcast({ type: 'error', geniusId, data: { message: `order_failed: ${err.message}` } })
+      logDecision({ geniusId, match, action: 'BLOCKED', reason: 'order_failed', detail: err.message })
+      return
+    }
+
+    await promoteToPending(claim.id, { betId: orderResult.betId, matchedPrice: orderResult.averagePrice })
+    setBetPlaced(geniusId, claim.id)
+    persistState(geniusId)
 
     broadcast({
-      type: 'bet_placed',
-      geniusId,
+      type: 'bet_placed', geniusId,
       data: {
-        tradeId:     trade.id,
-        side:        decision.action,
-        selection:   decision.selection,
-        price:       decision.price,
-        stake:       decision.stake,
-        marketType:  ouMarket.marketType,
-        addedMinutes,
-        dryRun,
+        tradeId: claim.id, side: decision.action, selection: decision.selection,
+        price: decision.price, stake: decision.stake, marketType: ouMarket.marketType,
+        addedMinutes, dryRun: DRY_RUN,
       },
     })
+    logDecision({ geniusId, match, action: 'PLACED', reason: decision.reason, price: decision.price, stake: decision.stake, marketType: ouMarket.marketType })
+    console.log(`[scalpy.engine] ✅ BET PLACED ${match}: ${decision.action} ${decision.selection} @ ${decision.price} £${decision.stake} (${ouMarket.marketType})`)
 
   } catch (err) {
-    console.error(`[scalpy.engine] Error during handleStoppageTime:`, err.message)
+    console.error(`[scalpy.engine] placeScalpyBet error for ${geniusId}:`, err.message)
     broadcast({ type: 'error', geniusId, data: { message: err.message } })
+  } finally {
+    placing.delete(geniusId)
   }
 }

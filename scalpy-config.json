@@ -1,10 +1,23 @@
 {
-  "stake": 10,
+  "stake": 2,
   "currency": "GBP",
+  "maxStakeHardCap": 2,
   "rules": [
     { "addedMinutes": 3, "selection": "UNDER", "side": "BACK", "price": 1.18 },
     { "addedMinutes": 4, "selection": "UNDER", "side": "BACK", "price": 1.22 },
     { "addedMinutes": 5, "selection": "UNDER", "side": "BACK", "price": 1.25 },
     { "addedMinutes": 6, "selection": "UNDER", "side": "BACK", "price": 1.28 }
-  ]
+  ],
+  "brakes": {
+    "oneBetPerMarket": true,
+    "maxLiabilityPerMarket": 2,
+    "maxTotalOpenLiability": 20,
+    "dailyRealizedLossLimit": 20,
+    "circuitBreakerLosses": 5,
+    "priceMin": 1.01,
+    "priceMax": 2.0,
+    "requireBookPresent": true,
+    "requireMarketOpen": true,
+    "minSimilarityScore": 0.75
+  }
 }

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getSessionToken } from './betfair-auth.service.js'
+import { DRY_RUN } from '../lib/env.js'
 
 const BETTING_API = 'https://api.betfair.com/exchange/betting/rest/v1.0'
 
@@ -19,9 +20,7 @@ const BETTING_API = 'https://api.betfair.com/exchange/betting/rest/v1.0'
  * @returns {Promise<{ betId: string|null, status: string, matchedSize: number, averagePrice: number|null }>}
  */
 export async function placeOrder({ marketId, selectionId, side, price, size, customerRef }) {
-  const dryRun = process.env.SCALPY_DRY_RUN !== 'false'
-
-  if (dryRun) {
+  if (DRY_RUN) {
     console.log(`[betfair-orders] DRY_RUN — would place ${side} ${size} @ ${price} on market ${marketId} sel ${selectionId}`)
     return {
       betId:        null,

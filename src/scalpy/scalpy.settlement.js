@@ -1,5 +1,7 @@
 import { getPendingTrades, settleTrade } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
+import { recordSettlement } from '../lib/control.js'
+import { getConfig } from './scalpy.algorithm.js'
 
 /**
  * Calculate DRY_RUN outcome based on final total goals.
@@ -47,9 +49,11 @@ function calcDryRunOutcome(trade, finalGoals) {
  */
 export async function settleDryRunTrade(trade, finalGoals) {
   const { outcome, pnl } = calcDryRunOutcome(trade, finalGoals)
-  await settleTrade(trade.id, outcome, pnl)
+  const settled = await settleTrade(trade.id, outcome, pnl)
+  if (!settled) return // already settled by another path — idempotent, don't double-count P&L
   console.log(`[settlement] DRY_RUN settled trade ${trade.id}: ${outcome} P&L=${pnl}`)
   broadcast({ type: 'trade_settled', data: { tradeId: trade.id, outcome, pnl, dryRun: true } })
+  await recordSettlement({ pnl, outcome, limits: getConfig().brakes ?? {} })
 }
 
 /**

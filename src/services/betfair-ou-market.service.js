@@ -103,6 +103,7 @@ export async function getOuMarket(eventId, marketType) {
   return {
     marketId,
     marketType,
+    status: book.status ?? null,
     underSelectionId: underRunner.selectionId,
     overSelectionId:  overRunner.selectionId,
     bestBackUnder: underBook?.ex?.availableToBack?.[0]?.price ?? null,

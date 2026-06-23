@@ -2,6 +2,9 @@ import axios from 'axios'
 import { getSessionToken } from '../services/betfair-auth.service.js'
 import { getOpenLiveTrades, markTradeMatched, settleTrade } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
+import { recordSettlement } from '../lib/control.js'
+import { getConfig } from './scalpy.algorithm.js'
+import { DRY_RUN } from '../lib/env.js'
 
 const BETTING_API    = 'https://api.betfair.com/exchange/betting/rest/v1.0'
 const SETTLE_POLL_MS = parseInt(process.env.SCALPY_LIVE_SETTLE_MS ?? '60000', 10)
@@ -26,8 +29,7 @@ function headers() {
  * settled from the final goal count by scalpy.settlement.js instead).
  */
 export function startLiveSettlement() {
-  const dryRun = process.env.SCALPY_DRY_RUN !== 'false'
-  if (dryRun) {
+  if (DRY_RUN) {
     console.log('[scalpy.live-settlement] DRY_RUN mode — live settlement poller disabled')
     return
   }
@@ -114,9 +116,11 @@ async function settleClearedOrders(open, betIds) {
     const pnl = Math.round((order.profit ?? 0) * 100) / 100
 
     try {
-      await settleTrade(trade.id, outcome, pnl)
+      const settled = await settleTrade(trade.id, outcome, pnl)
+      if (!settled) continue // already settled — idempotent
       console.log(`[scalpy.live-settlement] Trade ${trade.id} settled: ${outcome} P&L=${pnl}`)
       broadcast({ type: 'trade_settled', data: { tradeId: trade.id, outcome, pnl, dryRun: false } })
+      await recordSettlement({ pnl, outcome, limits: getConfig().brakes ?? {} })
     } catch (err) {
       console.error(`[scalpy.live-settlement] settleTrade failed for ${trade.id}:`, err.message)
     }

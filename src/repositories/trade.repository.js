@@ -34,13 +34,12 @@ export async function saveTrade(trade) {
 }
 
 /**
- * Settle a trade after the market resolves.
- * @param {string} tradeId - UUID of the trade row
- * @param {'WON'|'LOST'} outcome
- * @param {number} pnl - net profit/loss in GBP
+ * Settle a trade — IDEMPOTENT. Only transitions a not-yet-settled row.
+ * @returns {Promise<boolean>} true iff THIS call performed the settlement (rowCount===1).
+ *   false means it was already settled by another path → caller must NOT double-count P&L.
  */
 export async function settleTrade(tradeId, outcome, pnl) {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('scalpy_trades')
     .update({
       outcome,
@@ -49,8 +48,134 @@ export async function settleTrade(tradeId, outcome, pnl) {
       settled_at: new Date().toISOString(),
     })
     .eq('id', tradeId)
+    .neq('status', 'SETTLED')
+    .select('id')
 
   if (error) throw new Error(`[trade.repository] settleTrade failed: ${error.message}`)
+  return (data?.length ?? 0) === 1
+}
+
+const OPEN_STATUSES = ['CLAIMED', 'PENDING', 'MATCHED']
+
+function liabilityFor(side, stake, price) {
+  return side === 'LAY' ? stake * (price - 1) : stake
+}
+
+/**
+ * Claim-before-place: insert a CLAIMED row keyed by a unique dedupe_key so that, even across
+ * retries/restarts/concurrent polls, at most ONE bet exists per fixture-market. Returns the
+ * row, or null on a unique-key collision (already claimed → caller must NOT place an order).
+ */
+export async function claimTrade(trade) {
+  const { data, error } = await supabase
+    .from('scalpy_trades')
+    .insert({
+      dedupe_key:        trade.dedupeKey,
+      bet_id:            null,
+      dry_run:           trade.dryRun,
+      genius_id:         trade.geniusId,
+      betfair_event_id:  trade.betfairEventId,
+      betfair_market_id: trade.betfairMarketId,
+      selection_id:      trade.selectionId,
+      home_team:         trade.homeTeam,
+      away_team:         trade.awayTeam,
+      total_goals:       trade.totalGoals,
+      added_minutes:     trade.addedMinutes,
+      market_type:       trade.marketType,
+      selection:         trade.selection,
+      side:              trade.side,
+      requested_price:   trade.requestedPrice,
+      stake:             trade.stake,
+      reason:            trade.reason ?? null,
+      status:            'CLAIMED',
+    })
+    .select()
+    .single()
+
+  if (error) {
+    if (error.code === '23505') return null // unique_violation → already claimed
+    throw new Error(`[trade.repository] claimTrade failed: ${error.message}`)
+  }
+  return data
+}
+
+/** Promote a CLAIMED row to PENDING once the order is placed. */
+export async function promoteToPending(tradeId, { betId, matchedPrice } = {}) {
+  const { error } = await supabase
+    .from('scalpy_trades')
+    .update({
+      status: 'PENDING',
+      ...(betId != null ? { bet_id: betId } : {}),
+      ...(matchedPrice != null ? { matched_price: matchedPrice } : {}),
+    })
+    .eq('id', tradeId)
+    .eq('status', 'CLAIMED')
+
+  if (error) throw new Error(`[trade.repository] promoteToPending failed: ${error.message}`)
+}
+
+/** Mark a CLAIMED row FAILED (order placement errored) so it doesn't count as open exposure. */
+export async function failClaim(tradeId, reason) {
+  const { error } = await supabase
+    .from('scalpy_trades')
+    .update({ status: 'FAILED', reason: `claim_failed:${reason}` })
+    .eq('id', tradeId)
+    .eq('status', 'CLAIMED')
+  if (error) console.error(`[trade.repository] failClaim error: ${error.message}`)
+}
+
+/** True if a live (non-skipped/non-failed) bet row already exists for this Betfair market. */
+export async function getMarketHasOpenBet(betfairMarketId) {
+  const { data, error } = await supabase
+    .from('scalpy_trades')
+    .select('id')
+    .eq('betfair_market_id', betfairMarketId)
+    .in('status', [...OPEN_STATUSES, 'SETTLED'])
+    .limit(1)
+  if (error) throw new Error(`[trade.repository] getMarketHasOpenBet failed: ${error.message}`)
+  return (data?.length ?? 0) > 0
+}
+
+/** Total open liability across all not-yet-settled bets (BACK liability = stake). */
+export async function getOpenLiability() {
+  const { data, error } = await supabase
+    .from('scalpy_trades')
+    .select('stake, side, requested_price, status')
+    .in('status', OPEN_STATUSES)
+  if (error) throw new Error(`[trade.repository] getOpenLiability failed: ${error.message}`)
+  let total = 0
+  for (const t of data) total += liabilityFor(t.side, Number(t.stake), Number(t.requested_price))
+  return { total: Math.round(total * 100) / 100, count: data.length }
+}
+
+/**
+ * Authoritative sum of today's realized P&L from SETTLED rows (self-healing daily-loss bound —
+ * no float drift, survives a missed counter write). Filtered by dry_run so live and dry P&L
+ * never mix.
+ * @param {string} sinceUtcISO - start of the local trading day, in UTC
+ * @param {boolean} [dryRun]
+ */
+export async function getRealizedPnlToday(sinceUtcISO, dryRun) {
+  let q = supabase
+    .from('scalpy_trades')
+    .select('pnl')
+    .eq('status', 'SETTLED')
+    .gte('settled_at', sinceUtcISO)
+  if (dryRun !== undefined) q = q.eq('dry_run', dryRun)
+  const { data, error } = await q
+  if (error) throw new Error(`[trade.repository] getRealizedPnlToday failed: ${error.message}`)
+  const total = data.reduce((s, t) => s + (Number(t.pnl) || 0), 0)
+  return Math.round(total * 100) / 100
+}
+
+/** geniusIds that currently have an OPEN bet — used to rehydrate bettingDone after a restart. */
+export async function getOpenBetGeniusIds() {
+  const { data, error } = await supabase
+    .from('scalpy_trades')
+    .select('genius_id')
+    .in('status', OPEN_STATUSES)
+  if (error) throw new Error(`[trade.repository] getOpenBetGeniusIds failed: ${error.message}`)
+  return [...new Set(data.map(r => r.genius_id))]
 }
 
 /**

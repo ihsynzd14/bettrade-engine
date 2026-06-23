@@ -24,18 +24,22 @@ const states = new Map()
 export function initState(fixture) {
   if (states.has(fixture.geniusId)) return
   states.set(fixture.geniusId, {
-    geniusId:        fixture.geniusId,
-    homeTeam:        fixture.homeTeam,
-    awayTeam:        fixture.awayTeam,
-    betfairEventId:  fixture.betfairEventId,
-    betfairMarketId: fixture.betfairMarketId,
-    totalGoals:      0,
-    homeGoals:       0,
-    awayGoals:       0,
-    phase:           null,
-    currentMinute:   null,
-    bettingDone:     false,
-    lastSeenTs:      null,
+    geniusId:           fixture.geniusId,
+    homeTeam:           fixture.homeTeam,
+    awayTeam:           fixture.awayTeam,
+    betfairEventId:     fixture.betfairEventId,
+    betfairMarketId:    fixture.betfairMarketId,
+    similarityScore:    fixture.similarityScore ?? null,
+    totalGoals:         0,
+    homeGoals:          0,
+    awayGoals:          0,
+    phase:              null,
+    currentMinute:      null,
+    bettingDone:        false,
+    betPlaced:          false,
+    tradeId:            null,
+    lastSeenTs:         null,
+    lastEventReceivedAt: null,
   })
   console.log(`[match-state] Initialised state for ${fixture.homeTeam} v ${fixture.awayTeam} (geniusId=${fixture.geniusId})`)
 }
@@ -125,6 +129,22 @@ export function setBettingDone(geniusId) {
   const s = states.get(geniusId)
   if (!s) return
   s.bettingDone = true
+}
+
+/** Mark that a bet was actually placed for this fixture (feeds the Scalpy tab + card badge). */
+export function setBetPlaced(geniusId, tradeId) {
+  const s = states.get(geniusId)
+  if (!s) return
+  s.bettingDone = true
+  s.betPlaced = true
+  s.tradeId = tradeId ?? s.tradeId
+}
+
+/** Wall-clock stamp of the last poll that actually returned events (for the feed-freshness brake). */
+export function markEventReceived(geniusId) {
+  const s = states.get(geniusId)
+  if (!s) return
+  s.lastEventReceivedAt = Date.now()
 }
 
 export function setLastSeenTs(geniusId, ts) {
