@@ -37,6 +37,7 @@ export function initState(fixture) {
     phase:              null,
     currentMinute:      null,
     estimatedStoppage:  null,
+    estimatorEvents:    [],
     watching:           true,
     ouBook:             null,
     redCards:           { Home: 0, Away: 0 },
@@ -182,6 +183,14 @@ export function setEstimatedStoppage(geniusId, minutes) {
   const s = states.get(geniusId)
   if (!s) return
   s.estimatedStoppage = minutes
+}
+
+/** Append a mapped MatchEvent to the stoppage-estimator buffer (capped to bound memory). */
+export function pushEstimatorEvent(geniusId, matchEvent) {
+  const s = states.get(geniusId)
+  if (!s || !matchEvent) return
+  s.estimatorEvents.push(matchEvent)
+  if (s.estimatorEvents.length > 12000) s.estimatorEvents.shift()
 }
 
 // ------------------------------------------------------------------

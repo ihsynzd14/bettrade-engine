@@ -2,9 +2,10 @@ import axios from 'axios'
 import {
   initState, getState, getAllStates, clearState,
   recordGoal, setPhase, setClock, setBettingDone, setBetPlaced, setLastSeenTs, markEventReceived,
-  setEstimatedStoppage, recordRedCard, maxRedCards, setRisk, isAnyRiskActive, activeRiskNames,
+  setEstimatedStoppage, pushEstimatorEvent, recordRedCard, maxRedCards, setRisk, isAnyRiskActive, activeRiskNames,
   setPendingBet, getPendingBet, clearPendingBet,
 } from './scalpy.match-state.js'
+import { toMatchEvent, estimateFromMatchEvents } from './scalpy.stoppage-estimator.js'
 import { goalCountToMarketType, getOuMarket, forgetOuMarket } from '../services/betfair-ou-market.service.js'
 import { placeOrder } from '../services/betfair-orders.service.js'
 import { decide, loadConfig, getConfig } from './scalpy.algorithm.js'
@@ -269,6 +270,13 @@ async function pollEvents(geniusId) {
     const lastTs = events[events.length - 1]?.timestamp
     if (lastTs) setLastSeenTs(geniusId, lastTs)
 
+    // Recompute the predicted stoppage total for the current phase (display only).
+    if (state.phase === 'FirstHalf' || state.phase === 'SecondHalf') {
+      const calc = estimateFromMatchEvents(state.estimatorEvents)
+      const sec = state.phase === 'SecondHalf' ? calc.secondHalf.total : calc.firstHalf.total
+      setEstimatedStoppage(geniusId, Math.round(sec / 60))
+    }
+
     persistState(geniusId)
   } catch (err) {
     if (err.response?.status !== 404) {
@@ -313,6 +321,10 @@ async function processEvent(geniusId, event) {
   // Any event that carries phase + timeElapsed advances the displayed minute.
   if (event.phase && event.timeElapsed) setClock(geniusId, event.phase, event.timeElapsed)
 
+  // Feed the stoppage-time estimator (subs / injuries / VAR / incidents / red cards).
+  const me = toMatchEvent(event)
+  if (me) pushEstimatorEvent(geniusId, me)
+
   switch (event.type) {
     case 'goals': {
       recordGoal(geniusId, event)
@@ -338,7 +350,6 @@ async function processEvent(geniusId, event) {
       if (event.phase === 'SecondHalf' && Number.isFinite(event.addedMinutes)) {
         const s = getState(geniusId)
         if (s) s.currentMinute = `90+${event.addedMinutes}`
-        setEstimatedStoppage(geniusId, event.addedMinutes)
       }
       await handleStoppageTime(geniusId, event)
       break
