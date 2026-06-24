@@ -304,6 +304,18 @@ class ExtraTimeCalculator {
   }
 }
 
+// The live feed reports danger states team-prefixed: "HomeSafe", "AwayDangerousAttack",
+// "HomePenalty"… The calculator (like psychobet's event-processor) compares against the BARE
+// state ("Safe"/"Attack"/"DangerousAttack"/"Penalty"). Without stripping the prefix the injury/
+// incident "play resumed" signal never matches, so a stoppage runs until the next *plain* "Safe"
+// (a post-goal kickoff reset minutes later) → durations inflate 2-4×. Strip it, exactly as the live UI does.
+function bareDangerState(s) {
+  if (typeof s !== 'string') return s
+  if (s.startsWith('Home')) return s.slice(4)
+  if (s.startsWith('Away')) return s.slice(4)
+  return s
+}
+
 // ── Adapter: bettrade-engine feed event → calculator MatchEvent ─────────────
 // IMPORTANT: psychobet feeds the calculator EVERY match event. Its injury/incident logic snaps a
 // stoppage's start to the *nearest non-systemMessage event* and its end to the *next dangerState* —
@@ -318,7 +330,17 @@ export function toMatchEvent(e) {
   switch (e.type) {
     case 'substitutions':   return { ...base, type: 'substitution' }
     case 'systemMessages':  return { ...base, type: 'systemMessage', details: { message: e.message ?? '' } }
-    case 'dangerStateChanges': return { ...base, type: 'dangerState', details: { dangerState: e.dangerState } }
+    case 'dangerStateChanges': {
+      // Match psychobet's event-processor exactly: ONLY team-prefixed, non-corner danger states
+      // become "dangerState" events (prefix stripped). Plain "Safe" (post-goal kickoff resets) and
+      // corner-danger are dropped — otherwise a plain "Safe" can end an injury a few seconds in, so
+      // it falls under the 60s floor and gets discarded (under-count), or a real resume is missed.
+      const ds = e.dangerState
+      if (typeof ds === 'string' && (ds.startsWith('Home') || ds.startsWith('Away')) && !ds.endsWith('Corner')) {
+        return { ...base, type: 'dangerState', details: { dangerState: bareDangerState(ds) } }
+      }
+      return null
+    }
     case 'varStateChanges': {
       const state = e.varState || 'Safe'
       return { ...base, type: 'var', details: { state, isInProgress: state === 'InProgress', reason: e.varReason ?? e.varReasonV2 ?? 'VAR Check', originalOutcome: e.varOutcome ?? e.varOutcomeV2 ?? '' } }

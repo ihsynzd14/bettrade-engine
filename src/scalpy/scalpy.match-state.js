@@ -179,11 +179,11 @@ export function setOuBook(geniusId, ouBook) {
   s.ouBook = ouBook
 }
 
-/** @param {number} seconds - predicted added-time total for the current phase (seconds; card shows M:SS) */
-export function setEstimatedStoppage(geniusId, seconds) {
+/** @param {{first:number, second:number}|null} est - predicted added time per half (seconds; card shows 1Y/2Y M:SS) */
+export function setEstimatedStoppage(geniusId, est) {
   const s = states.get(geniusId)
   if (!s) return
-  s.estimatedStoppage = seconds
+  s.estimatedStoppage = est
 }
 
 /** Append a mapped MatchEvent to the stoppage-estimator buffer (capped to bound memory). */
