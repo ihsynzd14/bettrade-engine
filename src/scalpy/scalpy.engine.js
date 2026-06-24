@@ -271,10 +271,11 @@ async function pollEvents(geniusId) {
     if (lastTs) setLastSeenTs(geniusId, lastTs)
 
     // Recompute the predicted stoppage total for the current phase (display only).
+    // Stored in SECONDS so the card can show the exact M:SS the live system shows (e.g. "6:46").
     if (state.phase === 'FirstHalf' || state.phase === 'SecondHalf') {
       const calc = estimateFromMatchEvents(state.estimatorEvents)
       const sec = state.phase === 'SecondHalf' ? calc.secondHalf.total : calc.firstHalf.total
-      setEstimatedStoppage(geniusId, Math.round(sec / 60))
+      setEstimatedStoppage(geniusId, sec)
     }
 
     persistState(geniusId)

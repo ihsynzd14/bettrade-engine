@@ -305,8 +305,15 @@ class ExtraTimeCalculator {
 }
 
 // ── Adapter: bettrade-engine feed event → calculator MatchEvent ─────────────
+// IMPORTANT: psychobet feeds the calculator EVERY match event. Its injury/incident logic snaps a
+// stoppage's start to the *nearest non-systemMessage event* and its end to the *next dangerState* —
+// so it needs a DENSE event stream. If we pass only the 7 "interesting" types, the nearest-neighbour
+// anchors land on far-away events and durations balloon (e.g. 13′ where psychobet reads 6:46). We
+// therefore pass ALL timestamped events through: the 7 below get rich detail mapping; every other
+// type becomes a bare time-anchor (its type is ignored by the calculators but its timestamp brackets
+// the stoppage tightly, exactly as in the live system).
 export function toMatchEvent(e) {
-  if (!e || !e.type) return null
+  if (!e || !e.type || !e.timestamp) return null // no timestamp → useless as a time anchor
   const base = { id: e.id, timestamp: e.timestamp, phase: e.phase, timeElapsed: e.timeElapsed, team: e.team ?? 'System', details: {} }
   switch (e.type) {
     case 'substitutions':   return { ...base, type: 'substitution' }
@@ -319,7 +326,9 @@ export function toMatchEvent(e) {
     case 'straightRedCards': return { ...base, type: 'redCard' }
     case 'secondYellowCards': return { ...base, type: 'secondYellow' }
     case 'stoppageTimeAnnouncements': return { ...base, type: 'stoppageTime' }
-    default: return null
+    // All other events (throw-ins, fouls, shots, corners, goals, phase changes …) — keep them as
+    // bare anchors so the nearest-neighbour bracketing matches the live feed.
+    default: return { ...base, type: e.type }
   }
 }
 
