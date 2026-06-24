@@ -21,6 +21,10 @@ import { DRY_RUN } from '../lib/env.js'
 const FEED_POLL_MS = parseInt(process.env.SCALPY_FEED_POLL_MS ?? '3000', 10)
 const GENIUS_URL   = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3003'
 
+// If a poll 404s ("Feed not found" — backend restarted / Ably dropped the subscription), re-subscribe,
+// but no more than once per this window so we don't POST /feed/start every cycle while it comes back.
+const FEED_RESUBSCRIBE_THROTTLE_MS = parseInt(process.env.SCALPY_FEED_RESUBSCRIBE_MS ?? '10000', 10)
+
 // Each poll re-requests a small window before lastSeenTs so an event that shares a
 // timestamp with an already-seen event isn't skipped by the server's strict `>` filter.
 const POLL_LOOKBACK_MS = 5000
@@ -33,6 +37,9 @@ const seenEventKeys = new Map()
 
 /** geniusId -> self-scheduling feed-poll timeout id */
 const feedTimers = new Map()
+
+/** geniusId -> last time we (re)subscribed its feed (throttles the on-404 re-subscribe) */
+const lastFeedStartAt = new Map()
 
 /** geniusId -> consecutive syncs the fixture has NOT been live (used to detect match end) */
 const notLiveCount = new Map()
@@ -106,6 +113,7 @@ export function stopEngine() {
   polledFixtures.clear()
   seenEventKeys.clear()
   notLiveCount.clear()
+  lastFeedStartAt.clear()
   pollInFlight.clear()
   placing.clear()
   console.log('[scalpy.engine] Engine stopped')
@@ -194,6 +202,7 @@ async function finalizeFixture(geniusId) {
     polledFixtures.delete(geniusId)
     notLiveCount.delete(geniusId)
     seenEventKeys.delete(geniusId)
+    lastFeedStartAt.delete(geniusId)
     clearPendingBet(geniusId)
 
     const state = getState(geniusId)
@@ -222,6 +231,7 @@ async function finalizeFixture(geniusId) {
 }
 
 async function startFeedForFixture(geniusId) {
+  lastFeedStartAt.set(geniusId, Date.now()) // stamp BEFORE the await so the 404 path throttles correctly
   try {
     await axios.post(`${GENIUS_URL}/api/feed/start/${geniusId}`)
     console.log(`[scalpy.engine] Feed started for geniusId=${geniusId}`)
@@ -298,7 +308,16 @@ async function pollEvents(geniusId) {
 
     persistState(geniusId)
   } catch (err) {
-    if (err.response?.status !== 404) {
+    if (err.response?.status === 404) {
+      // "Feed not found" — the backend lost this subscription (restart / Ably drop). Re-subscribe so
+      // polling self-heals; throttled so we don't hammer /feed/start (and flood the backend log) while
+      // it comes back up. Only matches still in the live overlap reach here (ended ones get finalized).
+      const last = lastFeedStartAt.get(geniusId) ?? 0
+      if (Date.now() - last > FEED_RESUBSCRIBE_THROTTLE_MS) {
+        console.log(`[scalpy.engine] Feed not found for ${geniusId} — re-subscribing`)
+        await startFeedForFixture(geniusId)
+      }
+    } else {
       console.error(`[scalpy.engine] Poll error for ${geniusId}:`, err.message)
     }
   }
