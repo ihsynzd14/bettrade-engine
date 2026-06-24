@@ -1,9 +1,9 @@
 import axios from 'axios'
 import {
   initState, getState, getAllStates, clearState,
-  recordGoal, setPhase, setClock, setBettingDone, setBetPlaced, setLastSeenTs, markEventReceived,
+  recordGoal, setScore, setPhase, setClock, setBettingDone, setBetPlaced, setLastSeenTs, markEventReceived,
   setEstimatedStoppage, pushEstimatorEvent, recordRedCard, maxRedCards, setRisk, isAnyRiskActive, activeRiskNames,
-  setPendingBet, getPendingBet, clearPendingBet,
+  setPendingBet, getPendingBet, clearPendingBet, setWatching,
 } from './scalpy.match-state.js'
 import { toMatchEvent, estimateFromMatchEvents } from './scalpy.stoppage-estimator.js'
 import { goalCountToMarketType, getOuMarket, forgetOuMarket } from '../services/betfair-ou-market.service.js'
@@ -149,6 +149,12 @@ async function syncLiveFixtures() {
 
     if (!polledFixtures.has(geniusId)) {
       polledFixtures.add(geniusId)
+      // Manual-arm mode: a newly-appeared match starts DISARMED (no betting) until the operator
+      // explicitly arms it with the eye button. Lets us validate one match before opening the rest.
+      if (getConfig().manualArm) {
+        setWatching(geniusId, false)
+        broadcast({ type: 'watch_toggled', geniusId, data: { watching: false } })
+      }
       await startFeedForFixture(geniusId)
       schedulePoll(geniusId)
       persistState(geniusId)
@@ -259,6 +265,19 @@ async function pollEvents(geniusId) {
     })
 
     const events = res.data?.events ?? []
+
+    // Authoritative score from the backend (recomputed like the live UI: confirmed goals − VAR
+    // cancellations). Applied EVERY poll — even when no new events fall in the `since` window —
+    // because a disallowed/retracted goal may not emit a fresh-timestamped event. This replaces the
+    // per-event counter so a goal that is scored then cancelled can't push us into the wrong market.
+    const score = res.data?.score
+    if (score && Number.isFinite(score.home) && Number.isFinite(score.away)) {
+      if (setScore(geniusId, score.home, score.away)) {
+        const s = getState(geniusId)
+        broadcast({ type: 'goal', geniusId, data: { totalGoals: s.totalGoals, homeGoals: s.homeGoals, awayGoals: s.awayGoals } })
+      }
+    }
+
     if (events.length === 0) return
 
     markEventReceived(geniusId) // feed-freshness stamp for the safety gate
@@ -327,11 +346,16 @@ async function processEvent(geniusId, event) {
 
   switch (event.type) {
     case 'goals': {
-      recordGoal(geniusId, event)
+      // The score is now authoritative from the backend (see pollEvents — confirmed goals − VAR
+      // cancellations, retraction-safe). Fall back to the legacy per-event counter ONLY until a
+      // backend score has arrived (e.g. an old/un-redeployed backend that omits `score`).
       const s = getState(geniusId)
-      broadcast({ type: 'goal', geniusId, data: {
-        totalGoals: s.totalGoals, homeGoals: s.homeGoals, awayGoals: s.awayGoals,
-      } })
+      if (s && !s.usingBackendScore) {
+        recordGoal(geniusId, event)
+        broadcast({ type: 'goal', geniusId, data: {
+          totalGoals: s.totalGoals, homeGoals: s.homeGoals, awayGoals: s.awayGoals,
+        } })
+      }
       break
     }
 
@@ -373,7 +397,11 @@ async function processEvent(geniusId, event) {
       break
 
     case 'varStateChanges':
-      setRisk(geniusId, 'varInReview', event.varState === 'InReview')
+      // VAR is active while the feed reports 'Danger' (possible check) or 'InProgress' (review under
+      // way); it clears on 'Safe' (complete). The old check looked for 'InReview', a value the feed
+      // NEVER sends, so VAR never deferred a bet. Vocabulary confirmed from the live UI's
+      // varStateMapping (Safe / InProgress / Danger). The 60s risk TTL still bounds any stuck flag.
+      setRisk(geniusId, 'varInReview', event.varState === 'InProgress' || event.varState === 'Danger')
       break
 
     case 'penaltyRiskChanges': {

@@ -104,6 +104,7 @@ router.get('/control', async (req, res) => {
       control: getControl(),
       dryRun: DRY_RUN,
       liveArmed: LIVE_ARMED,
+      manualArm: cfg.manualArm ?? false,
       openLiability,
       brakes: cfg.brakes ?? null,
       stake: cfg.stake,
@@ -114,20 +115,38 @@ router.get('/control', async (req, res) => {
   }
 })
 
-// POST /api/scalpy/control { action:'kill'|'resume', pauseTracking?, reason? }
+// POST /api/scalpy/control { action:'kill'|'resume', pauseTracking?, manualArm?, reason? }
 router.post('/control', requireAdmin, async (req, res) => {
   try {
-    const { action, pauseTracking, reason } = req.body ?? {}
+    const { action, pauseTracking, manualArm, reason } = req.body ?? {}
     if (action === 'kill')        await kill(reason || 'manual_kill', 'operator')
     else if (action === 'resume') await resume('operator')
-    else if (action == null && pauseTracking == null)
+    else if (action == null && pauseTracking == null && manualArm == null)
       return res.status(400).json({ ok: false, error: 'missing action' })
     if (pauseTracking != null) await setTrackingPaused(!!pauseTracking)
-    res.json({ ok: true, control: getControl() })
+    if (manualArm != null) setManualArm(!!manualArm)
+    res.json({ ok: true, control: getControl(), manualArm: getConfig().manualArm ?? false })
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message })
   }
 })
+
+/**
+ * Toggle manual-arm mode: persist the flag to config (atomic write + hot-reload) and apply it to
+ * every currently-tracked match at once — ON disarms all (nothing bets until the operator arms a
+ * match with the eye button), OFF re-arms all (normal "bet every watched match" behaviour).
+ */
+function setManualArm(on) {
+  const next = { ...getConfig(), manualArm: on }
+  const tmp = `${CONFIG_PATH}.tmp`
+  writeFileSync(tmp, JSON.stringify(next, null, 2))
+  renameSync(tmp, CONFIG_PATH) // atomic swap — never leave a half-written config live
+  loadConfig()
+  for (const s of getAllStates()) {
+    setWatching(s.geniusId, !on)
+    broadcast({ type: 'watch_toggled', geniusId: s.geniusId, data: { watching: !on } })
+  }
+}
 
 // GET /api/scalpy/log?limit=N — recent decisions for the panel
 router.get('/log', (req, res) => {

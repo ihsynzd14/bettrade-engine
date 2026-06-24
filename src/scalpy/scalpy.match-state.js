@@ -34,6 +34,7 @@ export function initState(fixture) {
     totalGoals:         0,
     homeGoals:          0,
     awayGoals:          0,
+    usingBackendScore:  false,  // true once the backend supplies an authoritative score (see setScore)
     phase:              null,
     currentMinute:      null,
     estimatedStoppage:  null,
@@ -83,6 +84,28 @@ export function recordGoal(geniusId, event) {
   else if (scoring === 'Away') s.awayGoals += 1
   s.totalGoals = s.homeGoals + s.awayGoals
   console.log(`[match-state] Goal! geniusId=${geniusId} ${s.homeGoals}-${s.awayGoals} (${scoring}${event.isOwnGoal ? ' OG' : ''})`)
+}
+
+/**
+ * Set the authoritative score (computed by the backend like the live UI: confirmed goals − VAR
+ * cancellations). This is the single source of truth — it replaces the fragile per-event increment
+ * (which counted goals that were later disallowed/retracted → wrong score → wrong U/O market).
+ * Once called, `usingBackendScore` latches on so the incremental recordGoal fallback stops.
+ *
+ * @returns {boolean} true if the score actually changed (caller broadcasts a goal update)
+ */
+export function setScore(geniusId, home, away) {
+  const s = states.get(geniusId)
+  if (!s) return false
+  const h = Math.max(0, Math.trunc(home))
+  const a = Math.max(0, Math.trunc(away))
+  s.usingBackendScore = true
+  if (s.homeGoals === h && s.awayGoals === a) return false
+  s.homeGoals = h
+  s.awayGoals = a
+  s.totalGoals = h + a
+  console.log(`[match-state] Score (authoritative): geniusId=${geniusId} ${h}-${a}`)
+  return true
 }
 
 export function setPhase(geniusId, phase) {

@@ -4,6 +4,7 @@
   "side": "BACK",
   "selection": "UNDER",
   "maxStakeHardCap": 2,
+  "manualArm": false,
   "ladder": { "1": 1.06, "2": 1.12, "3": 1.18, "4": 1.23, "5": 1.28, "6": 1.35, "7": 1.42 },
   "maxAddedMinutes": 7,
   "adjustments": {
