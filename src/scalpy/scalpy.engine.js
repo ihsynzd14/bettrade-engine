@@ -463,7 +463,7 @@ async function handleStoppageTime(geniusId, event) {
     setPendingBet(geniusId, { addedMinutes: event.addedMinutes, createdTs: Date.now(), attempts: 0 })
     console.log(`[scalpy.engine] Bet DEFERRED for ${match} — active risk: ${risks.join(',')}`)
     broadcast({ type: 'bet_deferred', geniusId, data: { addedMinutes: event.addedMinutes, risks } })
-    logDecision({ geniusId, match, action: 'DEFERRED', reason: `risk:${risks.join(',')}` })
+    logDecision({ geniusId, match, action: 'DEFERRED', reason: `risk:${risks.join(',')}`, detail: `${event.addedMinutes}′ announced — held until risk clears` })
     return
   }
 
@@ -501,14 +501,32 @@ async function tryPendingBet(geniusId) {
 
   clearPendingBet(geniusId)
   setBettingDone(geniusId)
-  await placeScalpyBet(geniusId, pending.addedMinutes)
+  await placeScalpyBet(geniusId, pending.addedMinutes, { deferred: true })
+}
+
+const SECOND_HALF_MINUTES = 45
+
+/**
+ * Minutes ACTUALLY LEFT in 2nd-half added time. The added time ends ~(45 + announced) minutes into
+ * the half (phase-elapsed 45:00 = match 90:00). Risk-defer can eat into it, so we re-price off what
+ * remains, NOT the announced total (Ersen's rule): "5 announced, risk clears at 91:00 → 4 left" →
+ * bet the 4-minute rung. Ceil so the whole 91:xx minute reads "4". Falls back to the announced total
+ * if the clock is unknown, and never returns more than the announced total.
+ *
+ * @returns {number} whole minutes remaining (0 = added time already elapsed → caller skips)
+ */
+export function minutesRemainingInStoppage(announcedMin, elapsedSec) {
+  if (elapsedSec == null || !Number.isFinite(elapsedSec)) return announcedMin
+  const endSec = (SECOND_HALF_MINUTES + announcedMin) * 60
+  const remainingSec = Math.min(announcedMin * 60, Math.max(0, endSec - elapsedSec))
+  return Math.ceil(remainingSec / 60)
 }
 
 /**
  * The single bet-placement choke point: decide → brakes gate → claim-before-place → order.
  * Fully guarded by the `placing` mutex and the claim's unique dedupe_key.
  */
-async function placeScalpyBet(geniusId, addedMinutes) {
+async function placeScalpyBet(geniusId, addedMinutes, { deferred = false } = {}) {
   if (placing.has(geniusId)) return
   placing.add(geniusId)
   try {
@@ -526,11 +544,25 @@ async function placeScalpyBet(geniusId, addedMinutes) {
       return
     }
 
+    // Re-price off minutes ACTUALLY LEFT (Ersen's rule). For an immediate bet this equals the announced
+    // total; for a risk-deferred one it shrinks as the stoppage runs, so the ladder rung tracks reality.
+    const effectiveMinutes = state.phase === 'SecondHalf'
+      ? minutesRemainingInStoppage(addedMinutes, state.elapsedSec)
+      : addedMinutes
+    if (effectiveMinutes < 1) {
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'stoppage_time_elapsed', announced: addedMinutes } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: 'stoppage_time_elapsed', detail: `announced ${addedMinutes}min, 0 left` })
+      return
+    }
+    if (effectiveMinutes !== addedMinutes) {
+      console.log(`[scalpy.engine] Re-priced ${match}: announced ${addedMinutes}min → ${effectiveMinutes}min left (elapsed ${state.elapsedSec}s)`)
+    }
+
     const goalDiff = Math.abs(state.homeGoals - state.awayGoals)
-    const decision = decide({ addedMinutes, goalDiff, maxRedCards: maxRedCards(geniusId) })
+    const decision = decide({ addedMinutes: effectiveMinutes, goalDiff, maxRedCards: maxRedCards(geniusId) })
 
     if (decision.action === 'SKIP') {
-      broadcast({ type: 'bet_skipped', geniusId, data: { reason: decision.reason, addedMinutes } })
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: decision.reason, addedMinutes: effectiveMinutes } })
       logDecision({ geniusId, match, action: 'SKIPPED', reason: decision.reason })
       return
     }
@@ -561,7 +593,7 @@ async function placeScalpyBet(geniusId, addedMinutes) {
       claim = await claimTrade({
         dedupeKey, dryRun: DRY_RUN,
         geniusId, betfairEventId: state.betfairEventId, betfairMarketId: ouMarket.marketId, selectionId,
-        homeTeam: state.homeTeam, awayTeam: state.awayTeam, totalGoals: state.totalGoals, addedMinutes,
+        homeTeam: state.homeTeam, awayTeam: state.awayTeam, totalGoals: state.totalGoals, addedMinutes: effectiveMinutes,
         marketType: ouMarket.marketType, selection: decision.selection, side: decision.action,
         requestedPrice: decision.price, stake: decision.stake, reason: decision.reason,
       })
@@ -603,10 +635,15 @@ async function placeScalpyBet(geniusId, addedMinutes) {
       data: {
         tradeId: claim.id, side: decision.action, selection: decision.selection,
         price: decision.price, stake: decision.stake, marketType: ouMarket.marketType,
-        addedMinutes, dryRun: DRY_RUN,
+        addedMinutes: effectiveMinutes, announcedMinutes: addedMinutes, dryRun: DRY_RUN,
       },
     })
-    logDecision({ geniusId, match, action: 'PLACED', reason: decision.reason, price: decision.price, stake: decision.stake, marketType: ouMarket.marketType })
+    // Tell the deferred→placed story in the decision log: was it held for a risk, and was it re-priced?
+    const repriceNote = effectiveMinutes !== addedMinutes ? `${addedMinutes}′→${effectiveMinutes}′` : null
+    const placedDetail = deferred
+      ? `risk cleared${repriceNote ? ` · re-priced ${repriceNote}` : ` · ${effectiveMinutes}′ (full)`}`
+      : (repriceNote ? `re-priced ${repriceNote}` : undefined)
+    logDecision({ geniusId, match, action: 'PLACED', reason: decision.reason, detail: placedDetail, price: decision.price, stake: decision.stake, marketType: ouMarket.marketType })
     console.log(`[scalpy.engine] ✅ BET PLACED ${match}: ${decision.action} ${decision.selection} @ ${decision.price} £${decision.stake} (${ouMarket.marketType})`)
 
   } catch (err) {

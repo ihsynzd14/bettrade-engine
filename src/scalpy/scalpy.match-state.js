@@ -37,6 +37,7 @@ export function initState(fixture) {
     usingBackendScore:  false,  // true once the backend supplies an authoritative score (see setScore)
     phase:              null,
     currentMinute:      null,
+    elapsedSec:         null,  // raw phase-elapsed seconds of the latest timed event (for minutes-remaining re-pricing)
     estimatedStoppage:  null,
     estimatorEvents:    [],
     watching:           true,
@@ -129,16 +130,18 @@ export function setPhase(geniusId, phase) {
 export function setClock(geniusId, phase, timeElapsed) {
   const s = states.get(geniusId)
   if (!s || !phase) return
-  const elapsedMin = parseElapsedMinutes(timeElapsed)
+  const elapsedSec = parseElapsedSeconds(timeElapsed)
+  if (elapsedSec != null) s.elapsedSec = elapsedSec // raw, uncapped — drives minutes-remaining re-pricing
+  const elapsedMin = elapsedSec == null ? null : Math.floor(elapsedSec / 60)
   const minute = formatMinute(phase, elapsedMin)
   if (minute != null) s.currentMinute = minute
 }
 
-function parseElapsedMinutes(timeElapsed) {
+function parseElapsedSeconds(timeElapsed) {
   if (!timeElapsed || typeof timeElapsed !== 'string') return null
   const m = timeElapsed.match(/^(\d+):(\d+):(\d+)/)
   if (!m) return null
-  return parseInt(m[1], 10) * 60 + parseInt(m[2], 10)
+  return parseInt(m[1], 10) * 3600 + parseInt(m[2], 10) * 60 + parseInt(m[3], 10)
 }
 
 function formatMinute(phase, elapsedMin) {
