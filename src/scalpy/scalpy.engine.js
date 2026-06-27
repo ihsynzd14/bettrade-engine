@@ -371,9 +371,12 @@ async function processEvent(geniusId, event) {
       if (s && s.betPlaced && s.tradeId && event.phase && event.timeElapsed) {
         const clock = officialClock(event.phase, event.timeElapsed)
         if (clock) {
-          recordBustGoal(geniusId, clock)
-          setBustGoals(s.tradeId, s.bustGoals.join(',')).catch(() => {})
-          broadcast({ type: 'bust_goal', geniusId, data: { tradeId: s.tradeId, clock } })
+          // s.homeGoals/awayGoals already reflect this goal (score set at the top of the poll), so
+          // record the time AND the resulting score, e.g. "92:15 (2-3)" — Ersen wants both.
+          const entry = `${clock} (${s.homeGoals}-${s.awayGoals})`
+          recordBustGoal(geniusId, entry)
+          setBustGoals(s.tradeId, s.bustGoals.join(' · ')).catch(() => {})
+          broadcast({ type: 'bust_goal', geniusId, data: { tradeId: s.tradeId, clock: entry } })
         }
       }
       // The score is now authoritative from the backend (see pollEvents — confirmed goals − VAR
@@ -603,7 +606,8 @@ async function placeScalpyBet(geniusId, addedMinutes, { deferred = false } = {})
       claim = await claimTrade({
         dedupeKey, dryRun: DRY_RUN,
         geniusId, betfairEventId: state.betfairEventId, betfairMarketId: ouMarket.marketId, selectionId,
-        homeTeam: state.homeTeam, awayTeam: state.awayTeam, totalGoals: state.totalGoals, addedMinutes: effectiveMinutes,
+        homeTeam: state.homeTeam, awayTeam: state.awayTeam,
+        totalGoals: state.totalGoals, homeGoals: state.homeGoals, awayGoals: state.awayGoals, addedMinutes: effectiveMinutes,
         marketType: ouMarket.marketType, selection: decision.selection, side: decision.action,
         requestedPrice: decision.price, stake: decision.stake, reason: decision.reason,
       })
