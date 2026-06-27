@@ -49,6 +49,7 @@ export function initState(fixture) {
     bettingDone:        false,
     betPlaced:          false,
     tradeId:            null,
+    bustGoals:          [],   // running-clock times of goals scored AFTER our bet (the ones that bust an Under)
     lastSeenTs:         null,
     lastEventReceivedAt: null,
   })
@@ -144,6 +145,23 @@ function parseElapsedSeconds(timeElapsed) {
   return parseInt(m[1], 10) * 3600 + parseInt(m[2], 10) * 60 + parseInt(m[3], 10)
 }
 
+/**
+ * Running match clock "M:SS" for a timed event, uncapped (matches the live feed's clock, e.g. a
+ * 2nd-half goal at phase-elapsed 25:34 → "70:34"; a stoppage goal at 47:15 → "92:15").
+ */
+export function officialClock(phase, timeElapsed) {
+  const sec = parseElapsedSeconds(timeElapsed)
+  if (sec == null) return null
+  const base = phase === 'FirstHalf' ? 0
+    : phase === 'SecondHalf' ? 45 * 60
+    : phase === 'ExtraTimeFirstHalf' ? 90 * 60
+    : phase === 'ExtraTimeSecondHalf' ? 105 * 60
+    : null
+  if (base == null) return null
+  const total = base + sec
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`
+}
+
 function formatMinute(phase, elapsedMin) {
   switch (phase) {
     case 'PreMatch':   return null
@@ -173,6 +191,13 @@ export function setBetPlaced(geniusId, tradeId) {
   s.bettingDone = true
   s.betPlaced = true
   s.tradeId = tradeId ?? s.tradeId
+}
+
+/** Append the running-clock time of a goal that landed while a bet was open (busts the Under). */
+export function recordBustGoal(geniusId, clock) {
+  const s = states.get(geniusId)
+  if (!s || !clock) return
+  s.bustGoals.push(clock)
 }
 
 /** Wall-clock stamp of the last poll that actually returned events (for the feed-freshness brake). */

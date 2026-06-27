@@ -3,13 +3,13 @@ import {
   initState, getState, getAllStates, clearState,
   recordGoal, setScore, setPhase, setClock, setBettingDone, setBetPlaced, setLastSeenTs, markEventReceived,
   setEstimatedStoppage, pushEstimatorEvent, recordRedCard, maxRedCards, setRisk, isAnyRiskActive, activeRiskNames,
-  setPendingBet, getPendingBet, clearPendingBet, setWatching,
+  setPendingBet, getPendingBet, clearPendingBet, setWatching, officialClock, recordBustGoal,
 } from './scalpy.match-state.js'
 import { toMatchEvent, estimateFromMatchEvents } from './scalpy.stoppage-estimator.js'
 import { goalCountToMarketType, getOuMarket, forgetOuMarket } from '../services/betfair-ou-market.service.js'
 import { placeOrder } from '../services/betfair-orders.service.js'
 import { decide, loadConfig, getConfig } from './scalpy.algorithm.js'
-import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds } from '../repositories/trade.repository.js'
+import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds, setBustGoals } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
 import { getOverlap, onOverlapSync } from '../services/overlap.service.js'
 import { settleFixture } from './scalpy.settlement.js'
@@ -365,10 +365,20 @@ async function processEvent(geniusId, event) {
 
   switch (event.type) {
     case 'goals': {
+      const s = getState(geniusId)
+      // If a bet is already OPEN on this fixture, a goal now busts the Under — capture its official
+      // clock time so the LOST row can show WHY we blew up (e.g. "92:15"). Independent of scoring.
+      if (s && s.betPlaced && s.tradeId && event.phase && event.timeElapsed) {
+        const clock = officialClock(event.phase, event.timeElapsed)
+        if (clock) {
+          recordBustGoal(geniusId, clock)
+          setBustGoals(s.tradeId, s.bustGoals.join(',')).catch(() => {})
+          broadcast({ type: 'bust_goal', geniusId, data: { tradeId: s.tradeId, clock } })
+        }
+      }
       // The score is now authoritative from the backend (see pollEvents — confirmed goals − VAR
       // cancellations, retraction-safe). Fall back to the legacy per-event counter ONLY until a
       // backend score has arrived (e.g. an old/un-redeployed backend that omits `score`).
-      const s = getState(geniusId)
       if (s && !s.usingBackendScore) {
         recordGoal(geniusId, event)
         broadcast({ type: 'goal', geniusId, data: {

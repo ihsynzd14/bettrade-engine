@@ -105,6 +105,19 @@ export async function claimTrade(trade) {
   return data
 }
 
+/**
+ * Persist the running-clock time(s) of the goal(s) that busted this bet's Under (CSV, e.g. "92:15").
+ * Overwrite-whole (the engine's in-memory list is the source of truth). Best-effort — a failure here
+ * must never break the live loop, so it logs and swallows.
+ */
+export async function setBustGoals(tradeId, csv) {
+  const { error } = await supabase
+    .from('scalpy_trades')
+    .update({ bust_goals: csv })
+    .eq('id', tradeId)
+  if (error) console.error('[trade.repository] setBustGoals failed:', error.message)
+}
+
 /** Promote a CLAIMED row to PENDING once the order is placed. */
 export async function promoteToPending(tradeId, { betId, matchedPrice } = {}) {
   const { error } = await supabase
