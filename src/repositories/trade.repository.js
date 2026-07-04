@@ -122,6 +122,15 @@ export async function setBustGoals(tradeId, csv) {
   if (error) console.error('[trade.repository] setBustGoals failed:', error.message)
 }
 
+/** Persist the full post-90' timeline (newline-joined) to the trade. Best-effort — logs & swallows. */
+export async function setStoppageLog(tradeId, text) {
+  const { error } = await supabase
+    .from('scalpy_trades')
+    .update({ stoppage_log: text })
+    .eq('id', tradeId)
+  if (error) console.error('[trade.repository] setStoppageLog failed:', error.message)
+}
+
 /** Promote a CLAIMED row to PENDING once the order is placed. */
 export async function promoteToPending(tradeId, { betId, matchedPrice } = {}) {
   const { error } = await supabase

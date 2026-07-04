@@ -50,6 +50,8 @@ export function initState(fixture) {
     betPlaced:          false,
     tradeId:            null,
     bustGoals:          [],   // running-clock times of goals scored AFTER our bet (the ones that bust an Under)
+    stoppageLog:        [],    // full post-90' event + decision timeline (persisted to the trade at finalize)
+    stoppageLogging:    false, // true once the 2nd-half stoppage is announced (start capturing the timeline)
     lastSeenTs:         null,
     lastEventReceivedAt: null,
   })
@@ -149,9 +151,8 @@ function parseElapsedSeconds(timeElapsed) {
  * Running match clock "M:SS" for a timed event, uncapped (matches the live feed's clock, e.g. a
  * 2nd-half goal at phase-elapsed 25:34 → "70:34"; a stoppage goal at 47:15 → "92:15").
  */
-export function officialClock(phase, timeElapsed) {
-  const sec = parseElapsedSeconds(timeElapsed)
-  if (sec == null) return null
+export function officialClockFromSec(phase, sec) {
+  if (sec == null || !Number.isFinite(sec)) return null
   const base = phase === 'FirstHalf' ? 0
     : phase === 'SecondHalf' ? 45 * 60
     : phase === 'ExtraTimeFirstHalf' ? 90 * 60
@@ -160,6 +161,10 @@ export function officialClock(phase, timeElapsed) {
   if (base == null) return null
   const total = base + sec
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`
+}
+
+export function officialClock(phase, timeElapsed) {
+  return officialClockFromSec(phase, parseElapsedSeconds(timeElapsed))
 }
 
 function formatMinute(phase, elapsedMin) {
@@ -198,6 +203,20 @@ export function recordBustGoal(geniusId, clock) {
   const s = states.get(geniusId)
   if (!s || !clock) return
   s.bustGoals.push(clock)
+}
+
+/** Begin capturing the post-90' timeline (called when the 2nd-half stoppage is announced). */
+export function startStoppageLog(geniusId) {
+  const s = states.get(geniusId)
+  if (s) s.stoppageLogging = true
+}
+
+/** Append one line to the post-90' timeline (feed event or bot decision). Capped to bound memory. */
+export function pushStoppageLog(geniusId, line) {
+  const s = states.get(geniusId)
+  if (!s || !line) return
+  s.stoppageLog.push(line)
+  if (s.stoppageLog.length > 800) s.stoppageLog.shift()
 }
 
 /** Wall-clock stamp of the last poll that actually returned events (for the feed-freshness brake). */

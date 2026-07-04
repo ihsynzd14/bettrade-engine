@@ -3,13 +3,14 @@ import {
   initState, getState, getAllStates, clearState,
   recordGoal, setScore, setPhase, setClock, setBettingDone, setBetPlaced, setLastSeenTs, markEventReceived,
   setEstimatedStoppage, pushEstimatorEvent, recordRedCard, maxRedCards, setRisk, isAnyRiskActive, activeRiskNames,
-  setPendingBet, getPendingBet, clearPendingBet, setWatching, officialClock, recordBustGoal,
+  setPendingBet, getPendingBet, clearPendingBet, setWatching, officialClock, officialClockFromSec,
+  recordBustGoal, startStoppageLog, pushStoppageLog,
 } from './scalpy.match-state.js'
 import { toMatchEvent, estimateFromMatchEvents } from './scalpy.stoppage-estimator.js'
 import { goalCountToMarketType, getOuMarket, forgetOuMarket } from '../services/betfair-ou-market.service.js'
 import { placeOrder } from '../services/betfair-orders.service.js'
 import { decide, loadConfig, getConfig } from './scalpy.algorithm.js'
-import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds, setBustGoals } from '../repositories/trade.repository.js'
+import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds, setBustGoals, setStoppageLog } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
 import { getOverlap, onOverlapSync } from '../services/overlap.service.js'
 import { settleFixture } from './scalpy.settlement.js'
@@ -222,6 +223,10 @@ async function finalizeFixture(geniusId) {
       finalizedToday.add(geniusId)
     }
 
+    // Persist the full post-90' timeline to the placed bet (survives the feed buffer being wiped).
+    if (state.tradeId && state.stoppageLog.length) {
+      setStoppageLog(state.tradeId, state.stoppageLog.join('\n')).catch(() => {})
+    }
     persistState(geniusId) // persist final state before removing it from memory
     clearState(geniusId)   // remove from Live Fixtures — the match is over
     broadcast({ type: 'match_states', data: getAllStates() })
@@ -350,6 +355,39 @@ function alreadyProcessed(geniusId, event) {
   return false
 }
 
+const spaceCase = (s) => (typeof s === 'string' ? s.replace(/([a-z])([A-Z])/g, '$1 $2') : String(s))
+
+/** One human-readable timeline line for a feed event: "91:23  Home Dangerous Attack". */
+function timelineEntry(event) {
+  const clock = officialClock(event.phase, event.timeElapsed)
+  if (!clock) return null
+  let label
+  switch (event.type) {
+    case 'goals':                     label = `⚽ GOAL${event.team ? ` (${event.team})` : ''}${event.isOwnGoal ? ' OG' : ''}`; break
+    case 'dangerStateChanges':        label = spaceCase(event.dangerState); break
+    case 'cornersV2':                 label = event.taken?.isConfirmed ? 'Corner taken' : 'Corner awarded'; break
+    case 'varStateChanges':           label = `VAR: ${event.varState}${event.varReason && event.varReason !== 'NotSet' ? ` (${event.varReason})` : ''}`; break
+    case 'penaltyRiskChanges':        label = `Penalty risk: ${event.riskState}`; break
+    case 'straightRedCards':          label = `🟥 Red card${event.team ? ` (${event.team})` : ''}`; break
+    case 'secondYellowCards':         label = `🟥 2nd yellow${event.team ? ` (${event.team})` : ''}`; break
+    case 'yellowCards':               label = `🟨 Yellow${event.team ? ` (${event.team})` : ''}`; break
+    case 'stoppageTimeAnnouncements': label = `⏱ +${event.addedMinutes} min announced`; break
+    case 'substitutions':             label = `Substitution${event.team ? ` (${event.team})` : ''}`; break
+    case 'throwIns':                  label = 'Throw-in'; break
+    case 'fouls':                     label = 'Foul'; break
+    case 'goalKicks':                 label = 'Goal kick'; break
+    case 'kickOffs':                  label = 'Kick-off'; break
+    case 'offsides':                  label = 'Offside'; break
+    case 'shotsOnTarget':             label = 'Shot on target'; break
+    case 'shotsOffTarget':            label = 'Shot off target'; break
+    case 'blockedShots':              label = 'Blocked shot'; break
+    case 'shotsOffWoodwork':          label = 'Woodwork'; break
+    case 'phaseChanges':              label = `— ${event.currentPhase} —`; break
+    default:                          label = event.type; break
+  }
+  return `${clock}  ${label}`
+}
+
 async function processEvent(geniusId, event) {
   const state = getState(geniusId)
   if (!state) return
@@ -362,6 +400,14 @@ async function processEvent(geniusId, event) {
   // Feed the stoppage-time estimator (subs / injuries / VAR / incidents / red cards).
   const me = toMatchEvent(event)
   if (me) pushEstimatorEvent(geniusId, me)
+
+  // Post-90' replay (Ersen): start capturing at the 2nd-half stoppage announcement, then log EVERY
+  // event until full time. Persisted to the placed bet at finalize so it survives the feed being wiped.
+  if (event.type === 'stoppageTimeAnnouncements' && event.phase === 'SecondHalf') startStoppageLog(geniusId)
+  if (state.stoppageLogging) {
+    const line = timelineEntry(event)
+    if (line) pushStoppageLog(geniusId, line)
+  }
 
   switch (event.type) {
     case 'goals': {
@@ -477,6 +523,7 @@ async function handleStoppageTime(geniusId, event) {
     console.log(`[scalpy.engine] Bet DEFERRED for ${match} — active risk: ${risks.join(',')}`)
     broadcast({ type: 'bet_deferred', geniusId, data: { addedMinutes: event.addedMinutes, risks } })
     logDecision({ geniusId, match, action: 'DEFERRED', reason: `risk:${risks.join(',')}`, detail: `${event.addedMinutes}′ announced — held until risk clears` })
+    pushStoppageLog(geniusId, `${officialClock(event.phase, event.timeElapsed) ?? '?'}  ⏸ DEFERRED — risk: ${risks.join(',')} (${event.addedMinutes}′)`)
     return
   }
 
@@ -642,6 +689,7 @@ async function placeScalpyBet(geniusId, addedMinutes, { deferred = false } = {})
 
     await promoteToPending(claim.id, { betId: orderResult.betId, matchedPrice: orderResult.averagePrice })
     setBetPlaced(geniusId, claim.id)
+    pushStoppageLog(geniusId, `${officialClockFromSec(state.phase, state.elapsedSec) ?? '?'}  🎯 BET PLACED @${decision.price} ${ouMarket.marketType.replace('OVER_UNDER_', 'U/O ')} (${state.homeGoals}-${state.awayGoals})${effectiveMinutes !== addedMinutes ? ` [${addedMinutes}′→${effectiveMinutes}′]` : ''}`)
     persistState(geniusId)
 
     broadcast({
