@@ -15,6 +15,17 @@
     "stackAdjustments": false
   },
   "priceBounds": { "min": 1.01, "max": 2.0 },
+  "friendly": {
+    "enabled": true,
+    "stake": 2,
+    "rungs": { "87": 1.30, "88": 1.20, "89": 1.10 },
+    "firstHalfTicks": { "1": 3, "2": 6, "3": 9 },
+    "skipFirstHalfAddedFrom": 4,
+    "goalDiffFrom": 5,
+    "goalDiffTicks": 5,
+    "deferWindowSec": 60,
+    "competitionMatch": "friendl"
+  },
   "brakes": {
     "oneBetPerMarket": true,
     "maxLiabilityPerMarket": 2,

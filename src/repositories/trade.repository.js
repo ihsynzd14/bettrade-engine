@@ -97,6 +97,8 @@ export async function claimTrade(trade) {
       requested_price:   trade.requestedPrice,
       stake:             trade.stake,
       reason:            trade.reason ?? null,
+      strategy:          trade.strategy ?? 'stoppage',
+      first_half_added:  trade.firstHalfAdded ?? null,
       status:            'CLAIMED',
     })
     .select()

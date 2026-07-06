@@ -38,6 +38,8 @@ export function initState(fixture) {
     phase:              null,
     currentMinute:      null,
     elapsedSec:         null,  // raw phase-elapsed seconds of the latest timed event (for minutes-remaining re-pricing)
+    firstHalfEndSec:    null,  // max FirstHalf phase-elapsed seen = 1st-half end clock (friendly strategy pricing)
+    friendlyDone:       [],    // friendly minute-marks already attempted (87/88/89) — caps at 3 bets/match
     estimatedStoppage:  null,
     estimatorEvents:    [],
     watching:           true,
@@ -135,6 +137,10 @@ export function setClock(geniusId, phase, timeElapsed) {
   if (!s || !phase) return
   const elapsedSec = parseElapsedSeconds(timeElapsed)
   if (elapsedSec != null) s.elapsedSec = elapsedSec // raw, uncapped — drives minutes-remaining re-pricing
+  // Track the 1st-half end clock (max FirstHalf elapsed) — the friendly strategy prices off it.
+  if (phase === 'FirstHalf' && elapsedSec != null && (s.firstHalfEndSec == null || elapsedSec > s.firstHalfEndSec)) {
+    s.firstHalfEndSec = elapsedSec
+  }
   const elapsedMin = elapsedSec == null ? null : Math.floor(elapsedSec / 60)
   const minute = formatMinute(phase, elapsedMin)
   if (minute != null) s.currentMinute = minute

@@ -10,6 +10,7 @@ import { toMatchEvent, estimateFromMatchEvents } from './scalpy.stoppage-estimat
 import { goalCountToMarketType, getOuMarket, forgetOuMarket } from '../services/betfair-ou-market.service.js'
 import { placeOrder } from '../services/betfair-orders.service.js'
 import { decide, loadConfig, getConfig } from './scalpy.algorithm.js'
+import { addTicks, clampPrice } from './scalpy.ticks.js'
 import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds, setBustGoals, setStoppageLog } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
 import { getOverlap, onOverlapSync } from '../services/overlap.service.js'
@@ -257,7 +258,8 @@ async function runPoll(geniusId) {
   pollInFlight.add(geniusId)
   try {
     await pollEvents(geniusId)
-    await tryPendingBet(geniusId) // re-check deferred bets each cycle (risk may have cleared / expired)
+    await tryPendingBet(geniusId)      // re-check deferred stoppage bets (risk may have cleared / expired)
+    await handleFriendlyTicks(geniusId) // friendly strategy: fire 87/88/89 bets when due
   } catch (err) {
     console.error(`[scalpy.engine] runPoll error for ${geniusId}:`, err.message)
   } finally {
@@ -465,9 +467,15 @@ async function processEvent(geniusId, event) {
       break
 
     // --- Risk flags: defer betting while any of these is active ---
-    case 'dangerStateChanges':
-      setRisk(geniusId, 'dangerousAttack', /DangerousAttack/i.test(event.dangerState ?? ''))
+    case 'dangerStateChanges': {
+      const ds = event.dangerState ?? ''
+      setRisk(geniusId, 'dangerousAttack', /DangerousAttack/i.test(ds))
+      // A corner also shows in the danger flow ('HomeCorner'/'AwayCorner'/'CornerDanger'). Treat it as
+      // a pending-corner risk too — belt-and-braces with the cornersV2 signal (whose delivery the feed
+      // can drop). Cleared by the cornersV2 'taken' event or the 60s risk TTL.
+      if (/Corner/i.test(ds)) setRisk(geniusId, 'pendingCorner', true)
       break
+    }
 
     case 'cornersV2':
       if (event.awarded?.isConfirmed && !event.taken?.isConfirmed) setRisk(geniusId, 'pendingCorner', true)
@@ -498,6 +506,9 @@ async function handleStoppageTime(geniusId, event) {
   const state = getState(geniusId)
   if (!state) return
   const match = `${state.homeTeam} v ${state.awayTeam}`
+
+  // Friendly matches use the friendly strategy (87/88/89) ONLY — skip the stoppage strategy for them.
+  if (isFriendlyMatch(state, getConfig())) return
 
   if (event.phase !== 'SecondHalf') {
     console.log(`[scalpy.engine] Stoppage in ${event.phase} — skipping (not SecondHalf)`)
@@ -583,6 +594,193 @@ export function minutesRemainingInStoppage(announcedMin, elapsedSec) {
 }
 
 /**
+ * Shared placement core used by BOTH strategies: atomic gate + claim (under the global lock) →
+ * kill re-check → order → promote → broadcast. One place for the safety logic. Returns the claim, or
+ * null if blocked/skipped/already-claimed. Caller owns the per-fixture `placing` mutex.
+ */
+async function executePlacement(ctx) {
+  const {
+    geniusId, state, match, decision, ouMarket, selectionId,
+    goalsAtDecision, currentMarketType, dedupeKey, strategy = 'stoppage', friendly = false,
+    addedMinutes, firstHalfAdded = null, placedLog, placedDetail, extraBroadcast = {},
+  } = ctx
+
+  let claim = null
+  await withPlacementLock(async () => {
+    let gate
+    try {
+      gate = await canPlaceBet({ state, decision, ouMarket, goalsAtDecision, dryRun: DRY_RUN, cfg: getConfig(), currentMarketType, friendly })
+    } catch (err) {
+      console.error(`[scalpy.engine] gate error for ${match}:`, err.message)
+      broadcast({ type: 'bet_blocked', geniusId, data: { reason: 'gate_error', brake: 'gate_error', detail: err.message } })
+      logDecision({ geniusId, match, action: 'BLOCKED', reason: 'gate_error', brake: 'gate_error', detail: err.message })
+      return
+    }
+    if (!gate.allow) {
+      console.warn(`[scalpy.engine] 🚫 BLOCKED ${match}: ${gate.reason} [${gate.brake}] ${gate.detail ?? ''}`)
+      broadcast({ type: 'bet_blocked', geniusId, data: { reason: gate.reason, brake: gate.brake, detail: gate.detail } })
+      logDecision({ geniusId, match, action: 'BLOCKED', reason: gate.reason, brake: gate.brake, detail: gate.detail })
+      return
+    }
+    // Claim INSIDE the lock so its CLAIMED row counts toward the next bet's liability read.
+    claim = await claimTrade({
+      dedupeKey, dryRun: DRY_RUN, strategy, firstHalfAdded,
+      geniusId, betfairEventId: state.betfairEventId, betfairMarketId: ouMarket.marketId, selectionId,
+      homeTeam: state.homeTeam, awayTeam: state.awayTeam,
+      totalGoals: state.totalGoals, homeGoals: state.homeGoals, awayGoals: state.awayGoals, addedMinutes,
+      marketType: ouMarket.marketType, selection: decision.selection, side: decision.action,
+      requestedPrice: decision.price, stake: decision.stake, reason: decision.reason,
+    })
+    if (!claim) {
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'already_claimed' } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: 'already_claimed' })
+    }
+  })
+  if (!claim) return null
+
+  // --- RE-CHECK KILL at the last synchronous instant before placing ---
+  if (isKilled()) {
+    await failClaim(claim.id, 'killed_post_claim')
+    broadcast({ type: 'bet_blocked', geniusId, data: { reason: 'killed_post_claim', brake: 'kill_switch' } })
+    logDecision({ geniusId, match, action: 'BLOCKED', reason: 'killed_post_claim', brake: 'kill_switch' })
+    return null
+  }
+
+  let orderResult
+  try {
+    orderResult = await placeOrder({ marketId: ouMarket.marketId, selectionId, side: decision.action, price: decision.price, size: decision.stake, customerRef: dedupeKey })
+  } catch (err) {
+    await failClaim(claim.id, err.message)
+    console.error(`[scalpy.engine] placeOrder failed for ${match}:`, err.message)
+    broadcast({ type: 'error', geniusId, data: { message: `order_failed: ${err.message}` } })
+    logDecision({ geniusId, match, action: 'BLOCKED', reason: 'order_failed', detail: err.message })
+    return null
+  }
+
+  await promoteToPending(claim.id, { betId: orderResult.betId, matchedPrice: orderResult.averagePrice })
+  setBetPlaced(geniusId, claim.id)
+  if (placedLog) pushStoppageLog(geniusId, placedLog)
+  persistState(geniusId)
+  broadcast({ type: 'bet_placed', geniusId, data: {
+    tradeId: claim.id, side: decision.action, selection: decision.selection,
+    price: decision.price, stake: decision.stake, marketType: ouMarket.marketType,
+    addedMinutes, strategy, dryRun: DRY_RUN, ...extraBroadcast,
+  } })
+  logDecision({ geniusId, match, action: 'PLACED', reason: decision.reason, detail: placedDetail, price: decision.price, stake: decision.stake, marketType: ouMarket.marketType })
+  console.log(`[scalpy.engine] ✅ BET PLACED ${match}: ${decision.action} ${decision.selection} @ ${decision.price} £${decision.stake} (${ouMarket.marketType}) [${strategy}]`)
+  return claim
+}
+
+// ── Club-friendly strategy (Ersen): 3 timed BACK-UNDER bets at 87/88/89, priced off a fixed rung +
+//    1st-half-added ticks + goal-diff ticks. Only runs on friendly comps; the stoppage strategy is off. ──
+
+/** True if this fixture is a club friendly (config `friendly.competitionMatch`, e.g. "friendl"). */
+function isFriendlyMatch(state, cfg) {
+  const f = cfg.friendly
+  if (!f?.enabled) return false
+  try { return new RegExp(f.competitionMatch ?? 'friendl', 'i').test(state.competition ?? '') }
+  catch { return /friendl/i.test(state.competition ?? '') }
+}
+
+/** Map the 1st-half END clock (phase-elapsed seconds) to accepted added minutes (Ersen's buckets). */
+function firstHalfAddedMinutes(firstHalfEndSec) {
+  if (firstHalfEndSec == null) return null          // engine never saw the 1st half → unknown
+  if (firstHalfEndSec < 45.5 * 60) return 0         // 44:30–45:30 (and anything shorter) → 0
+  if (firstHalfEndSec < 46.5 * 60) return 1
+  if (firstHalfEndSec < 47.5 * 60) return 2
+  if (firstHalfEndSec < 48.5 * 60) return 3
+  return 4                                          // 48:30+ → 4+ (caller skips the match)
+}
+
+/** Friendly target price: base rung + 1st-half ticks + (goalDiff≥5 → extra ticks), on the tick ladder. */
+function friendlyPrice(cfg, minute, firstHalfAdded, goalDiff) {
+  const f = cfg.friendly
+  const base = f.rungs?.[String(minute)]
+  if (base == null) return null
+  const fhTicks = f.firstHalfTicks?.[String(firstHalfAdded)] ?? 0
+  const gdTicks = goalDiff >= (f.goalDiffFrom ?? 5) ? (f.goalDiffTicks ?? 0) : 0
+  const b = cfg.priceBounds ?? { min: 1.01, max: 2.0 }
+  return { price: clampPrice(addTicks(base, fhTicks + gdTicks), b.min, b.max), base, fhTicks, gdTicks }
+}
+
+/**
+ * Per-poll friendly driver: at each 87/88/89 mark (2nd half), fire one BACK-UNDER bet. If a risk is
+ * active at the mark, DEFER within that minute's window (retry next poll) and skip if it never clears.
+ */
+async function handleFriendlyTicks(geniusId) {
+  const state = getState(geniusId)
+  if (!state) return
+  const cfg = getConfig()
+  if (!isFriendlyMatch(state, cfg) || state.phase !== 'SecondHalf' || !state.watching) return
+
+  const fhAdded = firstHalfAddedMinutes(state.firstHalfEndSec)
+  if (fhAdded == null) return                                        // couldn't measure 1st half → skip (safe)
+  if (fhAdded >= (cfg.friendly.skipFirstHalfAddedFrom ?? 4)) return  // 1st half 4+ added → skip whole match
+
+  const deferWin = cfg.friendly.deferWindowSec ?? 60
+  for (const minute of Object.keys(cfg.friendly.rungs ?? {}).map(Number).sort((a, b) => a - b)) {
+    if (state.friendlyDone.includes(minute)) continue
+    const targetSec = (minute - SECOND_HALF_MINUTES) * 60           // 2nd-half elapsed for this match minute
+    if (state.elapsedSec == null || state.elapsedSec < targetSec) return   // not reached → later ones aren't either
+    if (state.elapsedSec >= targetSec + deferWin) { state.friendlyDone.push(minute); continue } // window passed → skip
+    if (isAnyRiskActive(geniusId, RISK_TTL_MS)) return              // defer within the window (retry next poll)
+    state.friendlyDone.push(minute)                                 // one attempt per minute mark
+    await placeFriendlyBet(geniusId, minute, fhAdded)
+    return                                                          // one placement per poll
+  }
+}
+
+/** Place a single friendly BACK-UNDER bet for a given minute mark. */
+async function placeFriendlyBet(geniusId, minute, firstHalfAdded) {
+  if (placing.has(geniusId)) return
+  placing.add(geniusId)
+  try {
+    const state = getState(geniusId)
+    if (!state) return
+    const cfg = getConfig()
+    const match = `${state.homeTeam} v ${state.awayTeam}`
+    const goalsAtDecision = state.totalGoals
+    const currentMarketType = goalCountToMarketType(state.totalGoals)
+
+    const ouMarket = await getOuMarket(state.betfairEventId, currentMarketType)
+    if (!ouMarket) {
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'no_market_found', marketType: currentMarketType } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: `friendly_${minute}_no_market` })
+      return
+    }
+    const goalDiff = Math.abs(state.homeGoals - state.awayGoals)
+    const p = friendlyPrice(cfg, minute, firstHalfAdded, goalDiff)
+    if (!p) return
+
+    const bits = [`friendly ${minute}′(${p.base})`]
+    if (p.fhTicks) bits.push(`+${p.fhTicks}t 1H+${firstHalfAdded}`)
+    if (p.gdTicks) bits.push(`+${p.gdTicks}t diff≥5`)
+    const decision = {
+      action: cfg.side ?? 'BACK', selection: cfg.selection ?? 'UNDER',
+      price: p.price, stake: cfg.friendly.stake ?? cfg.stake,
+      reason: `${bits.join(' ')} → BACK UNDER @ ${p.price}`,
+    }
+    const selectionId = decision.selection === 'UNDER' ? ouMarket.underSelectionId : ouMarket.overSelectionId
+    const dedupeKey = `scalpy:friendly:${geniusId}:${ouMarket.marketId}:${minute}` // minute-keyed → ≤3/market
+    const clock = officialClockFromSec(state.phase, state.elapsedSec) ?? `${minute}:00`
+
+    await executePlacement({
+      geniusId, state, match, decision, ouMarket, selectionId,
+      goalsAtDecision, currentMarketType, dedupeKey, strategy: 'friendly', friendly: true,
+      addedMinutes: minute, firstHalfAdded,
+      placedLog: `${clock}  🎯 FRIENDLY BET @${p.price} ${ouMarket.marketType.replace('OVER_UNDER_', 'U/O ')} (${state.homeGoals}-${state.awayGoals}) [${minute}′]`,
+      placedDetail: `friendly ${minute}′ · 1H+${firstHalfAdded}${p.gdTicks ? ' · diff≥5' : ''}`,
+      extraBroadcast: { firstHalfAdded },
+    })
+  } catch (err) {
+    console.error(`[scalpy.engine] placeFriendlyBet error for ${geniusId}:`, err.message)
+    broadcast({ type: 'error', geniusId, data: { message: err.message } })
+  } finally {
+    placing.delete(geniusId)
+  }
+}
+
+/**
  * The single bet-placement choke point: decide → brakes gate → claim-before-place → order.
  * Fully guarded by the `placing` mutex and the claim's unique dedupe_key.
  */
@@ -629,84 +827,18 @@ async function placeScalpyBet(geniusId, addedMinutes, { deferred = false } = {})
 
     const selectionId = decision.selection === 'UNDER' ? ouMarket.underSelectionId : ouMarket.overSelectionId
     const dedupeKey   = `scalpy:${geniusId}:${ouMarket.marketId}`
-
-    // --- ATOMIC GATE + CLAIM (global lock so the total-open-liability bound truly holds) ---
-    let claim = null
-    await withPlacementLock(async () => {
-      let gate
-      try {
-        gate = await canPlaceBet({ state, decision, ouMarket, goalsAtDecision, dryRun: DRY_RUN, cfg, currentMarketType })
-      } catch (err) {
-        // Any error inside the gate fails CLOSED — never place on uncertain data.
-        console.error(`[scalpy.engine] gate error for ${match}:`, err.message)
-        broadcast({ type: 'bet_blocked', geniusId, data: { reason: 'gate_error', brake: 'gate_error', detail: err.message } })
-        logDecision({ geniusId, match, action: 'BLOCKED', reason: 'gate_error', brake: 'gate_error', detail: err.message })
-        return
-      }
-      if (!gate.allow) {
-        console.warn(`[scalpy.engine] 🚫 BLOCKED ${match}: ${gate.reason} [${gate.brake}] ${gate.detail ?? ''}`)
-        broadcast({ type: 'bet_blocked', geniusId, data: { reason: gate.reason, brake: gate.brake, detail: gate.detail } })
-        logDecision({ geniusId, match, action: 'BLOCKED', reason: gate.reason, brake: gate.brake, detail: gate.detail })
-        return
-      }
-      // Claim INSIDE the lock so its CLAIMED row counts toward the next bet's liability read.
-      claim = await claimTrade({
-        dedupeKey, dryRun: DRY_RUN,
-        geniusId, betfairEventId: state.betfairEventId, betfairMarketId: ouMarket.marketId, selectionId,
-        homeTeam: state.homeTeam, awayTeam: state.awayTeam,
-        totalGoals: state.totalGoals, homeGoals: state.homeGoals, awayGoals: state.awayGoals, addedMinutes: effectiveMinutes,
-        marketType: ouMarket.marketType, selection: decision.selection, side: decision.action,
-        requestedPrice: decision.price, stake: decision.stake, reason: decision.reason,
-      })
-      if (!claim) {
-        broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'already_claimed' } })
-        logDecision({ geniusId, match, action: 'SKIPPED', reason: 'already_claimed' })
-      }
-    })
-    if (!claim) return // blocked, gate-errored, or already claimed — nothing placed
-
-    // --- RE-CHECK KILL at the last synchronous instant before placing ---
-    if (isKilled()) {
-      await failClaim(claim.id, 'killed_post_claim')
-      broadcast({ type: 'bet_blocked', geniusId, data: { reason: 'killed_post_claim', brake: 'kill_switch' } })
-      logDecision({ geniusId, match, action: 'BLOCKED', reason: 'killed_post_claim', brake: 'kill_switch' })
-      return
-    }
-
-    let orderResult
-    try {
-      orderResult = await placeOrder({
-        marketId: ouMarket.marketId, selectionId, side: decision.action,
-        price: decision.price, size: decision.stake, customerRef: dedupeKey,
-      })
-    } catch (err) {
-      await failClaim(claim.id, err.message)
-      console.error(`[scalpy.engine] placeOrder failed for ${match}:`, err.message)
-      broadcast({ type: 'error', geniusId, data: { message: `order_failed: ${err.message}` } })
-      logDecision({ geniusId, match, action: 'BLOCKED', reason: 'order_failed', detail: err.message })
-      return
-    }
-
-    await promoteToPending(claim.id, { betId: orderResult.betId, matchedPrice: orderResult.averagePrice })
-    setBetPlaced(geniusId, claim.id)
-    pushStoppageLog(geniusId, `${officialClockFromSec(state.phase, state.elapsedSec) ?? '?'}  🎯 BET PLACED @${decision.price} ${ouMarket.marketType.replace('OVER_UNDER_', 'U/O ')} (${state.homeGoals}-${state.awayGoals})${effectiveMinutes !== addedMinutes ? ` [${addedMinutes}′→${effectiveMinutes}′]` : ''}`)
-    persistState(geniusId)
-
-    broadcast({
-      type: 'bet_placed', geniusId,
-      data: {
-        tradeId: claim.id, side: decision.action, selection: decision.selection,
-        price: decision.price, stake: decision.stake, marketType: ouMarket.marketType,
-        addedMinutes: effectiveMinutes, announcedMinutes: addedMinutes, dryRun: DRY_RUN,
-      },
-    })
-    // Tell the deferred→placed story in the decision log: was it held for a risk, and was it re-priced?
     const repriceNote = effectiveMinutes !== addedMinutes ? `${addedMinutes}′→${effectiveMinutes}′` : null
-    const placedDetail = deferred
-      ? `risk cleared${repriceNote ? ` · re-priced ${repriceNote}` : ` · ${effectiveMinutes}′ (full)`}`
-      : (repriceNote ? `re-priced ${repriceNote}` : undefined)
-    logDecision({ geniusId, match, action: 'PLACED', reason: decision.reason, detail: placedDetail, price: decision.price, stake: decision.stake, marketType: ouMarket.marketType })
-    console.log(`[scalpy.engine] ✅ BET PLACED ${match}: ${decision.action} ${decision.selection} @ ${decision.price} £${decision.stake} (${ouMarket.marketType})`)
+
+    await executePlacement({
+      geniusId, state, match, decision, ouMarket, selectionId,
+      goalsAtDecision, currentMarketType, dedupeKey, strategy: 'stoppage',
+      addedMinutes: effectiveMinutes,
+      placedLog: `${officialClockFromSec(state.phase, state.elapsedSec) ?? '?'}  🎯 BET PLACED @${decision.price} ${ouMarket.marketType.replace('OVER_UNDER_', 'U/O ')} (${state.homeGoals}-${state.awayGoals})${repriceNote ? ` [${repriceNote}]` : ''}`,
+      placedDetail: deferred
+        ? `risk cleared${repriceNote ? ` · re-priced ${repriceNote}` : ` · ${effectiveMinutes}′ (full)`}`
+        : (repriceNote ? `re-priced ${repriceNote}` : undefined),
+      extraBroadcast: { announcedMinutes: addedMinutes },
+    })
 
   } catch (err) {
     console.error(`[scalpy.engine] placeScalpyBet error for ${geniusId}:`, err.message)

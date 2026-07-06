@@ -21,7 +21,7 @@ const block = (brake, reason, detail) => ({ allow: false, brake, reason, detail 
  *           dryRun:boolean, cfg:Object, currentMarketType:string }} ctx
  */
 export async function canPlaceBet(ctx) {
-  const { state, decision, ouMarket, goalsAtDecision, dryRun, cfg, currentMarketType } = ctx
+  const { state, decision, ouMarket, goalsAtDecision, dryRun, cfg, currentMarketType, friendly = false } = ctx
   const brakes = cfg.brakes ?? {}
 
   // 1 — KILL-SWITCH
@@ -59,8 +59,9 @@ export async function canPlaceBet(ctx) {
   if (currentMarketType && ouMarket.marketType !== currentMarketType)
     return block('market_mismatch', 'market_type_mismatch', `${ouMarket.marketType}!=${currentMarketType}`)
 
-  // 8 — ONE BET PER MARKET
-  if (brakes.oneBetPerMarket && await getMarketHasOpenBet(ouMarket.marketId))
+  // 8 — ONE BET PER MARKET (friendly strategy places up to 3/market at 87/88/89; its minute-keyed
+  //      dedupe_key bounds that to exactly 3, and the total-open-liability cap still applies)
+  if (brakes.oneBetPerMarket && !friendly && await getMarketHasOpenBet(ouMarket.marketId))
     return block('one_bet_per_market', 'market_already_bet')
 
   // 9 — LIABILITY PER MARKET
