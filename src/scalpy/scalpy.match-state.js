@@ -21,7 +21,12 @@ const states = new Map()
  * @property {string|null} lastSeenTs
  */
 
-export function initState(fixture) {
+/**
+ * @param {Object} fixture
+ * @param {{ firstHalfEndSec?: number|null }} [seed] - values restored from persistence at boot so a
+ *   mid-match restart keeps them (currently only the 1st-half end clock, for the friendly strategy).
+ */
+export function initState(fixture, seed = {}) {
   if (states.has(fixture.geniusId)) return
   states.set(fixture.geniusId, {
     geniusId:           fixture.geniusId,
@@ -38,7 +43,7 @@ export function initState(fixture) {
     phase:              null,
     currentMinute:      null,
     elapsedSec:         null,  // raw phase-elapsed seconds of the latest timed event (for minutes-remaining re-pricing)
-    firstHalfEndSec:    null,  // max FirstHalf phase-elapsed seen = 1st-half end clock (friendly strategy pricing)
+    firstHalfEndSec:    seed.firstHalfEndSec ?? null,  // max FirstHalf phase-elapsed = 1st-half end clock (friendly pricing); seeded from persistence on restart
     friendlyDone:       [],    // friendly minute-marks already attempted (87/88/89) — caps at 3 bets/match
     estimatedStoppage:  null,
     estimatorEvents:    [],

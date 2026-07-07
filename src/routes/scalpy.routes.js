@@ -107,6 +107,7 @@ router.get('/control', async (req, res) => {
       manualArm: cfg.manualArm ?? false,
       openLiability,
       brakes: cfg.brakes ?? null,
+      friendly: cfg.friendly ?? null,
       stake: cfg.stake,
       maxStakeHardCap: cfg.maxStakeHardCap ?? null,
     })

@@ -11,7 +11,7 @@ import { goalCountToMarketType, getOuMarket, forgetOuMarket } from '../services/
 import { placeOrder } from '../services/betfair-orders.service.js'
 import { decide, loadConfig, getConfig } from './scalpy.algorithm.js'
 import { addTicks, clampPrice } from './scalpy.ticks.js'
-import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds, setBustGoals, setStoppageLog } from '../repositories/trade.repository.js'
+import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds, setBustGoals, setStoppageLog, getRecentFirstHalfEnds } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
 import { getOverlap, onOverlapSync } from '../services/overlap.service.js'
 import { settleFixture } from './scalpy.settlement.js'
@@ -43,6 +43,17 @@ const feedTimers = new Map()
 /** geniusId -> last time we (re)subscribed its feed (throttles the on-404 re-subscribe) */
 const lastFeedStartAt = new Map()
 
+/** geniusId -> Set of one-shot friendly-strategy log notes already emitted (keeps the decision log
+ *  readable: log each distinct "why we didn't bet" reason at most once per fixture, not every poll). */
+const friendlyNotes = new Map()
+function friendlyNoteOnce(geniusId, key) {
+  let s = friendlyNotes.get(geniusId)
+  if (!s) { s = new Set(); friendlyNotes.set(geniusId, s) }
+  if (s.has(key)) return false
+  s.add(key)
+  return true
+}
+
 /** geniusId -> consecutive syncs the fixture has NOT been live (used to detect match end) */
 const notLiveCount = new Map()
 
@@ -64,6 +75,12 @@ function withPlacementLock(fn) {
 
 /** Fixtures that already had an OPEN bet at boot — never re-bet them after a restart */
 const rehydratedBetFixtures = new Set()
+
+/** geniusId -> persisted 1st-half end clock (sec), loaded once at boot. Seeds a re-picked-up fixture's
+ *  state so a mid-match restart keeps the friendly strategy's pricing input instead of silently
+ *  skipping the match ("1st half not observed"). firstHalfEndSec is otherwise in-memory only. */
+const rehydratedFirstHalfEnds = new Map()
+const FIRSTHALF_REHYDRATE_WINDOW_MS = 6 * 60 * 60 * 1000 // only restore clocks from matches touched in the last 6h
 
 // A tracked match that leaves the live set for this many consecutive syncs is treated as finished.
 const FINALIZE_AFTER_SYNCS = 2
@@ -102,6 +119,18 @@ export async function startEngine() {
     }
   }
 
+  // Rehydrate 1st-half clocks so a mid-match restart doesn't silently disable the friendly strategy.
+  // Best-effort: any failure just means those fixtures fall back to the safe "1st half not observed"
+  // skip (now logged) — never a betting risk — so this must not block or kill startup.
+  try {
+    const sinceIso = new Date(Date.now() - FIRSTHALF_REHYDRATE_WINDOW_MS).toISOString()
+    const map = await getRecentFirstHalfEnds(sinceIso)
+    for (const [gid, sec] of Object.entries(map)) rehydratedFirstHalfEnds.set(gid, sec)
+    if (rehydratedFirstHalfEnds.size) console.log(`[scalpy.engine] Rehydrated ${rehydratedFirstHalfEnds.size} first-half clock(s) (friendly restart-safety)`)
+  } catch (err) {
+    console.error('[scalpy.engine] first-half rehydrate failed:', err.message)
+  }
+
   console.log(`[scalpy.engine] Engine started (DRY_RUN=${DRY_RUN})`)
 
   // Re-check live fixtures immediately after every overlap refresh (incl. the first), so
@@ -114,6 +143,7 @@ export function stopEngine() {
   feedTimers.clear()
   polledFixtures.clear()
   seenEventKeys.clear()
+  friendlyNotes.clear()
   notLiveCount.clear()
   lastFeedStartAt.clear()
   pollInFlight.clear()
@@ -151,7 +181,13 @@ async function syncLiveFixtures() {
     const { geniusId } = fixture
     // A match finalized today must not be re-tracked if its inplay flag flaps back on.
     if (finalizedToday.has(geniusId)) continue
-    initState(fixture)
+    // Seed the 1st-half clock from persistence if we're re-picking this fixture up after a restart
+    // (initState ignores the seed for an already-tracked fixture, so a live-observed value wins).
+    const seed = rehydratedFirstHalfEnds.has(geniusId)
+      ? { firstHalfEndSec: rehydratedFirstHalfEnds.get(geniusId) }
+      : {}
+    initState(fixture, seed)
+    rehydratedFirstHalfEnds.delete(geniusId) // one-shot: from now on the live value re-persists
     notLiveCount.delete(geniusId) // still live → reset the end-of-match counter
 
     // Restart-safety: a fixture that already has an open bet must not be bet again.
@@ -204,6 +240,7 @@ async function finalizeFixture(geniusId) {
     polledFixtures.delete(geniusId)
     notLiveCount.delete(geniusId)
     seenEventKeys.delete(geniusId)
+    friendlyNotes.delete(geniusId)
     lastFeedStartAt.delete(geniusId)
     clearPendingBet(geniusId)
 
@@ -711,19 +748,56 @@ async function handleFriendlyTicks(geniusId) {
   const state = getState(geniusId)
   if (!state) return
   const cfg = getConfig()
+  // These three are the normal "not applicable" gates — silent by design (would spam every poll for
+  // every non-friendly / 1st-half / unwatched fixture). Everything AFTER this point is logged, so a
+  // friendly that is genuinely in its 2nd-half betting window always leaves a trace.
   if (!isFriendlyMatch(state, cfg) || state.phase !== 'SecondHalf' || !state.watching) return
+  const match = `${state.homeTeam} v ${state.awayTeam}`
 
   const fhAdded = firstHalfAddedMinutes(state.firstHalfEndSec)
-  if (fhAdded == null) return                                        // couldn't measure 1st half → skip (safe)
-  if (fhAdded >= (cfg.friendly.skipFirstHalfAddedFrom ?? 4)) return  // 1st half 4+ added → skip whole match
+  if (fhAdded == null) {                                             // couldn't measure 1st half → skip (safe)
+    if (friendlyNoteOnce(geniusId, 'no_first_half')) {
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'friendly_no_first_half' } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: 'friendly_no_first_half',
+        detail: "1st-half end not observed (engine started/restarted after this match's 1st half) — can't price" })
+    }
+    return
+  }
+  if (fhAdded >= (cfg.friendly.skipFirstHalfAddedFrom ?? 4)) {       // 1st half 4+ added → skip whole match
+    if (friendlyNoteOnce(geniusId, 'fh_added_skip')) {
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'friendly_1h_added_high' } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: 'friendly_1h_added_high',
+        detail: `1st-half added ${fhAdded} ≥ ${cfg.friendly.skipFirstHalfAddedFrom ?? 4} — match skipped per Ersen's rule` })
+    }
+    return
+  }
+  // One-shot "armed" trace so the strategy is visibly alive while it waits for 87/88/89′.
+  if (friendlyNoteOnce(geniusId, 'armed')) {
+    logDecision({ geniusId, match, action: 'DEFERRED', reason: 'friendly_armed',
+      detail: `2nd half · 1H+${fhAdded} · watching for 87/88/89′ marks` })
+  }
 
   const deferWin = cfg.friendly.deferWindowSec ?? 60
   for (const minute of Object.keys(cfg.friendly.rungs ?? {}).map(Number).sort((a, b) => a - b)) {
     if (state.friendlyDone.includes(minute)) continue
     const targetSec = (minute - SECOND_HALF_MINUTES) * 60           // 2nd-half elapsed for this match minute
     if (state.elapsedSec == null || state.elapsedSec < targetSec) return   // not reached → later ones aren't either
-    if (state.elapsedSec >= targetSec + deferWin) { state.friendlyDone.push(minute); continue } // window passed → skip
-    if (isAnyRiskActive(geniusId, RISK_TTL_MS)) return              // defer within the window (retry next poll)
+    if (state.elapsedSec >= targetSec + deferWin) {                 // window passed → skip (and record why)
+      state.friendlyDone.push(minute)
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'friendly_window_missed', addedMinutes: minute } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: `friendly_${minute}_window_missed`,
+        detail: `${minute}′ mark passed unbet (elapsed ${state.elapsedSec}s ≥ ${targetSec + deferWin}s window)` })
+      continue
+    }
+    if (isAnyRiskActive(geniusId, RISK_TTL_MS)) {                   // defer within the window (retry next poll)
+      const risks = activeRiskNames(geniusId, RISK_TTL_MS)
+      if (friendlyNoteOnce(geniusId, `defer_${minute}`)) {
+        broadcast({ type: 'bet_deferred', geniusId, data: { addedMinutes: minute, risks } })
+        logDecision({ geniusId, match, action: 'DEFERRED', reason: `risk:${risks.join(',')}`,
+          detail: `friendly ${minute}′ — held until risk clears` })
+      }
+      return
+    }
     state.friendlyDone.push(minute)                                 // one attempt per minute mark
     await placeFriendlyBet(geniusId, minute, fhAdded)
     return                                                          // one placement per poll

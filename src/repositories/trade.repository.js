@@ -350,10 +350,32 @@ export async function upsertMatchState(state) {
       away_team:     state.awayTeam,
       total_goals:   state.totalGoals,
       phase:         state.phase ?? null,
+      first_half_end_sec: state.firstHalfEndSec ?? null,
       betting_done:  state.bettingDone,
       last_event_ts: state.lastSeenTs ?? null,
       updated_at:    new Date().toISOString(),
     }, { onConflict: 'genius_id' })
 
   if (error) throw new Error(`[trade.repository] upsertMatchState failed: ${error.message}`)
+}
+
+/**
+ * geniusId -> firstHalfEndSec for match-states updated since `sinceUtcISO`. Used at boot to rehydrate
+ * the friendly strategy's 1st-half clock so a mid-match restart doesn't silently disable friendlies
+ * (firstHalfEndSec is otherwise in-memory only). geniusIds are unique per fixture, so a restored value
+ * always belongs to the same match. Best-effort: returns {} on any error (a miss = the safe skip path).
+ */
+export async function getRecentFirstHalfEnds(sinceUtcISO) {
+  const { data, error } = await supabase
+    .from('scalpy_match_states')
+    .select('genius_id, first_half_end_sec')
+    .not('first_half_end_sec', 'is', null)
+    .gte('updated_at', sinceUtcISO)
+  if (error) {
+    console.error('[trade.repository] getRecentFirstHalfEnds failed:', error.message)
+    return {}
+  }
+  const out = {}
+  for (const r of data) out[r.genius_id] = r.first_half_end_sec
+  return out
 }
