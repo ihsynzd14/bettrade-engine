@@ -54,6 +54,13 @@ function friendlyNoteOnce(geniusId, key) {
   return true
 }
 
+/** `${geniusId}:${minute}` -> earliest ts we may re-attempt a friendly mark that was blocked by a
+ *  TRANSIENT gate (Betfair market suspended / no book / stale feed / score just changed). Betfair
+ *  suspends the U/O market during the very attacks we bet right after, so a clear-of-risk attempt can
+ *  still hit a suspended market — we hold and retry (throttled) instead of burning the mark. Bounded by 90:00. */
+const friendlyRetryAt = new Map()
+const FRIENDLY_RETRY_MS = 8000
+
 /** geniusId -> consecutive syncs the fixture has NOT been live (used to detect match end) */
 const notLiveCount = new Map()
 
@@ -144,6 +151,7 @@ export function stopEngine() {
   polledFixtures.clear()
   seenEventKeys.clear()
   friendlyNotes.clear()
+  friendlyRetryAt.clear()
   notLiveCount.clear()
   lastFeedStartAt.clear()
   pollInFlight.clear()
@@ -241,6 +249,7 @@ async function finalizeFixture(geniusId) {
     notLiveCount.delete(geniusId)
     seenEventKeys.delete(geniusId)
     friendlyNotes.delete(geniusId)
+    for (const k of friendlyRetryAt.keys()) if (k.startsWith(`${geniusId}:`)) friendlyRetryAt.delete(k)
     lastFeedStartAt.delete(geniusId)
     clearPendingBet(geniusId)
 
@@ -804,9 +813,15 @@ async function handleFriendlyTicks(geniusId) {
       }
       return
     }
-    state.friendlyDone.push(minute)                                 // clear → place (re-priced in placeFriendlyBet)
-    await placeFriendlyBet(geniusId, minute, fhAdded)
-    return                                                          // one placement per poll
+    // Clear of risk → attempt to place (re-priced by minutes left in placeFriendlyBet). A TRANSIENT
+    // block (Betfair market suspended / no book / stale feed) does NOT burn the mark — hold and retry
+    // (throttled), bounded by 90:00. Only an actual placement (or terminal 90:00 skip) marks it done.
+    const rk = `${geniusId}:${minute}`
+    if (Date.now() < (friendlyRetryAt.get(rk) ?? 0)) return         // waiting out a recent blocked attempt
+    const placed = await placeFriendlyBet(geniusId, minute, fhAdded)
+    if (placed) { state.friendlyDone.push(minute); friendlyRetryAt.delete(rk) }
+    else friendlyRetryAt.set(rk, Date.now() + FRIENDLY_RETRY_MS)    // blocked → short hold, then retry
+    return                                                          // one placement attempt per poll
   }
 }
 
@@ -814,11 +829,11 @@ async function handleFriendlyTicks(geniusId) {
  *  dedupe, ≤3/match); the PRICE re-derives from whole minutes actually left to 90:00 at this instant,
  *  so a mark held through risk and placed a minute later prices to reality (Ersen: 87→3′, 88→2′, 89→1′). */
 async function placeFriendlyBet(geniusId, triggerMinute, firstHalfAdded) {
-  if (placing.has(geniusId)) return
+  if (placing.has(geniusId)) return false
   placing.add(geniusId)
   try {
     const state = getState(geniusId)
-    if (!state) return
+    if (!state) return false
     const cfg = getConfig()
     const match = `${state.homeTeam} v ${state.awayTeam}`
     const goalsAtDecision = state.totalGoals
@@ -831,7 +846,7 @@ async function placeFriendlyBet(geniusId, triggerMinute, firstHalfAdded) {
     if (minutesLeft < 1) {
       broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'friendly_90_reached', addedMinutes: triggerMinute } })
       logDecision({ geniusId, match, action: 'SKIPPED', reason: `friendly_${triggerMinute}_90_reached`, detail: '90:00 reached at placement' })
-      return
+      return true                                     // terminal — window closed, don't retry
     }
     const priceMinute = 90 - minutesLeft        // 3→87, 2→88, 1→89
     const slid = priceMinute !== triggerMinute
@@ -840,11 +855,11 @@ async function placeFriendlyBet(geniusId, triggerMinute, firstHalfAdded) {
     if (!ouMarket) {
       broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'no_market_found', marketType: currentMarketType } })
       logDecision({ geniusId, match, action: 'SKIPPED', reason: `friendly_${triggerMinute}_no_market` })
-      return
+      return false                                    // market may (re)appear — retry, bounded by 90:00
     }
     const goalDiff = Math.abs(state.homeGoals - state.awayGoals)
     const p = friendlyPrice(cfg, priceMinute, firstHalfAdded, goalDiff)
-    if (!p) return
+    if (!p) return false
 
     const tag = `${triggerMinute}′${slid ? `→${priceMinute}′` : ''}`
     const bits = [`friendly ${tag}(${p.base})`]
@@ -859,7 +874,7 @@ async function placeFriendlyBet(geniusId, triggerMinute, firstHalfAdded) {
     const dedupeKey = `scalpy:friendly:${geniusId}:${ouMarket.marketId}:${triggerMinute}` // trigger-keyed → ≤3/market
     const clock = officialClockFromSec(state.phase, state.elapsedSec) ?? `${priceMinute}:00`
 
-    await executePlacement({
+    const claim = await executePlacement({
       geniusId, state, match, decision, ouMarket, selectionId,
       goalsAtDecision, currentMarketType, dedupeKey, strategy: 'friendly', friendly: true,
       addedMinutes: priceMinute, firstHalfAdded,
@@ -867,9 +882,11 @@ async function placeFriendlyBet(geniusId, triggerMinute, firstHalfAdded) {
       placedDetail: `friendly ${tag} · 1H+${firstHalfAdded}${p.gdTicks ? ' · diff≥5' : ''}`,
       extraBroadcast: { firstHalfAdded },
     })
+    return !!claim                                    // placed → mark done; blocked/failed → retry (bounded by 90:00)
   } catch (err) {
     console.error(`[scalpy.engine] placeFriendlyBet error for ${geniusId}:`, err.message)
     broadcast({ type: 'error', geniusId, data: { message: err.message } })
+    return false
   } finally {
     placing.delete(geniusId)
   }
