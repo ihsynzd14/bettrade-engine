@@ -360,6 +360,24 @@ export async function upsertMatchState(state) {
 }
 
 /**
+ * Boot-time schema self-check: verifies every column the engine WRITES exists (a migration that
+ * wasn't run makes every claim/upsert throw — which once killed all betting silently for hours).
+ * @returns {Promise<string[]>} human-readable problems; empty = schema OK
+ */
+export async function checkSchema() {
+  const problems = []
+  const checks = [
+    ['scalpy_trades', 'dedupe_key, strategy, first_half_added, home_goals, away_goals, bust_goals, stoppage_log'],
+    ['scalpy_match_states', 'genius_id, first_half_end_sec'],
+  ]
+  for (const [table, cols] of checks) {
+    const { error } = await supabase.from(table).select(cols).limit(1)
+    if (error) problems.push(`${table}: ${error.message}`)
+  }
+  return problems
+}
+
+/**
  * geniusId -> firstHalfEndSec for match-states updated since `sinceUtcISO`. Used at boot to rehydrate
  * the friendly strategy's 1st-half clock so a mid-match restart doesn't silently disable friendlies
  * (firstHalfEndSec is otherwise in-memory only). geniusIds are unique per fixture, so a restored value

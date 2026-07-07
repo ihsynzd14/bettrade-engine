@@ -11,7 +11,7 @@ import { goalCountToMarketType, getOuMarket, forgetOuMarket } from '../services/
 import { placeOrder } from '../services/betfair-orders.service.js'
 import { decide, loadConfig, getConfig } from './scalpy.algorithm.js'
 import { addTicks, clampPrice } from './scalpy.ticks.js'
-import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds, setBustGoals, setStoppageLog, getRecentFirstHalfEnds } from '../repositories/trade.repository.js'
+import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds, setBustGoals, setStoppageLog, getRecentFirstHalfEnds, checkSchema } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
 import { getOverlap, onOverlapSync } from '../services/overlap.service.js'
 import { settleFixture } from './scalpy.settlement.js'
@@ -152,6 +152,26 @@ export async function startEngine() {
   // Boot marker in the decision trail: makes restarts visible in /log and the durable file, so
   // "why is the log short / why did a pending bet vanish" is answerable (each restart wipes memory).
   logDecision({ action: 'ENGINE', reason: 'started', detail: `DRY_RUN=${DRY_RUN}` })
+
+  // Schema self-check: a migration that wasn't run makes every claim/upsert throw — that once killed
+  // ALL betting silently for hours (missing `strategy` column, 2026-07-07). Make it scream at boot;
+  // in LIVE mode it's a kill condition (fail-closed), in DRY we keep running for visibility.
+  try {
+    const problems = await checkSchema()
+    if (problems.length) {
+      const detail = problems.join(' | ')
+      console.error(`[scalpy.engine] 🔴 SCHEMA CHECK FAILED — run the pending migrations in bettrade-engine/migrations/: ${detail}`)
+      logDecision({ action: 'ERROR', reason: 'schema_check_failed', detail: `RUN PENDING MIGRATIONS — ${detail}` })
+      if (!DRY_RUN) {
+        await kill('schema_check_failed_live', 'startup')
+        console.error('[scalpy.engine] 🔴 schema broken in LIVE — engine KILLED for safety')
+      }
+    } else {
+      console.log('[scalpy.engine] Schema check OK')
+    }
+  } catch (err) {
+    console.error('[scalpy.engine] schema check errored:', err.message)
+  }
 
   // Re-check live fixtures immediately after every overlap refresh (incl. the first), so
   // newly-live matches are picked up as soon as the data is fresh — no fixed-interval lag.
@@ -732,14 +752,24 @@ async function executePlacement(ctx) {
       return
     }
     // Claim INSIDE the lock so its CLAIMED row counts toward the next bet's liability read.
-    claim = await claimTrade({
-      dedupeKey, dryRun: DRY_RUN, strategy, firstHalfAdded,
-      geniusId, betfairEventId: state.betfairEventId, betfairMarketId: ouMarket.marketId, selectionId,
-      homeTeam: state.homeTeam, awayTeam: state.awayTeam,
-      totalGoals: state.totalGoals, homeGoals: state.homeGoals, awayGoals: state.awayGoals, addedMinutes,
-      marketType: ouMarket.marketType, selection: decision.selection, side: decision.action,
-      requestedPrice: decision.price, stake: decision.stake, reason: decision.reason,
-    })
+    // A claim FAILURE (DB down, schema drift — e.g. a migration not run) must be LOUD: it was
+    // silently eaten by the outer catch once (2026-07-07: missing `strategy` column killed every
+    // bet for hours with only a console line). Fail-closed AND visible.
+    try {
+      claim = await claimTrade({
+        dedupeKey, dryRun: DRY_RUN, strategy, firstHalfAdded,
+        geniusId, betfairEventId: state.betfairEventId, betfairMarketId: ouMarket.marketId, selectionId,
+        homeTeam: state.homeTeam, awayTeam: state.awayTeam,
+        totalGoals: state.totalGoals, homeGoals: state.homeGoals, awayGoals: state.awayGoals, addedMinutes,
+        marketType: ouMarket.marketType, selection: decision.selection, side: decision.action,
+        requestedPrice: decision.price, stake: decision.stake, reason: decision.reason,
+      })
+    } catch (err) {
+      console.error(`[scalpy.engine] 🔴 CLAIM FAILED for ${match}:`, err.message)
+      broadcast({ type: 'bet_blocked', geniusId, data: { reason: 'claim_failed', brake: 'claim', detail: err.message } })
+      logDecision({ geniusId, match, action: 'BLOCKED', reason: 'claim_failed', brake: 'claim', detail: err.message })
+      return
+    }
     if (!claim) {
       broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'already_claimed' } })
       logDecision({ geniusId, match, action: 'SKIPPED', reason: 'already_claimed' })
@@ -949,6 +979,9 @@ async function placeFriendlyBet(geniusId, triggerMinute, firstHalfAdded) {
   } catch (err) {
     console.error(`[scalpy.engine] placeFriendlyBet error for ${geniusId}:`, err.message)
     broadcast({ type: 'error', geniusId, data: { message: err.message } })
+    const s = getState(geniusId)
+    logDecision({ geniusId, match: s ? `${s.homeTeam} v ${s.awayTeam}` : String(geniusId),
+      action: 'ERROR', reason: 'friendly_place_error', detail: err.message })
     return false
   } finally {
     placing.delete(geniusId)
@@ -1018,6 +1051,9 @@ async function placeScalpyBet(geniusId, addedMinutes, { deferred = false } = {})
   } catch (err) {
     console.error(`[scalpy.engine] placeScalpyBet error for ${geniusId}:`, err.message)
     broadcast({ type: 'error', geniusId, data: { message: err.message } })
+    const s = getState(geniusId)
+    logDecision({ geniusId, match: s ? `${s.homeTeam} v ${s.awayTeam}` : String(geniusId),
+      action: 'ERROR', reason: 'place_error', detail: err.message })
   } finally {
     placing.delete(geniusId)
   }
