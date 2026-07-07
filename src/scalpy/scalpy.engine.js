@@ -61,6 +61,16 @@ function friendlyNoteOnce(geniusId, key) {
 const friendlyRetryAt = new Map()
 const FRIENDLY_RETRY_MS = 8000
 
+/** Fixtures Genius provides NO live stream for (feed/start 404s upstream — the "no minute on the card"
+ *  matches). Detected via strikes in startFeedForFixture; once flagged we stop polling/re-subscribing so
+ *  the log isn't a wall of "Failed to start feed ... 500" every 10s. Per-run: a restart retries once. */
+const noStreamFixtures = new Set()
+const feedStartFails = new Map()   // geniusId -> consecutive feed/start failures
+const NO_STREAM_STRIKES = 3
+
+/** geniusId -> last time a poll error was written to the decision log (1/min throttle per fixture) */
+const lastPollErrAt = new Map()
+
 /** geniusId -> consecutive syncs the fixture has NOT been live (used to detect match end) */
 const notLiveCount = new Map()
 
@@ -139,6 +149,9 @@ export async function startEngine() {
   }
 
   console.log(`[scalpy.engine] Engine started (DRY_RUN=${DRY_RUN})`)
+  // Boot marker in the decision trail: makes restarts visible in /log and the durable file, so
+  // "why is the log short / why did a pending bet vanish" is answerable (each restart wipes memory).
+  logDecision({ action: 'ENGINE', reason: 'started', detail: `DRY_RUN=${DRY_RUN}` })
 
   // Re-check live fixtures immediately after every overlap refresh (incl. the first), so
   // newly-live matches are picked up as soon as the data is fresh — no fixed-interval lag.
@@ -152,6 +165,9 @@ export function stopEngine() {
   seenEventKeys.clear()
   friendlyNotes.clear()
   friendlyRetryAt.clear()
+  noStreamFixtures.clear()
+  feedStartFails.clear()
+  lastPollErrAt.clear()
   notLiveCount.clear()
   lastFeedStartAt.clear()
   pollInFlight.clear()
@@ -189,6 +205,8 @@ async function syncLiveFixtures() {
     const { geniusId } = fixture
     // A match finalized today must not be re-tracked if its inplay flag flaps back on.
     if (finalizedToday.has(geniusId)) continue
+    // Genius offers no stream for it (flagged by startFeedForFixture) — untrackable, don't re-pick-up.
+    if (noStreamFixtures.has(geniusId)) continue
     // Seed the 1st-half clock from persistence if we're re-picking this fixture up after a restart
     // (initState ignores the seed for an already-tracked fixture, so a live-observed value wins).
     const seed = rehydratedFirstHalfEnds.has(geniusId)
@@ -251,6 +269,8 @@ async function finalizeFixture(geniusId) {
     friendlyNotes.delete(geniusId)
     for (const k of friendlyRetryAt.keys()) if (k.startsWith(`${geniusId}:`)) friendlyRetryAt.delete(k)
     lastFeedStartAt.delete(geniusId)
+    feedStartFails.delete(geniusId)
+    lastPollErrAt.delete(geniusId)
     clearPendingBet(geniusId)
 
     const state = getState(geniusId)
@@ -283,13 +303,40 @@ async function finalizeFixture(geniusId) {
 }
 
 async function startFeedForFixture(geniusId) {
+  if (noStreamFixtures.has(geniusId)) return
   lastFeedStartAt.set(geniusId, Date.now()) // stamp BEFORE the await so the 404 path throttles correctly
   try {
     await axios.post(`${GENIUS_URL}/api/feed/start/${geniusId}`)
+    feedStartFails.delete(geniusId)
     console.log(`[scalpy.engine] Feed started for geniusId=${geniusId}`)
   } catch (err) {
-    console.error(`[scalpy.engine] Failed to start feed for ${geniusId}:`, err.message)
+    const status = err.response?.status
+    const inner = err.response?.data?.error ?? err.message
+    const fails = (feedStartFails.get(geniusId) ?? 0) + 1
+    feedStartFails.set(geniusId, fails)
+    console.error(`[scalpy.engine] Failed to start feed for ${geniusId} (attempt ${fails}):`, inner)
+    // Genius has no live stream for this fixture (upstream 404 — today the backend wraps it in a 500,
+    // after the backend fix it arrives as a plain 404). These are the "no minute on the card" matches:
+    // no data will EVER arrive, so betting is impossible. Stop polling instead of retrying forever.
+    if (status === 404 || fails >= NO_STREAM_STRIKES) {
+      noStreamFixtures.add(geniusId)
+      const state = getState(geniusId)
+      logDecision({ geniusId, match: state ? `${state.homeTeam} v ${state.awayTeam}` : String(geniusId),
+        action: 'SKIPPED', reason: 'no_stream',
+        detail: `Genius has no live feed (feed/start ${status ?? '?'}: ${inner}) — fixture untrackable, polling stopped` })
+      stopPollingFixture(geniusId)
+    }
   }
+}
+
+/** Stop polling a fixture and drop it from the live list (no feed will ever arrive → nothing to bet). */
+function stopPollingFixture(geniusId) {
+  const t = feedTimers.get(geniusId)
+  if (t) clearTimeout(t)
+  feedTimers.delete(geniusId)
+  polledFixtures.delete(geniusId)
+  clearState(geniusId)
+  broadcast({ type: 'match_states', data: getAllStates() })
 }
 
 // --- self-scheduling poll (no overlapping requests; a slow feed call can't pile up) ---
@@ -308,6 +355,15 @@ async function runPoll(geniusId) {
     await handleFriendlyTicks(geniusId) // friendly strategy: fire 87/88/89 bets when due
   } catch (err) {
     console.error(`[scalpy.engine] runPoll error for ${geniusId}:`, err.message)
+    // Surface real processing errors in the decision trail too (console dies with the terminal;
+    // /log + the durable file don't). Throttled to 1/min per fixture so a crash-loop can't spam.
+    const last = lastPollErrAt.get(geniusId) ?? 0
+    if (Date.now() - last > 60_000) {
+      lastPollErrAt.set(geniusId, Date.now())
+      const state = getState(geniusId)
+      logDecision({ geniusId, match: state ? `${state.homeTeam} v ${state.awayTeam}` : String(geniusId),
+        action: 'ERROR', reason: 'poll_error', detail: err.message })
+    }
   } finally {
     pollInFlight.delete(geniusId)
     schedulePoll(geniusId) // schedule the next run only if still polled
@@ -552,6 +608,13 @@ async function handleStoppageTime(geniusId, event) {
   const state = getState(geniusId)
   if (!state) return
   const match = `${state.homeTeam} v ${state.awayTeam}`
+
+  // Durable trace of EVERY 2nd-half announcement, before any strategy filter can swallow it — so
+  // "did the engine even see the announcement?" is always answerable from /log, even after a restart.
+  if (event.phase === 'SecondHalf' && Number.isFinite(event.addedMinutes)) {
+    logDecision({ geniusId, match, action: 'ANNOUNCE', reason: `${event.addedMinutes}min_announced`,
+      detail: `2nd-half stoppage +${event.addedMinutes}′ announced` })
+  }
 
   // Friendly matches use the friendly strategy (87/88/89) ONLY — skip the stoppage strategy for them.
   if (isFriendlyMatch(state, getConfig())) return
