@@ -741,8 +741,11 @@ function friendlyPrice(cfg, minute, firstHalfAdded, goalDiff) {
 }
 
 /**
- * Per-poll friendly driver: at each 87/88/89 mark (2nd half), fire one BACK-UNDER bet. If a risk is
- * active at the mark, DEFER within that minute's window (retry next poll) and skip if it never clears.
+ * Per-poll friendly driver: at each 87/88/89 mark (2nd half), place one BACK-UNDER bet. If a risk
+ * (dangerous attack / corner / VAR / penalty) is active at the mark, HOLD the bet and retry every poll
+ * until it clears — then place, re-priced by the minutes actually left to 90:00 (Ersen: "geçince al,
+ * kalan dakikaya göre fiyatla"). A mark is only abandoned if 90:00 arrives before it can place. The loop
+ * stops at the first unfilled mark, so marks fire in order and never overlap (no double bet).
  */
 async function handleFriendlyTicks(geniusId) {
   const state = getState(geniusId)
@@ -777,35 +780,40 @@ async function handleFriendlyTicks(geniusId) {
       detail: `2nd half · 1H+${fhAdded} · watching for 87/88/89′ marks` })
   }
 
-  const deferWin = cfg.friendly.deferWindowSec ?? 60
+  // Betting window: 87:00 .. 90:00 (2nd-half phase-elapsed 2520 .. 2700). Marks fire in order; a mark is
+  // HELD through active risk until it clears (bounded by 90:00), then placed & re-priced by minutes left.
+  const windowEndSec = (90 - SECOND_HALF_MINUTES) * 60             // 2700 = 90:00 in 2nd-half elapsed
+  if (state.elapsedSec == null) return
   for (const minute of Object.keys(cfg.friendly.rungs ?? {}).map(Number).sort((a, b) => a - b)) {
     if (state.friendlyDone.includes(minute)) continue
     const targetSec = (minute - SECOND_HALF_MINUTES) * 60           // 2nd-half elapsed for this match minute
-    if (state.elapsedSec == null || state.elapsedSec < targetSec) return   // not reached → later ones aren't either
-    if (state.elapsedSec >= targetSec + deferWin) {                 // window passed → skip (and record why)
+    if (state.elapsedSec < targetSec) return                        // not reached → later marks aren't either
+    if (state.elapsedSec >= windowEndSec) {                         // 90:00 arrived before this mark could place
       state.friendlyDone.push(minute)
-      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'friendly_window_missed', addedMinutes: minute } })
-      logDecision({ geniusId, match, action: 'SKIPPED', reason: `friendly_${minute}_window_missed`,
-        detail: `${minute}′ mark passed unbet (elapsed ${state.elapsedSec}s ≥ ${targetSec + deferWin}s window)` })
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'friendly_90_reached', addedMinutes: minute } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: `friendly_${minute}_90_reached`,
+        detail: `90:00 reached before ${minute}′ could clear its risk` })
       continue
     }
-    if (isAnyRiskActive(geniusId, RISK_TTL_MS)) {                   // defer within the window (retry next poll)
+    if (isAnyRiskActive(geniusId, RISK_TTL_MS)) {                   // HOLD through risk — retry every poll, no giveup
       const risks = activeRiskNames(geniusId, RISK_TTL_MS)
       if (friendlyNoteOnce(geniusId, `defer_${minute}`)) {
         broadcast({ type: 'bet_deferred', geniusId, data: { addedMinutes: minute, risks } })
         logDecision({ geniusId, match, action: 'DEFERRED', reason: `risk:${risks.join(',')}`,
-          detail: `friendly ${minute}′ — held until risk clears` })
+          detail: `friendly ${minute}′ — held until risk clears (then re-priced by minutes left)` })
       }
       return
     }
-    state.friendlyDone.push(minute)                                 // one attempt per minute mark
+    state.friendlyDone.push(minute)                                 // clear → place (re-priced in placeFriendlyBet)
     await placeFriendlyBet(geniusId, minute, fhAdded)
     return                                                          // one placement per poll
   }
 }
 
-/** Place a single friendly BACK-UNDER bet for a given minute mark. */
-async function placeFriendlyBet(geniusId, minute, firstHalfAdded) {
+/** Place one friendly BACK-UNDER bet. `triggerMinute` = the 87/88/89 mark that fired it (keys the
+ *  dedupe, ≤3/match); the PRICE re-derives from whole minutes actually left to 90:00 at this instant,
+ *  so a mark held through risk and placed a minute later prices to reality (Ersen: 87→3′, 88→2′, 89→1′). */
+async function placeFriendlyBet(geniusId, triggerMinute, firstHalfAdded) {
   if (placing.has(geniusId)) return
   placing.add(geniusId)
   try {
@@ -816,17 +824,30 @@ async function placeFriendlyBet(geniusId, minute, firstHalfAdded) {
     const goalsAtDecision = state.totalGoals
     const currentMarketType = goalCountToMarketType(state.totalGoals)
 
+    // Re-price by whole minutes remaining to 90:00 (87:00→3, 88:00→2, 89:00→1). A mark held through
+    // risk and placed later prices to what's actually left, not the mark it triggered at.
+    const windowEndSec = (90 - SECOND_HALF_MINUTES) * 60
+    const minutesLeft = Math.ceil((windowEndSec - (state.elapsedSec ?? windowEndSec)) / 60)
+    if (minutesLeft < 1) {
+      broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'friendly_90_reached', addedMinutes: triggerMinute } })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: `friendly_${triggerMinute}_90_reached`, detail: '90:00 reached at placement' })
+      return
+    }
+    const priceMinute = 90 - minutesLeft        // 3→87, 2→88, 1→89
+    const slid = priceMinute !== triggerMinute
+
     const ouMarket = await getOuMarket(state.betfairEventId, currentMarketType)
     if (!ouMarket) {
       broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'no_market_found', marketType: currentMarketType } })
-      logDecision({ geniusId, match, action: 'SKIPPED', reason: `friendly_${minute}_no_market` })
+      logDecision({ geniusId, match, action: 'SKIPPED', reason: `friendly_${triggerMinute}_no_market` })
       return
     }
     const goalDiff = Math.abs(state.homeGoals - state.awayGoals)
-    const p = friendlyPrice(cfg, minute, firstHalfAdded, goalDiff)
+    const p = friendlyPrice(cfg, priceMinute, firstHalfAdded, goalDiff)
     if (!p) return
 
-    const bits = [`friendly ${minute}′(${p.base})`]
+    const tag = `${triggerMinute}′${slid ? `→${priceMinute}′` : ''}`
+    const bits = [`friendly ${tag}(${p.base})`]
     if (p.fhTicks) bits.push(`+${p.fhTicks}t 1H+${firstHalfAdded}`)
     if (p.gdTicks) bits.push(`+${p.gdTicks}t diff≥5`)
     const decision = {
@@ -835,15 +856,15 @@ async function placeFriendlyBet(geniusId, minute, firstHalfAdded) {
       reason: `${bits.join(' ')} → BACK UNDER @ ${p.price}`,
     }
     const selectionId = decision.selection === 'UNDER' ? ouMarket.underSelectionId : ouMarket.overSelectionId
-    const dedupeKey = `scalpy:friendly:${geniusId}:${ouMarket.marketId}:${minute}` // minute-keyed → ≤3/market
-    const clock = officialClockFromSec(state.phase, state.elapsedSec) ?? `${minute}:00`
+    const dedupeKey = `scalpy:friendly:${geniusId}:${ouMarket.marketId}:${triggerMinute}` // trigger-keyed → ≤3/market
+    const clock = officialClockFromSec(state.phase, state.elapsedSec) ?? `${priceMinute}:00`
 
     await executePlacement({
       geniusId, state, match, decision, ouMarket, selectionId,
       goalsAtDecision, currentMarketType, dedupeKey, strategy: 'friendly', friendly: true,
-      addedMinutes: minute, firstHalfAdded,
-      placedLog: `${clock}  🎯 FRIENDLY BET @${p.price} ${ouMarket.marketType.replace('OVER_UNDER_', 'U/O ')} (${state.homeGoals}-${state.awayGoals}) [${minute}′]`,
-      placedDetail: `friendly ${minute}′ · 1H+${firstHalfAdded}${p.gdTicks ? ' · diff≥5' : ''}`,
+      addedMinutes: priceMinute, firstHalfAdded,
+      placedLog: `${clock}  🎯 FRIENDLY BET @${p.price} ${ouMarket.marketType.replace('OVER_UNDER_', 'U/O ')} (${state.homeGoals}-${state.awayGoals}) [${tag}]`,
+      placedDetail: `friendly ${tag} · 1H+${firstHalfAdded}${p.gdTicks ? ' · diff≥5' : ''}`,
       extraBroadcast: { firstHalfAdded },
     })
   } catch (err) {
