@@ -102,6 +102,11 @@ const FIRSTHALF_REHYDRATE_WINDOW_MS = 6 * 60 * 60 * 1000 // only restore clocks 
 // A tracked match that leaves the live set for this many consecutive syncs is treated as finished.
 const FINALIZE_AFTER_SYNCS = 2
 
+// Scout-error guard (Ersen 2026-07-08): a 2nd-half stoppage announcement arriving before the 85th
+// minute (2nd-half phase-elapsed < 40:00) is junk — scouts sometimes mis-send one mid-match (e.g.
+// 65'). Ignore it completely so the REAL ~90' announcement still triggers normally.
+const ANNOUNCE_MIN_ELAPSED_SEC = 40 * 60
+
 // Risk-defer tuning (wall-clock so a deferred bet always ages out regardless of poll cadence/watch)
 const RISK_TTL_MS    = parseInt(process.env.SCALPY_RISK_TTL_MS ?? '60000', 10)
 const MAX_PENDING_MS = parseInt(process.env.SCALPY_MAX_PENDING_MS ?? '600000', 10) // ~10 min
@@ -527,7 +532,11 @@ async function processEvent(geniusId, event) {
 
   // Post-90' replay (Ersen): start capturing at the 2nd-half stoppage announcement, then log EVERY
   // event until full time. Persisted to the placed bet at finalize so it survives the feed being wiped.
-  if (event.type === 'stoppageTimeAnnouncements' && event.phase === 'SecondHalf') startStoppageLog(geniusId)
+  // Too-early (<85') announcements are scout errors — they don't start the capture either.
+  if (event.type === 'stoppageTimeAnnouncements' && event.phase === 'SecondHalf' &&
+      !(state.elapsedSec != null && state.elapsedSec < ANNOUNCE_MIN_ELAPSED_SEC)) {
+    startStoppageLog(geniusId)
+  }
   if (state.stoppageLogging) {
     const line = timelineEntry(event)
     if (line) pushStoppageLog(geniusId, line)
@@ -572,10 +581,13 @@ async function processEvent(geniusId, event) {
       break
 
     case 'stoppageTimeAnnouncements':
-      // Surface the announced added minutes on the card immediately ("90+N")
+      // Surface the announced added minutes on the card immediately ("90+N") — unless it's a
+      // too-early (<85') scout error, which must not touch the displayed minute either.
       if (event.phase === 'SecondHalf' && Number.isFinite(event.addedMinutes)) {
         const s = getState(geniusId)
-        if (s) s.currentMinute = `90+${event.addedMinutes}`
+        if (s && !(s.elapsedSec != null && s.elapsedSec < ANNOUNCE_MIN_ELAPSED_SEC)) {
+          s.currentMinute = `90+${event.addedMinutes}`
+        }
       }
       await handleStoppageTime(geniusId, event)
       break
@@ -634,6 +646,17 @@ async function handleStoppageTime(geniusId, event) {
   if (event.phase === 'SecondHalf' && Number.isFinite(event.addedMinutes)) {
     logDecision({ geniusId, match, action: 'ANNOUNCE', reason: `${event.addedMinutes}min_announced`,
       detail: `2nd-half stoppage +${event.addedMinutes}′ announced` })
+  }
+
+  // Scout-error guard (Ersen): an announcement before the 85th minute is junk — ignore it with NO
+  // side effects (no bet, no pendingBet, no bettingDone) so the real ~90' announcement still fires.
+  if (event.phase === 'SecondHalf' && state.elapsedSec != null && state.elapsedSec < ANNOUNCE_MIN_ELAPSED_SEC) {
+    const clock = officialClockFromSec('SecondHalf', state.elapsedSec) ?? '?'
+    console.log(`[scalpy.engine] Ignoring too-early stoppage announcement for ${match} (+${event.addedMinutes}′ at ${clock})`)
+    broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'announce_too_early', addedMinutes: event.addedMinutes } })
+    logDecision({ geniusId, match, action: 'SKIPPED', reason: 'announce_too_early',
+      detail: `+${event.addedMinutes}′ at ${clock} (<85′) — scout error, ignored entirely` })
+    return
   }
 
   // Friendly matches use the friendly strategy (87/88/89) ONLY — skip the stoppage strategy for them.
@@ -707,18 +730,21 @@ async function tryPendingBet(geniusId) {
 const SECOND_HALF_MINUTES = 45
 
 /**
- * Minutes ACTUALLY LEFT in 2nd-half added time. The added time ends ~(45 + announced) minutes into
- * the half (phase-elapsed 45:00 = match 90:00). Risk-defer can eat into it, so we re-price off what
- * remains, NOT the announced total (Ersen's rule): "5 announced, risk clears at 91:00 → 4 left" →
- * bet the 4-minute rung. Ceil so the whole 91:xx minute reads "4". Falls back to the announced total
- * if the clock is unknown, and never returns more than the announced total.
+ * Minutes ACTUALLY LEFT until the added time ends. The added time ends ~(45 + announced) minutes
+ * into the half (phase-elapsed 45:00 = match 90:00), so this is simply (end − now), both ways:
+ *  - LATE announce (risk-defer ate into it): "5 announced, placing at 91:00 → 4 left" → 4-min rung.
+ *  - EARLY announce (Ersen 2026-07-08 bug fix): "+5 shown at 88:11 → 1:49 still left to 90:00 →
+ *    ~7 min actually remain" → 7-min rung, NOT 5. The old code capped at the announced total and
+ *    silently threw the pre-90:00 remainder away.
+ * Ceil so a partially-elapsed minute still counts as remaining (88:11 → 6.8 → 7; 91:12 with 4
+ * announced → 2.8 → 3). Falls back to the announced total if the clock is unknown.
  *
  * @returns {number} whole minutes remaining (0 = added time already elapsed → caller skips)
  */
 export function minutesRemainingInStoppage(announcedMin, elapsedSec) {
   if (elapsedSec == null || !Number.isFinite(elapsedSec)) return announcedMin
   const endSec = (SECOND_HALF_MINUTES + announcedMin) * 60
-  const remainingSec = Math.min(announcedMin * 60, Math.max(0, endSec - elapsedSec))
+  const remainingSec = Math.max(0, endSec - elapsedSec)
   return Math.ceil(remainingSec / 60)
 }
 
@@ -735,6 +761,7 @@ async function executePlacement(ctx) {
   } = ctx
 
   let claim = null
+  let alreadyClaimed = false
   await withPlacementLock(async () => {
     let gate
     try {
@@ -771,11 +798,14 @@ async function executePlacement(ctx) {
       return
     }
     if (!claim) {
+      alreadyClaimed = true
       broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'already_claimed' } })
       logDecision({ geniusId, match, action: 'SKIPPED', reason: 'already_claimed' })
     }
   })
-  if (!claim) return null
+  // 'already_claimed' = a bet for this dedupe key EXISTS (e.g. placed before a restart wiped the
+  // in-memory friendlyDone list). Terminal for the caller — retrying can never succeed.
+  if (!claim) return alreadyClaimed ? 'already_claimed' : null
 
   // --- RE-CHECK KILL at the last synchronous instant before placing ---
   if (isKilled()) {
@@ -967,7 +997,7 @@ async function placeFriendlyBet(geniusId, triggerMinute, firstHalfAdded) {
     const dedupeKey = `scalpy:friendly:${geniusId}:${ouMarket.marketId}:${triggerMinute}` // trigger-keyed → ≤3/market
     const clock = officialClockFromSec(state.phase, state.elapsedSec) ?? `${priceMinute}:00`
 
-    const claim = await executePlacement({
+    const res = await executePlacement({
       geniusId, state, match, decision, ouMarket, selectionId,
       goalsAtDecision, currentMarketType, dedupeKey, strategy: 'friendly', friendly: true,
       addedMinutes: priceMinute, firstHalfAdded,
@@ -975,7 +1005,8 @@ async function placeFriendlyBet(geniusId, triggerMinute, firstHalfAdded) {
       placedDetail: `friendly ${tag} · 1H+${firstHalfAdded}${p.gdTicks ? ' · diff≥5' : ''}`,
       extraBroadcast: { firstHalfAdded },
     })
-    return !!claim                                    // placed → mark done; blocked/failed → retry (bounded by 90:00)
+    // placed OR already-claimed (bet exists from before a restart) → mark done; blocked/failed → retry
+    return res === 'already_claimed' || !!res
   } catch (err) {
     console.error(`[scalpy.engine] placeFriendlyBet error for ${geniusId}:`, err.message)
     broadcast({ type: 'error', geniusId, data: { message: err.message } })

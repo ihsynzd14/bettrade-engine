@@ -23,7 +23,6 @@
     "skipFirstHalfAddedFrom": 4,
     "goalDiffFrom": 5,
     "goalDiffTicks": 5,
-    "deferWindowSec": 60,
     "competitionMatch": "friendl"
   },
   "brakes": {
