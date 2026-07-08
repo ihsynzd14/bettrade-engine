@@ -57,6 +57,7 @@ export function initState(fixture, seed = {}) {
     betPlaced:          false,
     tradeId:            null,
     bustGoals:          [],   // running-clock times of goals scored AFTER our bet (the ones that bust an Under)
+    bustHighWater:      null, // authoritative total already reflected in bustGoals — only a HIGHER total is a real busting goal (blocks feed re-sends/disallowed showing as phantom goals)
     stoppageLog:        [],    // full post-90' event + decision timeline (persisted to the trade at finalize)
     stoppageLogging:    false, // true once the 2nd-half stoppage is announced (start capturing the timeline)
     lastSeenTs:         null,
@@ -204,6 +205,10 @@ export function setBettingDone(geniusId) {
 export function setBetPlaced(geniusId, tradeId) {
   const s = states.get(geniusId)
   if (!s) return
+  // Bust-detection baseline: goals already on the board when our FIRST bet went on. Only an
+  // authoritative total ABOVE this counts as a real busting goal; equal-or-lower 'goals' events
+  // (feed re-sends / disallowed) are ignored so they can't show as phantom bust goals.
+  if (s.bustHighWater == null) s.bustHighWater = s.totalGoals
   s.bettingDone = true
   s.betPlaced = true
   s.tradeId = tradeId ?? s.tradeId

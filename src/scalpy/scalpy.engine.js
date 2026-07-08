@@ -545,15 +545,20 @@ async function processEvent(geniusId, event) {
   switch (event.type) {
     case 'goals': {
       const s = getState(geniusId)
-      // If a bet is already OPEN on this fixture, a goal now busts the Under — capture its official
-      // clock time so the LOST row can show WHY we blew up (e.g. "92:15"). Independent of scoring.
-      if (s && s.betPlaced && s.tradeId && event.phase && event.timeElapsed) {
+      // A goal busts an OPEN Under bet — capture its official clock so the LOST row shows WHY (e.g.
+      // "92:15"). But ONLY when the AUTHORITATIVE total actually WENT UP: the feed re-sends /
+      // duplicates a goal event, and VAR-disallowed goals also fire 'goals' events, all keeping the
+      // score unchanged. Recording those produced fake "goal at 88:35 (1-0)" annotations that were not
+      // in the timeline and did not match the score (Ersen 2026-07-08). The score is authoritative
+      // from the backend (set at the top of the poll), so a real new goal shows as totalGoals > the
+      // high-water mark already reflected in bustGoals.
+      if (s && s.betPlaced && s.tradeId && s.bustHighWater != null && s.totalGoals > s.bustHighWater &&
+          event.phase && event.timeElapsed) {
         const clock = officialClock(event.phase, event.timeElapsed)
         if (clock) {
-          // s.homeGoals/awayGoals already reflect this goal (score set at the top of the poll), so
-          // record the time AND the resulting score, e.g. "92:15 (2-3)" — Ersen wants both.
           const entry = `${clock} (${s.homeGoals}-${s.awayGoals})`
           recordBustGoal(geniusId, entry)
+          s.bustHighWater = s.totalGoals // advance so a re-send / next event of the same goal isn't re-recorded
           setBustGoals(s.tradeId, s.bustGoals.join(' · ')).catch(() => {})
           broadcast({ type: 'bust_goal', geniusId, data: { tradeId: s.tradeId, clock: entry } })
         }
