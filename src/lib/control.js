@@ -118,8 +118,19 @@ export async function kill(reason, by = 'system') {
 }
 
 export async function resume(by = 'operator') {
-  await persist({ killed: false, killReason: null, killedAt: null, killedBy: by })
-  console.warn(`[control] 🟢 RESUMED by ${by}`)
+  // Also clear the consecutive-loss streak. `canPlaceBet` (scalpy.brakes.js) checks
+  // `consecutiveLosses >= circuitBreakerLosses` as a standalone backstop, INDEPENDENT of `killed` —
+  // so a circuit-breaker auto-kill left `killed:false` after resume() but the streak count still
+  // past threshold, meaning EVERY bet kept silently BLOCKING (reason `circuit_breaker_tripped`) with
+  // no losing trade ever able to happen to reset it, and no path back except the next Istanbul-day
+  // rollover. Resume is an explicit operator decision to let the bot operate again — leaving the very
+  // counter that triggered the kill in place defeated that purpose (found live 2026-07-11: resumed
+  // but consecutiveLosses stayed at 6, bot silently frozen for the rest of the day).
+  // `realizedPnlToday` is intentionally NOT reset here — it's real settled P&L (self-healing from the
+  // DB), and "stay paused for the rest of today after hitting the DAILY loss limit" is the correct,
+  // intended safety behaviour, unlike the streak counter which has no such daily-scoped meaning.
+  await persist({ killed: false, killReason: null, killedAt: null, killedBy: by, consecutiveLosses: 0 })
+  console.warn(`[control] 🟢 RESUMED by ${by} (consecutive-loss streak cleared)`)
   broadcast({ type: 'control_changed', data: getControl() })
   return getControl()
 }
