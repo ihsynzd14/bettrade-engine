@@ -307,6 +307,21 @@ export async function getPendingTrades() {
 }
 
 /**
+ * All trades placed for one fixture under a given strategy (any status). Used to batch a friendly
+ * match's correlated 87/88/89' legs into a SINGLE circuit-breaker event once every leg has resolved
+ * (settled, or will never settle), instead of counting each leg as an independent loss/win.
+ */
+export async function getStrategyTradesForFixture(geniusId, strategy) {
+  const { data, error } = await supabase
+    .from('scalpy_trades')
+    .select('id, status, outcome, pnl, dry_run')
+    .eq('genius_id', geniusId)
+    .eq('strategy', strategy)
+  if (error) throw new Error(`[trade.repository] getStrategyTradesForFixture failed: ${error.message}`)
+  return data
+}
+
+/**
  * P&L summary across all trades.
  */
 export async function getSummary() {

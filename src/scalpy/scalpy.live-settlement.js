@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getSessionToken } from '../services/betfair-auth.service.js'
-import { getOpenLiveTrades, markTradeMatched, settleTrade } from '../repositories/trade.repository.js'
+import { getOpenLiveTrades, markTradeMatched, settleTrade, getStrategyTradesForFixture } from '../repositories/trade.repository.js'
 import { cancelOrders } from '../services/betfair-orders.service.js'
 import { broadcast } from './scalpy.sse.js'
 import { recordSettlement } from '../lib/control.js'
@@ -150,9 +150,33 @@ async function settleClearedOrders(open, betIds) {
       if (!settled) continue // already settled — idempotent
       console.log(`[scalpy.live-settlement] Trade ${trade.id} settled: ${outcome} P&L=${pnl}`)
       broadcast({ type: 'trade_settled', data: { tradeId: trade.id, outcome, pnl, dryRun: false } })
-      await recordSettlement({ pnl, outcome, limits: getConfig().brakes ?? {} })
+      await recordSettlementFor(trade, outcome, pnl)
     } catch (err) {
       console.error(`[scalpy.live-settlement] settleTrade failed for ${trade.id}:`, err.message)
     }
   }
+}
+
+/**
+ * Record ONE trade's circuit-breaker/daily-loss effect — except a friendly leg, whose 87/88/89′
+ * siblings can clear on Betfair across SEVERAL poller ticks (not necessarily together like the
+ * DRY_RUN path's single-call settleFixture). Hold recording until every leg of that match has
+ * resolved, then record it as ONE batched win/loss — same rationale as scalpy.settlement.js: 3
+ * correlated legs must count as one strike, not up to 3 (Ersen 2026-07-12). DB-driven (re-queries
+ * `scalpy_trades`, not in-memory tick state) so it stays correct across ticks and restarts.
+ */
+async function recordSettlementFor(trade, outcome, pnl) {
+  const strategy = trade.strategy ?? 'stoppage'
+  if (strategy !== 'friendly') {
+    await recordSettlement({ pnl, outcome, limits: getConfig().brakes ?? {} })
+    return
+  }
+  const siblings = await getStrategyTradesForFixture(trade.genius_id, 'friendly')
+  const stillOpen = siblings.some(s => s.status === 'PENDING' || s.status === 'MATCHED')
+  if (stillOpen) return // other legs haven't resolved yet — this fixture's batch fires once they have
+  const resolvedLegs = siblings.filter(s => s.status === 'SETTLED')
+  if (resolvedLegs.length === 0) return // shouldn't happen (we just settled one) — defensive no-op
+  const anyWon = resolvedLegs.some(s => s.outcome === 'WON')
+  const batchPnl = Math.round(resolvedLegs.reduce((sum, s) => sum + Number(s.pnl ?? 0), 0) * 100) / 100
+  await recordSettlement({ pnl: batchPnl, outcome: anyWon ? 'WON' : 'LOST', limits: getConfig().brakes ?? {} })
 }

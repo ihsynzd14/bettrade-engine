@@ -135,6 +135,24 @@ export async function resume(by = 'operator') {
   return getControl()
 }
 
+/**
+ * Reset JUST the consecutive-loss streak — a targeted tool distinct from resume(), usable whether or
+ * not the bot is currently killed. If the CURRENT kill was specifically caused by the circuit
+ * breaker, this also un-kills (that's exactly what tripped it); a kill from another cause (manual,
+ * daily-loss-limit) stays killed — use resume() for that. Lets the operator give the streak a fresh
+ * start proactively (e.g. before it reaches the threshold) or clear a tripped breaker directly from
+ * the admin panel without touching an unrelated kill reason.
+ */
+export async function resetCircuitBreaker(by = 'operator') {
+  const wasCircuitBreakerKill = control.killed && !!control.killReason?.startsWith('circuit_breaker')
+  const patch = { consecutiveLosses: 0 }
+  if (wasCircuitBreakerKill) Object.assign(patch, { killed: false, killReason: null, killedAt: null, killedBy: by })
+  await persist(patch)
+  console.warn(`[control] 🔁 Circuit breaker reset by ${by}${wasCircuitBreakerKill ? ' (was killed by it — also resumed)' : ''}`)
+  broadcast({ type: 'control_changed', data: getControl() })
+  return getControl()
+}
+
 export async function setTrackingPaused(paused) {
   await persist({ trackingPaused: !!paused })
   broadcast({ type: 'control_changed', data: getControl() })

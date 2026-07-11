@@ -6,7 +6,7 @@ import { addClient, broadcast } from '../scalpy/scalpy.sse.js'
 import { loadConfig, getConfig } from '../scalpy/scalpy.algorithm.js'
 import { getTrades, getTradesForDay, getTradeById, getSummary, getOpenLiability } from '../repositories/trade.repository.js'
 import { getAllStates, getState, setWatching } from '../scalpy/scalpy.match-state.js'
-import { getControl, kill, resume, setTrackingPaused } from '../lib/control.js'
+import { getControl, kill, resume, resetCircuitBreaker, setTrackingPaused } from '../lib/control.js'
 import { getDecisions } from '../scalpy/scalpy.decisions.js'
 import { DRY_RUN, LIVE_ARMED } from '../lib/env.js'
 
@@ -116,12 +116,13 @@ router.get('/control', async (req, res) => {
   }
 })
 
-// POST /api/scalpy/control { action:'kill'|'resume', pauseTracking?, manualArm?, reason? }
+// POST /api/scalpy/control { action:'kill'|'resume'|'reset_circuit_breaker', pauseTracking?, manualArm?, reason? }
 router.post('/control', requireAdmin, async (req, res) => {
   try {
     const { action, pauseTracking, manualArm, reason } = req.body ?? {}
     if (action === 'kill')        await kill(reason || 'manual_kill', 'operator')
     else if (action === 'resume') await resume('operator')
+    else if (action === 'reset_circuit_breaker') await resetCircuitBreaker('operator')
     else if (action == null && pauseTracking == null && manualArm == null)
       return res.status(400).json({ ok: false, error: 'missing action' })
     if (pauseTracking != null) await setTrackingPaused(!!pauseTracking)
