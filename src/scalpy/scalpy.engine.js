@@ -537,6 +537,17 @@ async function processEvent(geniusId, event) {
       !(state.elapsedSec != null && state.elapsedSec < ANNOUNCE_MIN_ELAPSED_SEC)) {
     startStoppageLog(geniusId)
   }
+  // Friendly matches never rely on a stoppage announcement — they bet off the clock at 87/88/89′ —
+  // so the trigger above can go the whole match without firing, leaving the timeline with nothing but
+  // the bare "FRIENDLY BET" lines (Ersen 2026-07-11: "87:00'dan itibaren log tut"). Start the SAME
+  // capture the moment the 2nd half reaches the first configured rung (87′ by default).
+  if (event.phase === 'SecondHalf' && state.elapsedSec != null && isFriendlyMatch(state, getConfig())) {
+    const rungMinutes = Object.keys(getConfig().friendly?.rungs ?? {}).map(Number)
+    if (rungMinutes.length) {
+      const firstRungSec = (Math.min(...rungMinutes) - SECOND_HALF_MINUTES) * 60
+      if (state.elapsedSec >= firstRungSec) startStoppageLog(geniusId)
+    }
+  }
   if (state.stoppageLogging) {
     const line = timelineEntry(event)
     if (line) pushStoppageLog(geniusId, line)
