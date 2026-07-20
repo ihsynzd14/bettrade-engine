@@ -1,10 +1,11 @@
 import axios from 'axios'
 import { getSessionToken } from '../services/betfair-auth.service.js'
-import { getOpenLiveTrades, markTradeMatched, settleTrade, getStrategyTradesForFixture } from '../repositories/trade.repository.js'
+import { getOpenLiveTrades, markTradeMatched, updateMatchResult, failTrade, settleTrade, getStrategyTradesForFixture } from '../repositories/trade.repository.js'
 import { cancelOrders } from '../services/betfair-orders.service.js'
 import { broadcast } from './scalpy.sse.js'
 import { recordSettlement } from '../lib/control.js'
 import { getConfig } from './scalpy.algorithm.js'
+import { logDecision } from './scalpy.decisions.js'
 import { DRY_RUN } from '../lib/env.js'
 
 const BETTING_API    = 'https://api.betfair.com/exchange/betting/rest/v1.0'
@@ -90,14 +91,22 @@ async function tick() {
   const betIds = open.map(t => t.bet_id).filter(Boolean)
   if (betIds.length === 0) return
 
-  // 1. Promote PENDING -> MATCHED once the order is fully executed.
-  await updateMatchedStatus(open, betIds)
+  // 1. Reconcile current orders: PENDING → PARTIALLY_MATCHED → MATCHED, or FAILED on expiry.
+  await reconcileCurrentOrders(open, betIds)
 
   // 2. Settle (-> SETTLED) using Betfair's real settled P&L once the market resolves.
   await settleClearedOrders(open, betIds)
 }
 
-async function updateMatchedStatus(open, betIds) {
+/**
+ * Poll listCurrentOrders for every open live trade and update match state.
+ * Transitions:
+ *   PENDING → PARTIALLY_MATCHED (sizeMatched > 0 but < stake, order still EXECUTABLE)
+ *   PENDING/PARTIALLY_MATCHED → MATCHED (EXECUTION_COMPLETE)
+ *   PENDING/PARTIALLY_MATCHED → FAILED (EXPIRED / CANCELLED with 0 matched — no money risked)
+ *   MATCHED → MATCHED (final matched size may have changed — keep it in sync)
+ */
+async function reconcileCurrentOrders(open, betIds) {
   let res
   try {
     res = await axios.post(`${BETTING_API}/listCurrentOrders/`, { betIds }, { headers: headers() })
@@ -109,20 +118,92 @@ async function updateMatchedStatus(open, betIds) {
   const byBetId = new Map((res.data?.currentOrders ?? []).map(o => [o.betId, o]))
 
   for (const trade of open) {
-    if (trade.status !== 'PENDING') continue
-    const order = byBetId.get(trade.bet_id)
-    if (!order || order.status !== 'EXECUTION_COMPLETE') continue
+    // Skip already-settled or already-failed trades.
+    if (trade.status === 'SETTLED' || trade.status === 'FAILED') continue
 
-    try {
-      await markTradeMatched(trade.id, order.averagePriceMatched ?? null)
-      console.log(`[scalpy.live-settlement] Trade ${trade.id} matched @ ${order.averagePriceMatched ?? '?'}`)
-      broadcast({ type: 'trade_matched', data: { tradeId: trade.id, matchedPrice: order.averagePriceMatched ?? null } })
-    } catch (err) {
-      console.error(`[scalpy.live-settlement] markTradeMatched failed for ${trade.id}:`, err.message)
+    const order = byBetId.get(trade.bet_id)
+
+    // No order data — nothing to reconcile for this trade.
+    if (!order) continue
+
+    const ms = Number(order.sizeMatched ?? 0)
+    const mp = order.averagePriceMatched ?? null
+    const bs = order.status ?? null               // EXECUTABLE / EXECUTION_COMPLETE / EXPIRED / CANCELLED
+    const stake = Number(trade.stake ?? 0)
+
+    // ── Order expired or cancelled with NO matched amount → no money risked, mark FAILED ──
+    if ((bs === 'EXPIRED' || bs === 'CANCELLED') && ms <= 0) {
+      try {
+        await failTrade(trade.id, `${bs.toLowerCase()}_unmatched`, { matchedSize: 0 })
+        console.log(`[scalpy.live-settlement] Trade ${trade.id} ${bs} — fully unmatched, no loss`)
+        broadcast({ type: 'trade_unmatched', data: { tradeId: trade.id, requestedPrice: trade.requested_price, stake: trade.stake } })
+        logDecision({ geniusId: trade.genius_id, match: `${trade.home_team} v ${trade.away_team}`,
+          action: 'UNMATCHED', reason: `${bs.toLowerCase()}_unmatched`,
+          detail: `Order ${bs} with 0 matched — requested @ ${trade.requested_price} £${trade.stake}` })
+      } catch (err) {
+        console.error(`[scalpy.live-settlement] failTrade(${bs}) failed for ${trade.id}:`, err.message)
+      }
+      continue
+    }
+
+    // ── Order fully executed → MATCHED ──
+    if (bs === 'EXECUTION_COMPLETE') {
+      // Already marked matched with the same size? Skip to avoid redundant broadcasts.
+      if (trade.status === 'MATCHED' && trade.matched_size === ms) continue
+      try {
+        await markTradeMatched(trade.id, mp, ms)
+        console.log(`[scalpy.live-settlement] Trade ${trade.id} matched: ${ms.toFixed(2)} GBP @ ${mp ?? '?'}`)
+        broadcast({ type: 'trade_matched', data: { tradeId: trade.id, matchedPrice: mp, matchedSize: ms, stake: trade.stake } })
+        logDecision({ geniusId: trade.genius_id, match: `${trade.home_team} v ${trade.away_team}`,
+          action: 'MATCHED', reason: 'fully_matched',
+          detail: `${ms.toFixed(2)} GBP matched @ ${mp ?? '?'} (requested @ ${trade.requested_price})`,
+          price: trade.requested_price, stake: trade.stake })
+      } catch (err) {
+        console.error(`[scalpy.live-settlement] markTradeMatched failed for ${trade.id}:`, err.message)
+      }
+      continue
+    }
+
+    // ── Order still open (EXECUTABLE) with partial match → PARTIALLY_MATCHED ──
+    if (bs === 'EXECUTABLE' && ms > 0 && ms < stake) {
+      // Only update when the matched size changed (avoids spam on every tick).
+      if (trade.status === 'PARTIALLY_MATCHED' && trade.matched_size === ms) continue
+      try {
+        await updateMatchResult(trade.id, { matchedSize: ms, matchedPrice: mp, betStatus: bs, stake })
+        console.log(`[scalpy.live-settlement] Trade ${trade.id} partial match: ${ms.toFixed(2)}/${stake.toFixed(2)} GBP @ ${mp ?? '?'}`)
+        broadcast({ type: 'trade_partial_match', data: { tradeId: trade.id, matchedSize: ms, stake: trade.stake, matchedPrice: mp } })
+        logDecision({ geniusId: trade.genius_id, match: `${trade.home_team} v ${trade.away_team}`,
+          action: 'PARTIAL_MATCH', reason: 'partial_matched',
+          detail: `${ms.toFixed(2)}/${stake.toFixed(2)} GBP matched @ ${mp ?? '?'} (requested @ ${trade.requested_price})`,
+          price: trade.requested_price, stake: trade.stake })
+      } catch (err) {
+        console.error(`[scalpy.live-settlement] updateMatchResult(partial) failed for ${trade.id}:`, err.message)
+      }
+      continue
+    }
+
+    // ── Order expired/cancelled WITH a partial match → settle on the matched portion only ──
+    if ((bs === 'EXPIRED' || bs === 'CANCELLED') && ms > 0) {
+      try {
+        await updateMatchResult(trade.id, { matchedSize: ms, matchedPrice: mp, betStatus: bs, stake })
+        console.log(`[scalpy.live-settlement] Trade ${trade.id} ${bs} with partial match: ${ms.toFixed(2)}/${stake.toFixed(2)} GBP`)
+        broadcast({ type: 'trade_partial_match', data: { tradeId: trade.id, matchedSize: ms, stake: trade.stake, matchedPrice: mp, final: true } })
+        logDecision({ geniusId: trade.genius_id, match: `${trade.home_team} v ${trade.away_team}`,
+          action: 'PARTIAL_MATCH', reason: `${bs.toLowerCase()}_partial`,
+          detail: `${bs} — ${ms.toFixed(2)}/${stake.toFixed(2)} GBP matched @ ${mp ?? '?'} (rest unmatched)` })
+      } catch (err) {
+        console.error(`[scalpy.live-settlement] updateMatchResult(${bs}-partial) failed for ${trade.id}:`, err.message)
+      }
+      continue
     }
   }
 }
 
+/**
+ * Settle fully-resolved trades using Betfair's cleared-order report.
+ * Uses the actual priceMatched / sizeSettled from Betfair, not the requested values,
+ * so partial-match trades settle on the matched portion only.
+ */
 async function settleClearedOrders(open, betIds) {
   let res
   try {
@@ -139,17 +220,30 @@ async function settleClearedOrders(open, betIds) {
   const byBetId = new Map((res.data?.clearedOrders ?? []).map(o => [o.betId, o]))
 
   for (const trade of open) {
+    // Skip already-settled or failed trades.
+    if (trade.status === 'SETTLED' || trade.status === 'FAILED') continue
+
     const order = byBetId.get(trade.bet_id)
     if (!order) continue
 
     const outcome = order.betOutcome === 'WON' ? 'WON' : 'LOST'
+    // Use Betfair's actual profit (already accounts for matched price + commission).
     const pnl = Math.round((order.profit ?? 0) * 100) / 100
+
+    // Update matched_size/price from the settled report if they changed.
+    const settledSize = Number(order.sizeSettled ?? trade.matched_size ?? trade.stake ?? 0)
+    const settledPrice = Number(order.priceMatched ?? trade.matched_price ?? trade.requested_price ?? 0)
+    if (settledSize !== Number(trade.matched_size ?? 0) || settledPrice !== Number(trade.matched_price ?? 0)) {
+      try {
+        await updateMatchResult(trade.id, { matchedSize: settledSize, matchedPrice: settledPrice, betStatus: 'SETTLED', stake: trade.stake })
+      } catch { /* best-effort */ }
+    }
 
     try {
       const settled = await settleTrade(trade.id, outcome, pnl)
       if (!settled) continue // already settled — idempotent
-      console.log(`[scalpy.live-settlement] Trade ${trade.id} settled: ${outcome} P&L=${pnl}`)
-      broadcast({ type: 'trade_settled', data: { tradeId: trade.id, outcome, pnl, dryRun: false } })
+      console.log(`[scalpy.live-settlement] Trade ${trade.id} settled: ${outcome} P&L=${pnl} (${settledSize.toFixed(2)} GBP @ ${settledPrice})`)
+      broadcast({ type: 'trade_settled', data: { tradeId: trade.id, outcome, pnl, dryRun: false, matchedSize: settledSize, matchedPrice: settledPrice } })
       await recordSettlementFor(trade, outcome, pnl)
     } catch (err) {
       console.error(`[scalpy.live-settlement] settleTrade failed for ${trade.id}:`, err.message)
@@ -172,7 +266,7 @@ async function recordSettlementFor(trade, outcome, pnl) {
     return
   }
   const siblings = await getStrategyTradesForFixture(trade.genius_id, 'friendly')
-  const stillOpen = siblings.some(s => s.status === 'PENDING' || s.status === 'MATCHED')
+  const stillOpen = siblings.some(s => s.status === 'PENDING' || s.status === 'PARTIALLY_MATCHED' || s.status === 'MATCHED')
   if (stillOpen) return // other legs haven't resolved yet — this fixture's batch fires once they have
   const resolvedLegs = siblings.filter(s => s.status === 'SETTLED')
   if (resolvedLegs.length === 0) return // shouldn't happen (we just settled one) — defensive no-op

@@ -11,7 +11,7 @@ import { goalCountToMarketType, getOuMarket, forgetOuMarket } from '../services/
 import { placeOrder } from '../services/betfair-orders.service.js'
 import { decide, loadConfig, getConfig } from './scalpy.algorithm.js'
 import { addTicks, clampPrice } from './scalpy.ticks.js'
-import { upsertMatchState, claimTrade, promoteToPending, failClaim, getOpenBetGeniusIds, setBustGoals, setStoppageLog, getRecentFirstHalfEnds, checkSchema } from '../repositories/trade.repository.js'
+import { upsertMatchState, claimTrade, promoteToPending, updateMatchResult, failClaim, getOpenBetGeniusIds, setBustGoals, setStoppageLog, getRecentFirstHalfEnds, checkSchema } from '../repositories/trade.repository.js'
 import { broadcast } from './scalpy.sse.js'
 import { getOverlap, onOverlapSync } from '../services/overlap.service.js'
 import { settleFixture } from './scalpy.settlement.js'
@@ -842,17 +842,38 @@ async function executePlacement(ctx) {
     return null
   }
 
-  await promoteToPending(claim.id, { betId: orderResult.betId, matchedPrice: orderResult.averagePrice })
+  // Capture the actual match result. In live mode the Betfair response tells us immediately whether
+  // the order was matched, partially matched, or left unmatched. In dry-run, placeOrder simulates a
+  // full match so this code path produces realistic output either way.
+  const ms = Number(orderResult.matchedSize ?? 0)
+  const mp = orderResult.averagePrice ?? null
+  const bs = orderResult.betStatus ?? null
+  const stakeNum = Number(decision.stake ?? 0)
+
+  await promoteToPending(claim.id, { betId: orderResult.betId, matchedPrice: mp })
+  await updateMatchResult(claim.id, { matchedSize: ms, matchedPrice: mp, betStatus: bs, stake: stakeNum })
+
+  // Human-readable match outcome for the decision log + console.
+  let matchOutcome
+  if (ms <= 0) {
+    matchOutcome = 'UNMATCHED (open)'
+  } else if (stakeNum > 0 && ms < stakeNum) {
+    matchOutcome = `partial ${ms.toFixed(2)}/${stakeNum.toFixed(2)} @ ${mp ?? '?'}`
+  } else {
+    matchOutcome = `matched ${ms.toFixed(2)} @ ${mp ?? '?'}`
+  }
+
   setBetPlaced(geniusId, claim.id)
   if (placedLog) pushStoppageLog(geniusId, placedLog)
   persistState(geniusId)
   broadcast({ type: 'bet_placed', geniusId, data: {
     tradeId: claim.id, side: decision.action, selection: decision.selection,
     price: decision.price, stake: decision.stake, marketType: ouMarket.marketType,
-    addedMinutes, strategy, dryRun: DRY_RUN, ...extraBroadcast,
+    addedMinutes, strategy, dryRun: DRY_RUN,
+    matchedSize: ms, matchedPrice: mp, betStatus: bs, ...extraBroadcast,
   } })
-  logDecision({ geniusId, match, action: 'PLACED', reason: decision.reason, detail: placedDetail, price: decision.price, stake: decision.stake, marketType: ouMarket.marketType })
-  console.log(`[scalpy.engine] ✅ BET PLACED ${match}: ${decision.action} ${decision.selection} @ ${decision.price} £${decision.stake} (${ouMarket.marketType}) [${strategy}]`)
+  logDecision({ geniusId, match, action: 'PLACED', reason: decision.reason, detail: `${placedDetail ?? ''} → ${matchOutcome}`.trim(), price: decision.price, stake: decision.stake, marketType: ouMarket.marketType, matchedSize: ms, matchedPrice: mp, betStatus: bs })
+  console.log(`[scalpy.engine] ✅ BET PLACED ${match}: ${decision.action} ${decision.selection} @ ${decision.price} £${decision.stake} (${ouMarket.marketType}) [${strategy}] → ${matchOutcome}`)
   return claim
 }
 

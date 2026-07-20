@@ -17,16 +17,20 @@ const BETTING_API = 'https://api.betfair.com/exchange/betting/rest/v1.0'
  * @param {number}       params.size          Stake in GBP
  * @param {string}       params.customerRef   Unique reference (e.g. "scalpy_<uuid>")
  *
- * @returns {Promise<{ betId: string|null, status: string, matchedSize: number, averagePrice: number|null }>}
+ * @returns {Promise<{ betId: string|null, status: string, matchedSize: number, averagePrice: number|null, betStatus: string }>}
+ *   status:    top-level Betfair response status ('SUCCESS' / 'DRY_RUN')
+ *   betStatus: Betfair order status — 'EXECUTION_COMPLETE' | 'EXECUTABLE' (live), 'EXECUTION_COMPLETE' (dry-run simulation)
  */
 export async function placeOrder({ marketId, selectionId, side, price, size, customerRef }) {
   if (DRY_RUN) {
     console.log(`[betfair-orders] DRY_RUN — would place ${side} ${size} @ ${price} on market ${marketId} sel ${selectionId}`)
+    // Simulate a full match so the live-matching code path produces realistic output in dry-run too.
     return {
       betId:        null,
       status:       'DRY_RUN',
-      matchedSize:  0,
-      averagePrice: null,
+      matchedSize:  size,
+      averagePrice: price,
+      betStatus:    'EXECUTION_COMPLETE',
     }
   }
 
@@ -74,9 +78,10 @@ export async function placeOrder({ marketId, selectionId, side, price, size, cus
 
   return {
     betId:        report.betId,
-    status:       report.status,
+    status:       report.status,        // top-level instruction status ('SUCCESS')
     matchedSize:  report.sizeMatched ?? 0,
     averagePrice: report.averagePriceMatched ?? null,
+    betStatus:    report.orderStatus ?? null, // EXECUTABLE / EXECUTION_COMPLETE / EXPIRED / CANCELLED
   }
 }
 

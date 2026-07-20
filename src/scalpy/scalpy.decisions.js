@@ -1,6 +1,6 @@
 /**
- * Bet-decision trail (PLACED / SKIPPED / BLOCKED / DEFERRED / ANNOUNCE / ENGINE / ERROR),
- * surfaced to the admin panel via GET /api/scalpy/log.
+ * Bet-decision trail (PLACED / MATCHED / PARTIAL_MATCH / UNMATCHED / SETTLED / SKIPPED / BLOCKED /
+ * DEFERRED / ANNOUNCE / ENGINE / ERROR), surfaced to the admin panel via GET /api/scalpy/log.
  *
  * Two layers: an in-memory ring buffer (fast, serves the API) AND an append-only JSONL file
  * (`scalpy-decisions.log` in the engine root). The file exists because the engine restarts on every
@@ -19,9 +19,10 @@ const buffer = []
 
 /**
  * @param {{ geniusId?: string, match?: string,
- *            action: 'PLACED'|'SKIPPED'|'BLOCKED'|'DEFERRED'|'ANNOUNCE'|'ENGINE'|'ERROR',
+ *            action: 'PLACED'|'MATCHED'|'PARTIAL_MATCH'|'UNMATCHED'|'SETTLED'
+ *                   |'SKIPPED'|'BLOCKED'|'DEFERRED'|'ANNOUNCE'|'ENGINE'|'ERROR',
  *            reason?: string, brake?: string, detail?: string, price?: number, stake?: number,
- *            marketType?: string }} entry
+ *            marketType?: string, matchedSize?: number, matchedPrice?: number, betStatus?: string }} entry
  */
 export function logDecision(entry) {
   const row = { ts: new Date().toISOString(), ...entry }

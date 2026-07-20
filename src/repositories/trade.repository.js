@@ -148,6 +148,58 @@ export async function promoteToPending(tradeId, { betId, matchedPrice } = {}) {
   if (error) throw new Error(`[trade.repository] promoteToPending failed: ${error.message}`)
 }
 
+/**
+ * Persist the match result from a placed order (called right after placeOrder, and by the
+ * live-settlement poller when the matched amount changes).
+ * Sets matched_size / matched_price / bet_status / size_matched_at and, when applicable, advances
+ * the trade status forward (PENDING → PARTIALLY_MATCHED → MATCHED). Never moves status backwards.
+ *
+ * Column updates are independent of status transitions: even if the trade is already MATCHED, the
+ * matched_size / matched_price / bet_status columns are still refreshed (Betfair can revise them
+ * between reconcile and settlement). Status itself is only changed on a forward transition and only
+ * from a non-terminal state.
+ */
+export async function updateMatchResult(tradeId, { matchedSize, matchedPrice, betStatus, stake } = {}) {
+  if (matchedSize == null) return // nothing to record
+  const ms = Number(matchedSize)
+  if (!Number.isFinite(ms) || ms < 0) return
+
+  // size_matched_at only set when we first observe a match (don't clobber a later full match's timestamp).
+  const nowIso = new Date().toISOString()
+  const columns = {
+    matched_size: ms,
+    ...(matchedPrice != null ? { matched_price: matchedPrice } : {}),
+    ...(betStatus != null ? { bet_status: betStatus } : {}),
+    ...(ms > 0 ? { size_matched_at: nowIso } : {}),
+  }
+
+  // 1. Always refresh the match-result columns (unless the trade is already terminal).
+  {
+    const { error } = await supabase
+      .from('scalpy_trades')
+      .update(columns)
+      .eq('id', tradeId)
+      .in('status', ['CLAIMED', 'PENDING', 'PARTIALLY_MATCHED', 'MATCHED'])
+    if (error) throw new Error(`[trade.repository] updateMatchResult (columns) failed: ${error.message}`)
+  }
+
+  // 2. Advance status forward only: → PARTIALLY_MATCHED | MATCHED. Skipped if no transition needed.
+  const st = Number(stake ?? 0)
+  let nextStatus = null
+  if (ms > 0 && st > 0 && ms < st) nextStatus = 'PARTIALLY_MATCHED'
+  else if (st > 0 && ms >= st) nextStatus = 'MATCHED'
+  if (!nextStatus) return
+
+  {
+    const { error } = await supabase
+      .from('scalpy_trades')
+      .update({ status: nextStatus })
+      .eq('id', tradeId)
+      .in('status', ['CLAIMED', 'PENDING', 'PARTIALLY_MATCHED']) // never overwrite MATCHED/SETTLED/FAILED
+    if (error) throw new Error(`[trade.repository] updateMatchResult (status) failed: ${error.message}`)
+  }
+}
+
 /** Mark a CLAIMED row FAILED (order placement errored) so it doesn't count as open exposure. */
 export async function failClaim(tradeId, reason) {
   const { error } = await supabase
@@ -156,6 +208,26 @@ export async function failClaim(tradeId, reason) {
     .eq('id', tradeId)
     .eq('status', 'CLAIMED')
   if (error) console.error(`[trade.repository] failClaim error: ${error.message}`)
+}
+
+/**
+ * Mark a live trade as FAILED (order expired/cancelled unmatched or lapsed after partial match).
+ * Records the final matched amount in `matched_size` so partial-match P&L is still correct.
+ * No-op on already-SETTLED/FAILED rows (idempotent).
+ */
+export async function failTrade(tradeId, reason, { matchedSize = null, matchedPrice = null } = {}) {
+  const update = {
+    status: 'FAILED',
+    reason,
+    ...(matchedSize != null ? { matched_size: matchedSize } : {}),
+    ...(matchedPrice != null ? { matched_price: matchedPrice } : {}),
+  }
+  const { error } = await supabase
+    .from('scalpy_trades')
+    .update(update)
+    .eq('id', tradeId)
+    .in('status', ['PENDING', 'PARTIALLY_MATCHED', 'MATCHED'])
+  if (error) console.error(`[trade.repository] failTrade error: ${error.message}`)
 }
 
 /** True if a live (non-skipped/non-failed) bet row already exists for this Betfair market. */
@@ -216,13 +288,15 @@ export async function getOpenBetGeniusIds() {
  * Mark a trade as MATCHED (order fully executed on Betfair).
  * @param {string} tradeId
  * @param {number|null} matchedPrice - average matched price, if known
+ * @param {number|null} matchedSize  - total matched size in GBP, if known
  */
-export async function markTradeMatched(tradeId, matchedPrice) {
+export async function markTradeMatched(tradeId, matchedPrice, matchedSize = null) {
   const { error } = await supabase
     .from('scalpy_trades')
     .update({
       status: 'MATCHED',
       ...(matchedPrice != null ? { matched_price: matchedPrice } : {}),
+      ...(matchedSize != null ? { matched_size: matchedSize, size_matched_at: new Date().toISOString() } : {}),
     })
     .eq('id', tradeId)
 
@@ -230,15 +304,15 @@ export async function markTradeMatched(tradeId, matchedPrice) {
 }
 
 /**
- * Get live (non-dry-run) trades that are not yet settled — i.e. still PENDING
- * or MATCHED. Used by the live settlement poller.
+ * Get live (non-dry-run) trades that are not yet settled — i.e. still PENDING,
+ * PARTIALLY_MATCHED, or MATCHED. Used by the live settlement poller.
  */
 export async function getOpenLiveTrades() {
   const { data, error } = await supabase
     .from('scalpy_trades')
     .select('*')
     .eq('dry_run', false)
-    .in('status', ['PENDING', 'MATCHED'])
+    .in('status', ['PENDING', 'PARTIALLY_MATCHED', 'MATCHED'])
 
   if (error) throw new Error(`[trade.repository] getOpenLiveTrades failed: ${error.message}`)
   return data
@@ -294,13 +368,15 @@ export async function getTradeById(id) {
 }
 
 /**
- * Get PENDING trades (for settlement poller).
+ * Get unsettled trades (for the DRY_RUN settlement path). Includes PENDING, PARTIALLY_MATCHED,
+ * and MATCHED — all of them have an open bet that needs to be settled at full time. The status
+ * distinction is about match state, not whether settlement is due.
  */
 export async function getPendingTrades() {
   const { data, error } = await supabase
     .from('scalpy_trades')
     .select('*')
-    .eq('status', 'PENDING')
+    .in('status', ['PENDING', 'PARTIALLY_MATCHED', 'MATCHED'])
 
   if (error) throw new Error(`[trade.repository] getPendingTrades failed: ${error.message}`)
   return data
@@ -382,7 +458,7 @@ export async function upsertMatchState(state) {
 export async function checkSchema() {
   const problems = []
   const checks = [
-    ['scalpy_trades', 'dedupe_key, strategy, first_half_added, home_goals, away_goals, bust_goals, stoppage_log'],
+    ['scalpy_trades', 'dedupe_key, strategy, first_half_added, home_goals, away_goals, bust_goals, stoppage_log, matched_size, size_matched_at, bet_status'],
     ['scalpy_match_states', 'genius_id, first_half_end_sec'],
   ]
   for (const [table, cols] of checks) {
