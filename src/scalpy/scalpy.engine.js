@@ -20,7 +20,7 @@ import { isKilled, kill, istanbulDay } from '../lib/control.js'
 import { logDecision } from './scalpy.decisions.js'
 import { DRY_RUN } from '../lib/env.js'
 
-const FEED_POLL_MS = parseInt(process.env.SCALPY_FEED_POLL_MS ?? '3000', 10)
+const FEED_POLL_MS = parseInt(process.env.SCALPY_FEED_POLL_MS ?? '500', 10)
 const GENIUS_URL   = process.env.GENIUS_BACKEND_URL ?? 'http://localhost:3003'
 
 // If a poll 404s ("Feed not found" — backend restarted / Ably dropped the subscription), re-subscribe,
@@ -29,7 +29,7 @@ const FEED_RESUBSCRIBE_THROTTLE_MS = parseInt(process.env.SCALPY_FEED_RESUBSCRIB
 
 // Each poll re-requests a small window before lastSeenTs so an event that shares a
 // timestamp with an already-seen event isn't skipped by the server's strict `>` filter.
-const POLL_LOOKBACK_MS = 5000
+const POLL_LOOKBACK_MS = 1000
 
 /** Set of geniusIds currently being polled */
 const polledFixtures = new Set()
@@ -770,16 +770,24 @@ export function minutesRemainingInStoppage(announcedMin, elapsedSec) {
  * null if blocked/skipped/already-claimed. Caller owns the per-fixture `placing` mutex.
  */
 async function executePlacement(ctx) {
+  const tStart = performance.now()
   const {
     geniusId, state, match, decision, ouMarket, selectionId,
     goalsAtDecision, currentMarketType, dedupeKey, strategy = 'stoppage', friendly = false,
     addedMinutes, firstHalfAdded = null, placedLog, placedDetail, extraBroadcast = {},
   } = ctx
 
+  // Latency triage helper — time from this function's entry until the Betfair placeOrder returns,
+  // broken down per phase so I can see exactly where time is lost between Genius event arrival and
+  // bet placement. Logged only on the success path; failures already have their own console lines.
+  const phase = (name, ms) => `[${name}:${ms.toFixed(0)}ms]`
+  let gateMs = 0, claimMs = 0, orderMs = 0
+
   let claim = null
   let alreadyClaimed = false
   await withPlacementLock(async () => {
     let gate
+    const tGate0 = performance.now()
     try {
       gate = await canPlaceBet({ state, decision, ouMarket, goalsAtDecision, dryRun: DRY_RUN, cfg: getConfig(), currentMarketType, friendly })
     } catch (err) {
@@ -788,6 +796,7 @@ async function executePlacement(ctx) {
       logDecision({ geniusId, match, action: 'BLOCKED', reason: 'gate_error', brake: 'gate_error', detail: err.message })
       return
     }
+    gateMs = performance.now() - tGate0
     if (!gate.allow) {
       console.warn(`[scalpy.engine] 🚫 BLOCKED ${match}: ${gate.reason} [${gate.brake}] ${gate.detail ?? ''}`)
       broadcast({ type: 'bet_blocked', geniusId, data: { reason: gate.reason, brake: gate.brake, detail: gate.detail } })
@@ -798,6 +807,7 @@ async function executePlacement(ctx) {
     // A claim FAILURE (DB down, schema drift — e.g. a migration not run) must be LOUD: it was
     // silently eaten by the outer catch once (2026-07-07: missing `strategy` column killed every
     // bet for hours with only a console line). Fail-closed AND visible.
+    const tClaim0 = performance.now()
     try {
       claim = await claimTrade({
         dedupeKey, dryRun: DRY_RUN, strategy, firstHalfAdded,
@@ -813,6 +823,7 @@ async function executePlacement(ctx) {
       logDecision({ geniusId, match, action: 'BLOCKED', reason: 'claim_failed', brake: 'claim', detail: err.message })
       return
     }
+    claimMs = performance.now() - tClaim0
     if (!claim) {
       alreadyClaimed = true
       broadcast({ type: 'bet_skipped', geniusId, data: { reason: 'already_claimed' } })
@@ -832,15 +843,18 @@ async function executePlacement(ctx) {
   }
 
   let orderResult
+  const tOrder0 = performance.now()
   try {
     orderResult = await placeOrder({ marketId: ouMarket.marketId, selectionId, side: decision.action, price: decision.price, size: decision.stake, customerRef: dedupeKey })
   } catch (err) {
+    orderMs = performance.now() - tOrder0
+    console.error(`[scalpy.engine] placeOrder failed for ${match} ${phase('gate',gateMs)}${phase('claim',claimMs)}${phase('order',orderMs)}:`, err.message)
     await failClaim(claim.id, err.message)
-    console.error(`[scalpy.engine] placeOrder failed for ${match}:`, err.message)
     broadcast({ type: 'error', geniusId, data: { message: `order_failed: ${err.message}` } })
     logDecision({ geniusId, match, action: 'BLOCKED', reason: 'order_failed', detail: err.message })
     return null
   }
+  orderMs = performance.now() - tOrder0
 
   // Capture the actual match result. In live mode the Betfair response tells us immediately whether
   // the order was matched, partially matched, or left unmatched. In dry-run, placeOrder simulates a
@@ -850,8 +864,19 @@ async function executePlacement(ctx) {
   const bs = orderResult.betStatus ?? null
   const stakeNum = Number(decision.stake ?? 0)
 
-  await promoteToPending(claim.id, { betId: orderResult.betId, matchedPrice: mp })
-  await updateMatchResult(claim.id, { matchedSize: ms, matchedPrice: mp, betStatus: bs, stake: stakeNum })
+  // Fire-and-forget the post-order DB writes (CLAIMED→PENDING promotion + match result). The order
+  // is ALREADY on Betfair by the time we're here — these persistence updates only matter for the
+  // admin UI and the settlement poller (which reconciles from Betfair's currentOrders anyway, so a
+  // missed write here self-heals). Awaiting them serially delays the broadcast + return by ~200-450ms
+  // AND holds the next fixture's placement (caller's `placing` mutex) for that much longer.
+  const claimId = claim.id
+  const betId = orderResult.betId
+  void Promise.all([
+    promoteToPending(claimId, { betId, matchedPrice: mp })
+      .catch(e => console.error(`[scalpy.engine] promoteToPending(fire-and-forget) failed for ${match}:`, e.message)),
+    updateMatchResult(claimId, { matchedSize: ms, matchedPrice: mp, betStatus: bs, stake: stakeNum })
+      .catch(e => console.error(`[scalpy.engine] updateMatchResult(fire-and-forget) failed for ${match}:`, e.message)),
+  ])
 
   // Human-readable match outcome for the decision log + console.
   let matchOutcome
@@ -873,7 +898,13 @@ async function executePlacement(ctx) {
     matchedSize: ms, matchedPrice: mp, betStatus: bs, ...extraBroadcast,
   } })
   logDecision({ geniusId, match, action: 'PLACED', reason: decision.reason, detail: `${placedDetail ?? ''} → ${matchOutcome}`.trim(), price: decision.price, stake: decision.stake, marketType: ouMarket.marketType, matchedSize: ms, matchedPrice: mp, betStatus: bs })
-  console.log(`[scalpy.engine] ✅ BET PLACED ${match}: ${decision.action} ${decision.selection} @ ${decision.price} £${decision.stake} (${ouMarket.marketType}) [${strategy}] → ${matchOutcome}`)
+  // End-to-end timing breakdown so I can SEE where latency hides (the Bot was 0.5-1s slower than a
+  // human on the same trigger — Ersen 2026-07-20). gate = canPlaceBet DB reads, claim = claimTrade
+  // INSERT, order = placeOrder HTTP RTT + TLS handshake. The "since last event" gauge shows the
+  // Genius-feed-time-to-place latency (the actual symptom); eventTs comes from lastSeenTs/markEventReceived.
+  const totalMs = performance.now() - tStart
+  const sinceEvent = state.lastEventReceivedAt ? (Date.now() - state.lastEventReceivedAt) : -1
+  console.log(`[scalpy.engine] ✅ BET PLACED ${match}: ${decision.action} ${decision.selection} @ ${decision.price} £${decision.stake} (${ouMarket.marketType}) [${strategy}] → ${matchOutcome} ${phase('gate',gateMs)}${phase('claim',claimMs)}${phase('order',orderMs)}${phase('total',totalMs)} sinceEvent=${sinceEvent}ms`)
   return claim
 }
 

@@ -1,8 +1,13 @@
 import axios from 'axios'
+import https from 'https'
 import { getSessionToken } from './betfair-auth.service.js'
 import { DRY_RUN } from '../lib/env.js'
 
 const BETTING_API = 'https://api.betfair.com/exchange/betting/rest/v1.0'
+
+// Persistent keep-alive agent for Betfair betting API calls. Reusing the TLS socket avoids a fresh
+// handshake (~100-200ms) on every placeOrders / cancelOrders call — critical for low-latency placement.
+const betfairAgent = new https.Agent({ keepAlive: true, maxSockets: 4 })
 
 /**
  * Place a limit order on Betfair, or simulate it in DRY_RUN mode.
@@ -22,6 +27,7 @@ const BETTING_API = 'https://api.betfair.com/exchange/betting/rest/v1.0'
  *   betStatus: Betfair order status — 'EXECUTION_COMPLETE' | 'EXECUTABLE' (live), 'EXECUTION_COMPLETE' (dry-run simulation)
  */
 export async function placeOrder({ marketId, selectionId, side, price, size, customerRef }) {
+  const t0 = performance.now()
   if (DRY_RUN) {
     console.log(`[betfair-orders] DRY_RUN — would place ${side} ${size} @ ${price} on market ${marketId} sel ${selectionId}`)
     // Simulate a full match so the live-matching code path produces realistic output in dry-run too.
@@ -57,6 +63,8 @@ export async function placeOrder({ marketId, selectionId, side, price, size, cus
     `${BETTING_API}/placeOrders/`,
     body,
     {
+      httpAgent:  betfairAgent,
+      httpsAgent: betfairAgent,
       headers: {
         'X-Application':    appKey,
         'X-Authentication': sessionToken,
@@ -66,15 +74,20 @@ export async function placeOrder({ marketId, selectionId, side, price, size, cus
     }
   )
 
+  const tEl = (performance.now() - t0).toFixed(0)
   const result = response.data
   if (result.status !== 'SUCCESS') {
+    console.log(`[betfair-orders] placeOrders ${side} ${size}@${price} m=${marketId} FAILED in ${tEl}ms`)
     throw new Error(`[betfair-orders] placeOrders failed: ${JSON.stringify(result)}`)
   }
 
   const report = result.instructionReports?.[0]
   if (report?.status !== 'SUCCESS') {
+    console.log(`[betfair-orders] placeOrders ${side} ${size}@${price} m=${marketId} instruction FAILED in ${tEl}ms`)
     throw new Error(`[betfair-orders] Instruction failed: ${JSON.stringify(report)}`)
   }
+
+  console.log(`[betfair-orders] placeOrders ${side} ${size}@${price} m=${marketId} OK in ${tEl}ms matched=${report.sizeMatched ?? 0}@${report.averagePriceMatched ?? '?'}`)
 
   return {
     betId:        report.betId,
@@ -97,7 +110,7 @@ export async function cancelOrders(marketId, betIds = []) {
   const response = await axios.post(
     `${BETTING_API}/cancelOrders/`,
     { marketId, instructions: betIds.map(betId => ({ betId })) },
-    { headers: {
+    { httpAgent: betfairAgent, httpsAgent: betfairAgent, headers: {
       'X-Application': process.env.BETFAIR_APP_KEY, 'X-Authentication': getSessionToken(),
       'Content-Type': 'application/json', Accept: 'application/json',
     } }

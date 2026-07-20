@@ -61,20 +61,35 @@ export async function canPlaceBet(ctx) {
 
   // 8 — ONE BET PER MARKET (friendly strategy places up to 3/market at 87/88/89; its minute-keyed
   //      dedupe_key bounds that to exactly 3, and the total-open-liability cap still applies)
-  if (brakes.oneBetPerMarket && !friendly && await getMarketHasOpenBet(ouMarket.marketId))
+  // 10 — TOTAL OPEN LIABILITY
+  // Both DB reads are issued in parallel here (one bet-per-market + total-open-liability). The
+  // earlier serial pattern cost ~100-400ms inside the global placement lock; Promise.all is safe
+  // because both queries are read-only and independent — the per-market check is short-circuited
+  // only if the bet-per-market brake is disabled OR the strategy is friendly, in which case we
+  // skip issuing that query entirely.
+  const liability = liabilityFor(decision.action, decision.stake, decision.price)
+
+  const checksOnePerMarket = brakes.oneBetPerMarket && !friendly
+  const checksTotalLiability = brakes.maxTotalOpenLiability != null
+
+  let onePerMarketHit = false
+  let openLiability = null
+  if (checksOnePerMarket || checksTotalLiability) {
+    const tasks = []
+    if (checksOnePerMarket) tasks.push(getMarketHasOpenBet(ouMarket.marketId).then(v => { onePerMarketHit = !!v }))
+    if (checksTotalLiability) tasks.push(getOpenLiability().then(v => { openLiability = v }))
+    await Promise.all(tasks)
+  }
+
+  if (onePerMarketHit)
     return block('one_bet_per_market', 'market_already_bet')
 
-  // 9 — LIABILITY PER MARKET
-  const liability = liabilityFor(decision.action, decision.stake, decision.price)
+  // 9 — LIABILITY PER MARKET (pure arithmetic on a value computed before the parallel awaits)
   if (brakes.maxLiabilityPerMarket != null && liability > brakes.maxLiabilityPerMarket)
     return block('liability_per_market', 'liability_per_market_exceeded', String(liability))
 
-  // 10 — TOTAL OPEN LIABILITY
-  if (brakes.maxTotalOpenLiability != null) {
-    const open = await getOpenLiability()
-    if (open.total + liability > brakes.maxTotalOpenLiability)
-      return block('total_open_liability', 'total_open_liability_exceeded', `${open.total}+${liability}`)
-  }
+  if (checksTotalLiability && openLiability != null && openLiability.total + liability > brakes.maxTotalOpenLiability)
+    return block('total_open_liability', 'total_open_liability_exceeded', `${openLiability.total}+${liability}`)
 
   // 11 — DAILY REALIZED-LOSS LIMIT (backstop; recordSettlement also auto-kills)
   const ctrl = getControl()
