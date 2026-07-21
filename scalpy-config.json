@@ -28,7 +28,7 @@
   "brakes": {
     "oneBetPerMarket": true,
     "maxLiabilityPerMarket": 2,
-    "maxTotalOpenLiability": 20,
+    "maxTotalOpenLiability": 40,
     "dailyRealizedLossLimit": 20,
     "circuitBreakerLosses": 5,
     "priceMin": 1.01,

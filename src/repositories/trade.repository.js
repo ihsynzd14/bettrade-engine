@@ -63,7 +63,11 @@ export async function settleTrade(tradeId, outcome, pnl) {
   return (data?.length ?? 0) === 1
 }
 
-const OPEN_STATUSES = ['CLAIMED', 'PENDING', 'MATCHED']
+// Trades whose liability still counts toward the safety caps. PARTIALLY_MATCHED is included because
+// the matched portion is real money at risk (the unmatched portion LAPSEs at match end, but until
+// then the trade is open exposure). Leaving it out let the live settlement path under-count liability
+// right after a partial match — dangerous under maxTotalOpenLiability pressure.
+const OPEN_STATUSES = ['CLAIMED', 'PENDING', 'PARTIALLY_MATCHED', 'MATCHED']
 
 function liabilityFor(side, stake, price) {
   return side === 'LAY' ? stake * (price - 1) : stake
