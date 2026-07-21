@@ -29,7 +29,9 @@ const FEED_RESUBSCRIBE_THROTTLE_MS = parseInt(process.env.SCALPY_FEED_RESUBSCRIB
 
 // Each poll re-requests a small window before lastSeenTs so an event that shares a
 // timestamp with an already-seen event isn't skipped by the server's strict `>` filter.
-const POLL_LOOKBACK_MS = 1000
+// Kept at 2000ms (was 5000ms when poll was 3000ms) — the cushion shrinks proportionally with
+// the faster 500ms poll cadence, but never below 2s of redundancy for shared-ts bursts.
+const POLL_LOOKBACK_MS = 2000
 
 /** Set of geniusIds currently being polled */
 const polledFixtures = new Set()
@@ -864,19 +866,13 @@ async function executePlacement(ctx) {
   const bs = orderResult.betStatus ?? null
   const stakeNum = Number(decision.stake ?? 0)
 
-  // Fire-and-forget the post-order DB writes (CLAIMED→PENDING promotion + match result). The order
-  // is ALREADY on Betfair by the time we're here — these persistence updates only matter for the
-  // admin UI and the settlement poller (which reconciles from Betfair's currentOrders anyway, so a
-  // missed write here self-heals). Awaiting them serially delays the broadcast + return by ~200-450ms
-  // AND holds the next fixture's placement (caller's `placing` mutex) for that much longer.
-  const claimId = claim.id
-  const betId = orderResult.betId
-  void Promise.all([
-    promoteToPending(claimId, { betId, matchedPrice: mp })
-      .catch(e => console.error(`[scalpy.engine] promoteToPending(fire-and-forget) failed for ${match}:`, e.message)),
-    updateMatchResult(claimId, { matchedSize: ms, matchedPrice: mp, betStatus: bs, stake: stakeNum })
-      .catch(e => console.error(`[scalpy.engine] updateMatchResult(fire-and-forget) failed for ${match}:`, e.message)),
-  ])
+  // Persist post-order DB writes (CLAIMED→PENDING promotion + match result). Awaited so that on
+  // failure the throw triggers the outer `placeScalpyBet/placeFriendlyBet` catch (which broadcasts
+  // an error) AND so a hard crash can't leave a real-money Betfair order with a stuck CLAIMED DB
+  // row that the settlement poller skips (it only fetches PENDING/MATCHED). A fire-and-forget
+  // version was tried for latency but reverted — the ~150-300ms save wasn't worth the orphan-risk.
+  await promoteToPending(claim.id, { betId: orderResult.betId, matchedPrice: mp })
+  await updateMatchResult(claim.id, { matchedSize: ms, matchedPrice: mp, betStatus: bs, stake: stakeNum })
 
   // Human-readable match outcome for the decision log + console.
   let matchOutcome
