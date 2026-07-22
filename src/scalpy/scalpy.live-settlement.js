@@ -10,8 +10,13 @@ import { DRY_RUN } from '../lib/env.js'
 
 const BETTING_API    = 'https://api.betfair.com/exchange/betting/rest/v1.0'
 const SETTLE_POLL_MS = parseInt(process.env.SCALPY_LIVE_SETTLE_MS ?? '60000', 10)
+const ORPHAN_TICK_LIMIT = 3
+const ORPHAN_AGE_LIMIT_MS = 5 * 60 * 1000
 
 let intervalRef = null
+
+/** Tracks how many consecutive ticks a bet_id has been missing from both Betfair APIs. */
+const missingCount = new Map()
 
 function headers() {
   return {
@@ -103,9 +108,35 @@ async function tick() {
   // 2. Settle (-> SETTLED) using Betfair's real settled P&L once the market resolves.
   const settled = await settleClearedOrders(open, betIds)
 
+  // 3. Auto-fail trades that Betfair doesn't recognise (orphaned). A trade that appears PENDING
+  // for multiple consecutive ticks with neither listCurrentOrders nor listClearedOrders returning
+  // its bet_id means something went wrong (e.g., bet_id was never real, account mismatch, or
+  // Betfair voided the order). Rather than blocking liability forever, we fail it after a grace
+  // period (3 ticks AND 5 min age) so the engine can move on.
+  const foundBetIds = new Set([...reconciled.foundBetIds, ...settled.foundBetIds])
+  for (const trade of open) {
+    if (!trade.bet_id) continue
+    if (trade.status === 'FAILED' || trade.status === 'SETTLED') continue
+    if (foundBetIds.has(trade.bet_id)) {
+      missingCount.delete(trade.bet_id)
+      continue
+    }
+    const count = (missingCount.get(trade.bet_id) ?? 0) + 1
+    missingCount.set(trade.bet_id, count)
+    const age = Date.now() - new Date(trade.created_at).getTime()
+    if (count >= ORPHAN_TICK_LIMIT && age > ORPHAN_AGE_LIMIT_MS) {
+      try {
+        await failTrade(trade.id, 'bet_not_found_on_betfair', { matchedSize: 0 })
+        console.warn(`[scalpy.live-settlement] Trade ${trade.id} orphaned: bet_id ${trade.bet_id} not found in ${count} consecutive ticks (age ${(age / 1000 / 60).toFixed(0)}m) — auto-failed`)
+        broadcast({ type: 'trade_unmatched', data: { tradeId: trade.id, reason: 'bet_not_found_on_betfair' } })
+      } catch (err) {
+        console.error(`[scalpy.live-settlement] failTrade(orphan) failed for ${trade.id}:`, err.message)
+      }
+    }
+  }
+
   // Diagnostic: surface "open but not found anywhere on Betfair" so stuck trades are visible
-  // instead of silently rotting. If after several ticks a trade is still open and Betfair returns
-  // nothing for it in either API, something is wrong (bet_id mismatch, Betfair delay, etc.).
+  // instead of silently rotting.
   const found = reconciled.found + settled.found
   const missing = open.length - found
   if (missing > 0) {
@@ -129,7 +160,7 @@ async function reconcileCurrentOrders(open, betIds) {
     res = await axios.post(`${BETTING_API}/listCurrentOrders/`, { betIds }, { headers: headers() })
   } catch (err) {
     console.error('[scalpy.live-settlement] listCurrentOrders failed:', err.message)
-    return { found: 0, returned: 0, count: 0 }
+    return { found: 0, returned: 0, count: 0, foundBetIds: new Set() }
   }
 
   const orders = res.data?.currentOrders ?? []
@@ -221,7 +252,8 @@ async function reconcileCurrentOrders(open, betIds) {
     }
   }
 
-  return { found: byBetId.size, returned: orders.length, count: actionsTaken }
+  const foundBetIds = new Set(orders.map(o => o.betId))
+  return { found: byBetId.size, returned: orders.length, count: actionsTaken, foundBetIds }
 }
 
 /**
@@ -250,7 +282,7 @@ async function settleClearedOrders(open, betIds) {
     )
   } catch (err) {
     console.error('[scalpy.live-settlement] listClearedOrders failed:', err.message)
-    return { found: 0, returned: 0, count: 0 }
+    return { found: 0, returned: 0, count: 0, foundBetIds: new Set() }
   }
 
   const orders = res.data?.clearedOrders ?? []
@@ -289,7 +321,8 @@ async function settleClearedOrders(open, betIds) {
     }
   }
 
-  return { found: byBetId.size, returned: orders.length, count: settledCount }
+  const foundBetIds = new Set(orders.map(o => o.betId))
+  return { found: byBetId.size, returned: orders.length, count: settledCount, foundBetIds }
 }
 
 /**

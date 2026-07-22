@@ -1,34 +1,245 @@
-
-PS C:\Users\Administrator\Desktop\production\bettrade-engine> npm start
-
 > bettrade-engine@0.1.0 start
 > node src/index.js
 
 [engine] Starting bettrade-engine...
 [betfair-auth] Logged in successfully
-[control] Loaded (persisted) - killed=false day=2026-07-22 pnlToday=0 losses=0
+[control] loaded (persisted) — killed=false day=2026-07-22 pnlToday=0 losses=0
 [overlap] Sync started...
 [overlap] Polling started (interval: 500ms)
 [scalpy.algorithm] Config loaded: 7-rung ladder, stake=2, stacking=false
 [scalpy.engine] Rehydrated 19 fixtures with open bets (won't re-bet)
+[overlap] Sync started...
 [scalpy.engine] Rehydrated 8 first-half clock(s) (friendly restart-safety)
 [scalpy.engine] Engine started (DRY_RUN=false)
+[overlap] Sync started...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
 [scalpy.engine] Schema check OK
 [scalpy.live-settlement] Started (interval: 15000ms)
 [scalpy.price-poller] Started (interval: 3000ms, batched + change-only + backoff)
-[engine] Listening on http://0.0.0.0:4001 (all interfaces - reachable on this machine's IP)
-
-[engine] Overlap: /api/v1/fixtures/overlap
+[engine] Listening on http://0.0.0.0:4001 (all interfaces — reachable on this machine's IP)
+[engine] Overlap:       /api/v1/fixtures/overlap
 [engine] Scalpy stream: /api/scalpy/stream
-
 [engine] DRY_RUN: false | LIVE_ARMED: true | killed: false
-
-[overlap] Sync started...
 [overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Sync started...
+[scalpy.live-settlement] tick: 19 open, 19 betIds, currentOrders=0, clearedOrders=0, settled=0, MISSING=19 (not found in either Betfair API)
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[booking-coverage] Fetched 184 fixtures
+[overlap] Booking coverage: 184 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[booking-coverage] Fetched 184 fixtures
+[overlap] Booking coverage: 184 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[overlap] Sync started...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[match-state] Initialised state for NK Kustošija v NK Krka (geniusId=14198382)
+[scalpy.engine] Feed started for geniusId=14198382
+[scalpy.engine] Now polling fixture geniusId=14198382
+[match-state] Initialised state for Terengganu FA U20 v Penang FC U20 (geniusId=14021603)
+[scalpy.engine] Feed started for geniusId=14021603
+[scalpy.engine] Now polling fixture geniusId=14021603
+[match-state] Initialised state for Kedah FA U20 v Touchtronics FC U20 (geniusId=14021604)
+[scalpy.engine] Feed started for geniusId=14021604
+[scalpy.engine] Now polling fixture geniusId=14021604
+[match-state] Initialised state for Athlone Town Women v Skopje 2014 Women (geniusId=14055420)
+[scalpy.engine] Feed started for geniusId=14055420
+[scalpy.engine] Now polling fixture geniusId=14055420
+[match-state] Initialised state for Ipswich FC v Brisbane Roar (geniusId=14121375)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[match-state] Initialised state for Sydney United 58 v Central Coast Mariners (geniusId=14073728)
 [booking-coverage] Fetched 182 fixtures
 [overlap] Booking coverage: 182 fixtures
-[overlap] Booking filter: 93 -> 74 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[scalpy.engine] Feed started for geniusId=14073728
+[scalpy.engine] Now polling fixture geniusId=14073728
+[match-state] Initialised state for Tigers FC v Western Sydney Wanderers (geniusId=14073729)
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[scalpy.engine] Feed started for geniusId=14073729
+[scalpy.engine] Now polling fixture geniusId=14073729
+[match-state] Initialised state for United Kolkata SC v Bhawanipore FC (geniusId=14185834)
+[scalpy.engine] Failed to start feed for 14121375 (attempt 1): stream_not_available
+[scalpy.engine] Now polling fixture geniusId=14121375
+[match-state] Initialised state for Kalighat MS v Kidderpore SC (geniusId=14185835)
+[scalpy.engine] Feed started for geniusId=14185834
+[scalpy.engine] Now polling fixture geniusId=14185834
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[scalpy.engine] Failed to start feed for 14185835 (attempt 1): stream_not_available
+[scalpy.engine] Now polling fixture geniusId=14185835
+[overlap] Sync started...
+[overlap] Sync started...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
 [overlap] Matched 74 fixtures, fetching market books...
 [betfair-market] Fetched book for 40 markets (batch 1)
 [betfair-market] Fetched book for 34 markets (batch 2)
-[overlap] Sync complete - 74 overlapped fixtures
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Sync started...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Sync started...
+[betfair-market] Fetched book for 5 markets (batch 1)
+[overlap] Sync started...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Sync started...
+[match-state] Score (authoritative): geniusId=14198382 1-1
+[match-state] Phase change: geniusId=14198382 phase=FirstHalf
+[match-state] Phase change: geniusId=14198382 phase=HalfTime
+[match-state] Phase change: geniusId=14198382 phase=SecondHalf
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[match-state] Score (authoritative): geniusId=14021603 1-1
+[match-state] Phase change: geniusId=14021603 phase=FirstHalf
+[scalpy.engine] Stoppage in FirstHalf — skipping (not SecondHalf)
+[match-state] Phase change: geniusId=14021603 phase=HalfTime
+[match-state] Phase change: geniusId=14021603 phase=SecondHalf
+[match-state] Phase change: geniusId=14021604 phase=FirstHalf
+[scalpy.engine] Stoppage in FirstHalf — skipping (not SecondHalf)
+[match-state] Phase change: geniusId=14021604 phase=HalfTime
+[match-state] Score (authoritative): geniusId=14055420 2-0
+[match-state] Phase change: geniusId=14055420 phase=FirstHalf
+[scalpy.engine] Stoppage in FirstHalf — skipping (not SecondHalf)
+[match-state] Phase change: geniusId=14055420 phase=HalfTime
+[match-state] Phase change: geniusId=14073728 phase=FirstHalf
+[match-state] Phase change: geniusId=14073729 phase=FirstHalf
+[betfair-market] Fetched book for 40 markets (batch 1)
+[match-state] Phase change: geniusId=14185834 phase=FirstHalf
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Sync started...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[overlap] Sync started...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Sync started...
+[overlap] Sync started...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[overlap] Sync started...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[betfair-market] Fetched book for 7 markets (batch 1)
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Sync started...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[overlap] Sync started...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[overlap] Sync started...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[overlap] Sync started...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 → 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete — 74 overlapped fixtures
+[scalpy.engine] sync: 74 overlap fixtures, 9 live (InProgress / inplay)
+[overlap] Sync started...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+PS C:\Users\Administrator\Desktop\production\bettrade-engine>
