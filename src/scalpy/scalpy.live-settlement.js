@@ -89,13 +89,27 @@ async function tick() {
   if (!open || open.length === 0) return
 
   const betIds = open.map(t => t.bet_id).filter(Boolean)
-  if (betIds.length === 0) return
+  if (betIds.length === 0) {
+    console.warn(`[scalpy.live-settlement] ${open.length} open trade(s) but NONE have a bet_id — cannot query Betfair`)
+    return
+  }
 
   // 1. Reconcile current orders: PENDING → PARTIALLY_MATCHED → MATCHED, or FAILED on expiry.
-  await reconcileCurrentOrders(open, betIds)
+  const reconciled = await reconcileCurrentOrders(open, betIds)
 
   // 2. Settle (-> SETTLED) using Betfair's real settled P&L once the market resolves.
-  await settleClearedOrders(open, betIds)
+  const settled = await settleClearedOrders(open, betIds)
+
+  // Diagnostic: surface "open but not found anywhere on Betfair" so stuck trades are visible
+  // instead of silently rotting. If after several ticks a trade is still open and Betfair returns
+  // nothing for it in either API, something is wrong (bet_id mismatch, Betfair delay, etc.).
+  const found = reconciled.found + settled.found
+  const missing = open.length - found
+  if (missing > 0) {
+    console.warn(`[scalpy.live-settlement] tick: ${open.length} open, ${betIds.length} betIds, currentOrders=${reconciled.returned}, clearedOrders=${settled.returned}, settled=${settled.count}, MISSING=${missing} (not found in either Betfair API)`)
+  } else if (settled.count > 0 || reconciled.count > 0) {
+    console.log(`[scalpy.live-settlement] tick: ${open.length} open, currentOrders=${reconciled.returned}, clearedOrders=${settled.returned}, reconciled=${reconciled.count}, settled=${settled.count}`)
+  }
 }
 
 /**
@@ -112,10 +126,12 @@ async function reconcileCurrentOrders(open, betIds) {
     res = await axios.post(`${BETTING_API}/listCurrentOrders/`, { betIds }, { headers: headers() })
   } catch (err) {
     console.error('[scalpy.live-settlement] listCurrentOrders failed:', err.message)
-    return
+    return { found: 0, returned: 0, count: 0 }
   }
 
-  const byBetId = new Map((res.data?.currentOrders ?? []).map(o => [o.betId, o]))
+  const orders = res.data?.currentOrders ?? []
+  const byBetId = new Map(orders.map(o => [o.betId, o]))
+  let actionsTaken = 0
 
   for (const trade of open) {
     // Skip already-settled or already-failed trades.
@@ -133,6 +149,7 @@ async function reconcileCurrentOrders(open, betIds) {
 
     // ── Order expired or cancelled with NO matched amount → no money risked, mark FAILED ──
     if ((bs === 'EXPIRED' || bs === 'CANCELLED') && ms <= 0) {
+      actionsTaken++
       try {
         await failTrade(trade.id, `${bs.toLowerCase()}_unmatched`, { matchedSize: 0 })
         console.log(`[scalpy.live-settlement] Trade ${trade.id} ${bs} — fully unmatched, no loss`)
@@ -150,6 +167,7 @@ async function reconcileCurrentOrders(open, betIds) {
     if (bs === 'EXECUTION_COMPLETE') {
       // Already marked matched with the same size? Skip to avoid redundant broadcasts.
       if (trade.status === 'MATCHED' && trade.matched_size === ms) continue
+      actionsTaken++
       try {
         await markTradeMatched(trade.id, mp, ms)
         console.log(`[scalpy.live-settlement] Trade ${trade.id} matched: ${ms.toFixed(2)} GBP @ ${mp ?? '?'}`)
@@ -168,6 +186,7 @@ async function reconcileCurrentOrders(open, betIds) {
     if (bs === 'EXECUTABLE' && ms > 0 && ms < stake) {
       // Only update when the matched size changed (avoids spam on every tick).
       if (trade.status === 'PARTIALLY_MATCHED' && trade.matched_size === ms) continue
+      actionsTaken++
       try {
         await updateMatchResult(trade.id, { matchedSize: ms, matchedPrice: mp, betStatus: bs, stake })
         console.log(`[scalpy.live-settlement] Trade ${trade.id} partial match: ${ms.toFixed(2)}/${stake.toFixed(2)} GBP @ ${mp ?? '?'}`)
@@ -184,6 +203,7 @@ async function reconcileCurrentOrders(open, betIds) {
 
     // ── Order expired/cancelled WITH a partial match → settle on the matched portion only ──
     if ((bs === 'EXPIRED' || bs === 'CANCELLED') && ms > 0) {
+      actionsTaken++
       try {
         await updateMatchResult(trade.id, { matchedSize: ms, matchedPrice: mp, betStatus: bs, stake })
         console.log(`[scalpy.live-settlement] Trade ${trade.id} ${bs} with partial match: ${ms.toFixed(2)}/${stake.toFixed(2)} GBP`)
@@ -197,6 +217,8 @@ async function reconcileCurrentOrders(open, betIds) {
       continue
     }
   }
+
+  return { found: byBetId.size, returned: orders.length, count: actionsTaken }
 }
 
 /**
@@ -207,17 +229,29 @@ async function reconcileCurrentOrders(open, betIds) {
 async function settleClearedOrders(open, betIds) {
   let res
   try {
+    // settledDateRange is CRITICAL: without it, Betfair defaults to a narrow window (start of today
+    // or last few hours) and silently omits bets settled on previous days. This caused 19 trades to
+    // stay stuck in PENDING for 24h+ — the poller ran but Betfair returned nothing for them.
+    // 7-day window is generous; we filter by betIds anyway so the range just ensures inclusion.
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
     res = await axios.post(
       `${BETTING_API}/listClearedOrders/`,
-      { betStatus: 'SETTLED', betIds, groupBy: 'BET' },
+      {
+        betStatus: 'SETTLED',
+        betIds,
+        settledDateRange: { from: sevenDaysAgo },
+        groupBy: 'BET',
+      },
       { headers: headers() }
     )
   } catch (err) {
     console.error('[scalpy.live-settlement] listClearedOrders failed:', err.message)
-    return
+    return { found: 0, returned: 0, count: 0 }
   }
 
-  const byBetId = new Map((res.data?.clearedOrders ?? []).map(o => [o.betId, o]))
+  const orders = res.data?.clearedOrders ?? []
+  const byBetId = new Map(orders.map(o => [o.betId, o]))
+  let settledCount = 0
 
   for (const trade of open) {
     // Skip already-settled or failed trades.
@@ -242,6 +276,7 @@ async function settleClearedOrders(open, betIds) {
     try {
       const settled = await settleTrade(trade.id, outcome, pnl)
       if (!settled) continue // already settled — idempotent
+      settledCount++
       console.log(`[scalpy.live-settlement] Trade ${trade.id} settled: ${outcome} P&L=${pnl} (${settledSize.toFixed(2)} GBP @ ${settledPrice})`)
       broadcast({ type: 'trade_settled', data: { tradeId: trade.id, outcome, pnl, dryRun: false, matchedSize: settledSize, matchedPrice: settledPrice } })
       await recordSettlementFor(trade, outcome, pnl)
@@ -249,6 +284,8 @@ async function settleClearedOrders(open, betIds) {
       console.error(`[scalpy.live-settlement] settleTrade failed for ${trade.id}:`, err.message)
     }
   }
+
+  return { found: byBetId.size, returned: orders.length, count: settledCount }
 }
 
 /**
