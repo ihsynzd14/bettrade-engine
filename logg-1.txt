@@ -1,0 +1,34 @@
+
+PS C:\Users\Administrator\Desktop\production\bettrade-engine> npm start
+
+> bettrade-engine@0.1.0 start
+> node src/index.js
+
+[engine] Starting bettrade-engine...
+[betfair-auth] Logged in successfully
+[control] Loaded (persisted) - killed=false day=2026-07-22 pnlToday=0 losses=0
+[overlap] Sync started...
+[overlap] Polling started (interval: 500ms)
+[scalpy.algorithm] Config loaded: 7-rung ladder, stake=2, stacking=false
+[scalpy.engine] Rehydrated 19 fixtures with open bets (won't re-bet)
+[scalpy.engine] Rehydrated 8 first-half clock(s) (friendly restart-safety)
+[scalpy.engine] Engine started (DRY_RUN=false)
+[scalpy.engine] Schema check OK
+[scalpy.live-settlement] Started (interval: 15000ms)
+[scalpy.price-poller] Started (interval: 3000ms, batched + change-only + backoff)
+[engine] Listening on http://0.0.0.0:4001 (all interfaces - reachable on this machine's IP)
+
+[engine] Overlap: /api/v1/fixtures/overlap
+[engine] Scalpy stream: /api/scalpy/stream
+
+[engine] DRY_RUN: false | LIVE_ARMED: true | killed: false
+
+[overlap] Sync started...
+[overlap] Betfair: 136 markets | Genius: 367 fixtures
+[booking-coverage] Fetched 182 fixtures
+[overlap] Booking coverage: 182 fixtures
+[overlap] Booking filter: 93 -> 74 fixtures
+[overlap] Matched 74 fixtures, fetching market books...
+[betfair-market] Fetched book for 40 markets (batch 1)
+[betfair-market] Fetched book for 34 markets (batch 2)
+[overlap] Sync complete - 74 overlapped fixtures

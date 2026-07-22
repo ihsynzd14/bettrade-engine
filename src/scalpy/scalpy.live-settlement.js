@@ -37,6 +37,9 @@ export function startLiveSettlement() {
   }
   if (intervalRef) return
 
+  // Fire one tick immediately at startup so we don't wait 15s to see if settlement works.
+  tick().catch(err => console.error('[scalpy.live-settlement] startup tick error:', err.message))
+
   intervalRef = setInterval(() => {
     tick().catch(err => console.error('[scalpy.live-settlement] tick error:', err.message))
   }, SETTLE_POLL_MS)
@@ -233,13 +236,14 @@ async function settleClearedOrders(open, betIds) {
     // or last few hours) and silently omits bets settled on previous days. This caused 19 trades to
     // stay stuck in PENDING for 24h+ — the poller ran but Betfair returned nothing for them.
     // 7-day window is generous; we filter by betIds anyway so the range just ensures inclusion.
+    const nowIso = new Date().toISOString()
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
     res = await axios.post(
       `${BETTING_API}/listClearedOrders/`,
       {
         betStatus: 'SETTLED',
         betIds,
-        settledDateRange: { from: sevenDaysAgo },
+        settledDateRange: { from: sevenDaysAgo, to: nowIso },
         groupBy: 'BET',
       },
       { headers: headers() }
