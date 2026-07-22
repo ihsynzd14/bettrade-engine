@@ -77,7 +77,7 @@ export async function canPlaceBet(ctx) {
   if (checksOnePerMarket || checksTotalLiability) {
     const tasks = []
     if (checksOnePerMarket) tasks.push(getMarketHasOpenBet(ouMarket.marketId).then(v => { onePerMarketHit = !!v }))
-    if (checksTotalLiability) tasks.push(getOpenLiability().then(v => { openLiability = v }))
+    if (checksTotalLiability) tasks.push(getOpenLiability(dryRun).then(v => { openLiability = v }))
     await Promise.all(tasks)
   }
 

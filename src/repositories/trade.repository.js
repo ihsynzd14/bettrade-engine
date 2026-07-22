@@ -246,12 +246,20 @@ export async function getMarketHasOpenBet(betfairMarketId) {
   return (data?.length ?? 0) > 0
 }
 
-/** Total open liability across all not-yet-settled bets (BACK liability = stake). */
-export async function getOpenLiability() {
-  const { data, error } = await supabase
+/**
+ * Total open liability across all not-yet-settled bets (BACK liability = stake).
+ * @param {boolean} [dryRun] - When provided, filters to only dry_run=true (test) or dry_run=false
+ *   (live) trades. This MUST match the mode the engine is running in — otherwise old test trades
+ *   (dry_run=true) block live betting forever: they count toward the cap but are never settled by
+ *   the live poller (which only picks dry_run=false). When omitted, counts ALL trades (legacy).
+ */
+export async function getOpenLiability(dryRun) {
+  let query = supabase
     .from('scalpy_trades')
     .select('stake, side, requested_price, status')
     .in('status', OPEN_STATUSES)
+  if (dryRun !== undefined) query = query.eq('dry_run', dryRun)
+  const { data, error } = await query
   if (error) throw new Error(`[trade.repository] getOpenLiability failed: ${error.message}`)
   let total = 0
   for (const t of data) total += liabilityFor(t.side, Number(t.stake), Number(t.requested_price))
